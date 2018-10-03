@@ -1,0 +1,130 @@
+
+
+B271: Benson, N. G., and P. L. Hudson. 1975. Effects of a reduced fall 
+drawdown on benthos abundance in Lake Francis Case. Transactions of the 
+American Fisheries Society. 
+
+A short study describing the change in benthic invertebrate community of
+a Missouri River Reservoir. They found that benthic insect abundance 
+increased 3 fold after the drawdown was reduced, especially in May for 
+burrowing forms of chironomids, mayflies, oligocheaches, and gnats.
+
+
+B272: Bennett, G. W. 1962. Management of artificial lakes and ponds. New York : Reinhold Pub. Corp., [1962].
+
+
+
+C271: Carmignani, J. R., and A. H. Roy. 2017. Ecological impacts of winter water level drawdowns on lake littoral zones: a review. Aquatic Sciences 79:803-824.
+
+G141: Gaboury, M. N., and J. W. Patalas. 
+1984. Influence of water level drawdown on the fish populations of Cross 
+Lake, Manitoba. Canadian Journal of Fisheries & Aquatic Sciences 
+41:118-125. 
+
+The study evaluated the effect of winter drawdown of a lake in Manitoba. 
+The drawdown lead to winterkills and limited access to shoreline 
+spawning. Whitefish and ciscos were especially sensitive to winterkill. 
+The study was prompted by water level management (hydroelectric regime) 
+effects on reduced commercial fishery catch. 
+
+
+
+H257: LeRoy Heman, M., R. S. Campbell, and L. C. Redmond. 
+1969. Manipulation of Fish Populations Through Reservoir Drawdown. 
+Transactions of the American Fisheries Society 98:293-304. 
+
+This was one of the first manuscripts devoted to the subject of the 
+effect of **midsummer (mid july)** reservoir drawdowns on fish 
+populations. The authors used a drawdown to restructure lmb population 
+in Little Dixie Lake, MO. Specifically they wanted to reduce the 
+population and increase growth rates. The surface area and volume was 
+reduced bh 42 and 58% retrospectively which caused the lake to become 
+homothermous. They used stomach analysis to evaluate feeding activity. 
+Food found in stomach increased post drawdown and the percent empty 
+stomachs decreased. Growth, inferred from annual of scales was found to 
+increase post drawdown. Harvest of bluegills increased immediately after 
+drawdown and then declined which lmb harvest reduced but increased in 
+numbers and size 2 months later. The authors speculate that with 
+drawdown the small sunfish were stranded in in weedbeds and shallow 
+pools and concentration of biomass lead to increased predation by bass. 
+
+It is unclear how the system responded as the system became inundated again. 
+
+Notes:
+* Reservoir aging and declining fish production, bass are susceptible to 
+egg predation as the community shifts
+* Suggestion to allow fish to and insects to reach production by maintaining a 
+full lake during the summer growing season and then lower the lake to concentrate
+fish, thereby letting predators feed on the prey fish and knock them back. **Therefore
+should know something about growth and gape size to figure out optimal drawdown**
+Refilling allows the residual population to expand.
+* Bass and predators harvest should decrease post drawdown because they are satiated
+by concentrated forage fish
+
+
+
+L183: Logez, M., R. Roy, L. Tissot, and C. Argillier. 2016. Effects of 
+water-level fluctuations on the environmental characteristics and 
+fish-environment relationships in the littoral zone of a reservoir. 
+Fundamental and Applied Limnology 189:37-49. 
+
+
+
+N100: Noble, R. L. 1981. Management of Forage Fishes in Impoundments of 
+the Southern United States. Transactions of the American Fisheries 
+Society 110:738-750. 
+
+
+
+
+P268: Paller, M. H. 1997. Recovery of a reservoir fish community from drawdown related 
+impacts. North American Journal of Fisheries Management 17:726-733. 
+
+This study evaluated the effect of a 3.5 year drawdown of a south 
+Carolina reservoir. The drawdown reduced fish abundance, and structure 
+and the loss of littoral zone was speculated as driving the changes. The 
+system recovered within 9 months of the drawdown to adequate fish 
+abundance and species composition but size structure was different. 
+Large individuals were rare and the community was dominated by smaller 
+individuals. Authors noted the role of refugia in recolonization and 
+high reproductive rates of resident fish. Suggests that some reservoir 
+communities are resilient to disturbance to physical habitat, thereby 
+resembling stream fish communities. 
+
+* Use proportional similarity PS = 1-0.5*sum(abs(p_in-p_ij)) p is the 
+proportion of species in site i 
+* Reports high level of reproduction post drawdown potentially due to
+the inundation of terrestrial plants that had colonized the lake bed.
+* Attributed reduction in size structure to mortality of older fish
+* Posit that long lived fishes like lmb will take a few years to recover
+* Makes a case that stocking post drawdown may not be necessary as communities
+are resilient, however it may be required if fish kills occur
+
+
+
+R190: Rose, B. P., and M. G. Mesa. 2013. Effects of Summer Drawdown on 
+the Fishes and Larval Chironomids in Beulah Reservoir, Oregon. Northwest 
+Science 87:207-218. 
+
+
+
+R192: Riedel, R., P. Bayley, and D. Austen. 2017. Effects of Management 
+Practices and Environmental Factors on Largemouth Bass Abundance in 
+Illinois Inland Lakes. Natural Resources Vol.08No.03:20. 
+
+
+
+Lantz, K. E.. J. T. Davis, J. S. Hughes, and H. E. Schafer.
+Jr. 1967. Water level fluctuation—its effects on
+vegetation control and fish population management.
+Proceedings of the Annual Conference Southeastern
+Association of Game and Fish Commissioners
+18(l964):483-494.
+
+
+ILL on this one
+Ratcliff, D. R., W. A. Wurtsbaugh, and J. Zusak. 2009.
+Evaluating the effectiveness of grassbed treatments
+as habitat for juvenile black bass in a drawdown
+reservoir. North American Journal of Fisheries
+Management 29:1119–1129.
