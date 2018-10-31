@@ -24,13 +24,13 @@ Specifically, Bluff Lake water levels are manipulated to provide roosting and
 foraging habitats for wood storks (Cite noxubee ccp)
 
  
-        1. Lake level manipulation and changes over time
-    1. Effects of lake level manipulation
-        1. Concentrate forage and predator fish
-            1. Results in poor fishing post drawdown but good growth
-            1. Limits recruitment of forage fish
-        1. Effect depends on when drawdown occurs
-        1. Effect depends on fish community and growth
+1. Lake level manipulation and changes over time
+1. Effects of lake level manipulation
+1. Concentrate forage and predator fish
+1. Results in poor fishing post drawdown but good growth
+1. Limits recruitment of forage fish
+1. Effect depends on when drawdown occurs
+1. Effect depends on fish community and growth
 
 Recreational fishing opportunities on the refuge are negatively 
 impacted seasonally with the management of lakes for waterfowl and wood 
@@ -58,20 +58,20 @@ resources (Cite noxubee ccp p33)
 
  P 96....
 Objective A.7.2: When not in conflict with waterfowl and threatened and endangered species management, maintain a balanced native fisheries population in lakes by managing size distribution, ratio of predator to prey, mortality rates, and other key parameters.
-o Strategy A.7.2.1: Monitor water levels using permanently fixed water level gauges.
-o Strategy A.7.2.2: Use geographic information systems to record and assess water level measures.
-o Strategy A.7.2.3: Periodically conduct fisheries monitoring.
-o Strategy A.7.2.4: Create deep-water habitats within Bluff Lake and use soil from excavations to create forested islands to serve as possible future rookeries for birds.
-o Strategy A.7.2.5: Use public use regulations as a tool in managing fish populations (i.e., slot or creel limits).
+* Strategy A.7.2.1: Monitor water levels using permanently fixed water level gauges.
+* Strategy A.7.2.2: Use geographic information systems to record and assess water level measures.
+* Strategy A.7.2.3: Periodically conduct fisheries monitoring.
+* Strategy A.7.2.4: Create deep-water habitats within Bluff Lake and use soil from excavations to create forested islands to serve as possible future rookeries for birds.
+* Strategy A.7.2.5: Use public use regulations as a tool in managing fish populations (i.e., slot or creel limits).
 
 Objective A.7.3: Support existing populations of paddlefish by manipulating water flow from the lakes during the key spring spawning migration periods of February 15 to
 May 1.
-o Strategy A.7.3.1: Weekly release at least an estimated 400 cubic feet per second of water for at least one, 8-hour period using the Bluff Lake radial arm water control structure to increase water flow in areas down stream of structure.
-o Strategy A.7.3.2: Maintain protection from the taking of paddlefish by anglers.
+* Strategy A.7.3.1: Weekly release at least an estimated 400 cubic feet per second of water for at least one, 8-hour period using the Bluff Lake radial arm water control structure to increase water flow in areas down stream of structure.
+* Strategy A.7.3.2: Maintain protection from the taking of paddlefish by anglers.
 
 Objective A.7.5: Restore fish connectivity between the Bluff Lake and Noxubee River by installing fish passage structures for paddlefish and potential Gulf Coast walleye populations.
-o Strategy A.7.5.1: Work with partners to better understand fish passage needs.
-o Strategy A.7.5.2: If the existing structure is replaced, consider designing fish passage features.
+* Strategy A.7.5.1: Work with partners to better understand fish passage needs.
+* Strategy A.7.5.2: If the existing structure is replaced, consider designing fish passage features.
 
 March 1 to October 31- 6 weeks
 
