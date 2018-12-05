@@ -1,6 +1,6 @@
 
 
-_operations/
+_operations/_*
 _archive/
 
 # IGNORE CERTAIN FILETYPES
