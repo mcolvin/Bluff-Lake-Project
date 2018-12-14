@@ -4,16 +4,11 @@ _operations/_*
 _archive/
 
 # IGNORE CERTAIN FILETYPES
-*.doc
-*.docx
-*.ppt
-*.pptx
-*.SESSION
-*.potx
+
 *.accdb
 
 *.Rdata
-*.pdf
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
