@@ -11,12 +11,19 @@ colnames(coords) <- c('x','y','z')
 str(coords)
       
 write.table(coords, "poly_coordinates.csv", sep = ",", row.names = F)
-    
+
 library(sp)
 xy <- cbind(coords$x, coords$y)
 plot(xy, type = 'l')
 xy.poly <- Polygon(xy)
 xy.points.reg <- spsample(xy.poly, n = 23, type = "regular") # n is sample size
+
+
+CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0")
+crs(xy.poly)
+
+
+
 set.seed(123)
 xy.points.nonal.20 <- spsample(xy.poly, n = 23, type = "nonaligned") # n is sample size
 plot(xy.points.nonal.20, add = TRUE, pch = 3)
