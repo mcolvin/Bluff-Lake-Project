@@ -36,15 +36,12 @@ plot(bl) ## THAT LOOKS MUCH BETTER
 
 ## NOW TRANSFORM TO UTM
 ## I PERSONALLY LIKE UTM B/C THE GRID IS 1 METER
-states<-spTransform(BL, 
+bl_utm<-spTransform(bl, 
     CRS("+proj=utm +zone=16 +datum=NAD83"))
 
-xy.points.reg <- spsample(xy.poly, n = 23, type = "regular") # n is sample size
-
-
-CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs +towgs84=0,0,0")
-crs(xy.poly)
-
+xy.points.reg <- spsample(bl_utm, n = 23, type = "regular") # n is sample size
+plot(bl_utm,axes=TRUE)
+points(xy.points.reg)
 
 
 set.seed(123)
