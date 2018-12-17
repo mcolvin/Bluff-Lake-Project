@@ -1,7 +1,7 @@
 
 ## Usually no need to set a 
 #setwd("C:/Users/Victoria Starnes/Documents/Bluff Lake DO site selection")
-setwd("..") # SET WORKING DIRECTORY TO THE FOLDER ABOVE THIS ONE 
+setwd("C:/Users/Victoria Starnes/Documents/GitHub/Bluff-Lake-Project/analysis/DO-Sampling") # SET WORKING DIRECTORY TO THE FOLDER ABOVE THIS ONE
 #kml.text <- readLines("C:/Users/Victoria Starnes/Documents/Bluff Lake DO site selection/Bluff Lake Draft 1.kml")
 
 ## PULL KML DATA IN
@@ -39,13 +39,24 @@ plot(bl) ## THAT LOOKS MUCH BETTER
 bl_utm<-spTransform(bl, 
     CRS("+proj=utm +zone=16 +datum=NAD83"))
 
-xy.points.reg <- spsample(bl_utm, n = 23, type = "regular") # n is sample size
-plot(bl_utm,axes=TRUE)
-points(xy.points.reg)
+#making a grid
+grid <- makegrid(bl, cellsize = 0.0001) # cellsize in map units!
 
+# grid is a data.frame. To change it to a spatial data set we have to
+grid <- SpatialPoints(grid, proj4string = CRS(proj4string(bl)))
+grid <- grid[bl]
+plot(bl)
+plot(grid, pch = 1, add = T)
+write.table(coords, "_dat/poly_grid.csv", sep = ",", row.names = F)
+
+
+
+#options for sample site locations
+xy.points.reg.23 <- spsample(bl_utm, n = 23, type = "regular") # n is sample size
+plot(bl_utm,axes=TRUE)
+points(xy.points.reg.23, pch =10)
 
 set.seed(123)
-xy.points.nonal.20 <- spsample(xy.poly, n = 23, type = "nonaligned") # n is sample size
-plot(xy.points.nonal.20, add = TRUE, pch = 3)
-
-write.table(xy.points, "point_coordinates.csv", sep = ",", row.names = F) 
+xy.points.nonal.23 <- spsample(bl_utm, n = 23, type = "nonaligned") # n is sample size
+plot(xy.points.nonal.23, add = TRUE, pch = 3)
+write.table(xy.points.nonal.23, "point_coordinates.csv", sep = ",", row.names = F) 
