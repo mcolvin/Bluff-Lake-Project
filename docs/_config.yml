@@ -14,10 +14,10 @@ baseurl: ""
 # Of course don't forget to change the username and projectname to YOUR username and project
 
 # Name of website
-title: My website
+title: Bluff Lake Project
 
 # Short description of your site
-description: A virtual proof that name is awesome!
+description: Bluff Lake is a 1,200-acre shallow lake on the Sam D. Hamilton Noxubee National Wildlife Refuge. Currently the lake undergoes seasonal drawdowns to provide cultivated moist soil plants for migrating duck forage and to increase concentrations of fish in shallow water habitats for piscivorous wading birds. Currently, Mississippi State professor Dr. Mike Colvin and graduate student Victoria Starnes are working to discover how these management practices effect the fishery and water quality of the lake. Check back here to see how the project progresses. 
 
 # --- Navigation bar options --- #
 
@@ -64,7 +64,7 @@ footer-link-col: "#404040"
 # Change all these values or delete the ones you don't want.
 # Important: you must keep the "name" parameter, everything else you can remove
 author:
-  name: Some Person
+  name: Dr. Mike Colvin and Victoria Starnes
 
 # Select your active Social Network Links.
 # Uncomment the links you want to show in the footer and add your information to each link.
@@ -92,10 +92,10 @@ social-network-links:
 
 # Select which share links to show in posts
 share-links-active:
-  twitter: true
-  facebook: true
+  twitter: false
+  facebook: false
   google: false
-  linkedin: true
+  linkedin: false
 
 # How to display the link to the website in the footer
 # Remove this if you don't want a link in the footer
