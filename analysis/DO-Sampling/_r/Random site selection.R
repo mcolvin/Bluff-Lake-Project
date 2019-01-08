@@ -5,10 +5,11 @@ setwd("C:/Users/Victoria Starnes/Documents/GitHub/Bluff-Lake-Project/analysis/DO
 #kml.text <- readLines("C:/Users/Victoria Starnes/Documents/Bluff Lake DO site selection/Bluff Lake Draft 1.kml")
 
 ## PULL KML DATA IN
-kml.text <- readLines("_dat/Bluff Lake Draft 1.kml")
+kml.text <- readLines("_dat/Bluff Lake Draft 2.kml")
 kml.text
-coords <- data.frame(kml.text[51:116])
-coords <- data.frame(do.call('rbind', strsplit(as.character(coords$kml.text.51.116.), ',', fixed = TRUE)))
+#change seccond number based on coordinates in kml file (kml.text[51:?])
+coords <- data.frame(kml.text[51:189])
+coords <- data.frame(do.call('rbind', strsplit(as.character(coords$kml.text.51.189.), ',', fixed = TRUE)))
 str(coords)
 coords$X1 <- as.numeric(as.character(coords$X1))
 coords$X2 <- as.numeric(as.character(coords$X2))
@@ -17,7 +18,7 @@ colnames(coords) <- c('x','y','z')
 str(coords)
 
 ## SAVE COORDINATES TO CSV
-write.table(coords, "_dat/poly_coordinates.csv", sep = ",", row.names = F)
+write.table(coords, "_dat/poly_coordinates draft 2.csv", sep = ",", row.names = F)
 
 library(sp)
 xy <- cbind(coords$x, coords$y)
@@ -40,14 +41,14 @@ bl_utm<-spTransform(bl,
     CRS("+proj=utm +zone=16 +datum=NAD83"))
 
 #making a grid
-grid <- makegrid(bl, cellsize = 0.0001) # cellsize in map units!
+grid <- makegrid(bl, cellsize = 0.00001) # cellsize in map units!
 
 # grid is a data.frame. To change it to a spatial data set we have to
 grid <- SpatialPoints(grid, proj4string = CRS(proj4string(bl)))
 grid <- grid[bl]
 plot(bl)
 plot(grid, pch = 1, add = T)
-write.table(coords, "_dat/poly_grid.csv", sep = ",", row.names = F)
+write.table(grid, "_dat/poly_grid draft 2.csv", sep = ",", row.names = F)
 
 
 
