@@ -2,9 +2,9 @@
 
 _operations/_*
 _archive/
-
+analysis/Depth-Mapping/coverages/
 # IGNORE CERTAIN FILETYPES
-
+/Humminbird-Blackjack/
 *.accdb
 
 *.Rdata
