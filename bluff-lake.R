@@ -90,6 +90,7 @@ for(d in 2:28)
     }
 
 trans_black<- rgb(0,0,0,alpha=40,maxColorValue=255)
+matplot(unlist(e_area~v,type='l',col=trans_black)
 matplot(v,type='l',col=trans_black)
 matplot(c(1:28),ms_area,type='l',col=trans_black) 
 matplot(c(1:28),ws_area,type='l',col=trans_black,
@@ -100,7 +101,7 @@ matplot(c(1:28),ws_area,type='l',col=trans_black,
 # OUTCOMES
 ## WOOD STORK FORAGING HABITAT
 ws_vals<-colSums(ws_area)
-hist(ws_vals)
+hist(ws_vals,xlab="Foraging habitat",probability=TRUE)
 ## MOIST SOIL
 ms_vals<-colSums(ms_area)   
 hist(ms_vals)  
@@ -126,8 +127,44 @@ nReleases<-colSums(releaseDone)
 
 
 
+# FISHERY
+
+dat<-read.csv("fishery-functional-relationship.csv")
+
+
+plot(Bass~Lake.volume,dat,type="l")
+plot(Crappie~Lake.volume,dat,type="l")
+plot(Catfish~Lake.volume,dat,type="l")
+plot(Anything~Lake.volume,dat,type="l")
 
 
 
+set.seed(1)
+
+
+data <-as.data.frame(matrix(runif(3*5) ,nrow=3, ncol=5))
+data
+colnames(data) <- c("maSub-Goal A.1\n Waterfowl" , "Sub-Goal A.2\n Waterbirds" , 
+"Sub-Goal A.4\n Threatened and Endangered Species" ,
+ "Sub-Goal A.7 \n Aquatic Biota" , 
+ "Sub-Goal D.2 \n Fishing")
+
+# To use the fmsb package, I have to add 2 lines to the dataframe: the max and min of each topic to show on the plot!
+data <-rbind(rep(1,5) , rep(0,5) , data)
+library(fmsb)
+
+# Custom the radarChart !
+par(mar=c(0,0,0,0))
+p1 <- radarchart(data, axistype=1, 
+
+  #custom polygon
+  pcol=rgb(0.2,0.5,0.5,0.9) , pfcol=rgb(0.2,0.5,0.5,0.5) , plwd=4 , 
+
+  #custom the grid
+  cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,1,0.1), cglwd=0.8,
+
+  #custom labels
+  vlcex=0.7 
+  )
 
 
