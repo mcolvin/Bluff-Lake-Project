@@ -2,12 +2,17 @@
 
 _operations/
 _archive/
-analysis/Depth-Mapping/coverages/
+_analysis/Depth-Mapping/coverages/TAa07244
 # IGNORE CERTAIN FILETYPES
 /Humminbird-Blackjack/
 *.accdb
 
 *.Rdata
+*.las
+*.e00
+*.ovr
+*.adf
+*.zip
 
 # Windows image file caches
 Thumbs.db
