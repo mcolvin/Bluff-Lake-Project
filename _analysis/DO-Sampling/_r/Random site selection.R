@@ -1,0 +1,63 @@
+
+## Usually no need to set a 
+#setwd("C:/Users/Victoria Starnes/Documents/Bluff Lake DO site selection")
+setwd("C:/Users/Victoria Starnes/Documents/GitHub/Bluff-Lake-Project/analysis/DO-Sampling") # SET WORKING DIRECTORY TO THE FOLDER ABOVE THIS ONE
+#kml.text <- readLines("C:/Users/Victoria Starnes/Documents/Bluff Lake DO site selection/Bluff Lake Draft 1.kml")
+
+## PULL KML DATA IN
+kml.text <- readLines("_dat/Bluff Lake Draft 2.kml")
+kml.text
+#change seccond number based on coordinates in kml file (kml.text[51:?])
+coords <- data.frame(kml.text[51:189])
+coords <- data.frame(do.call('rbind', strsplit(as.character(coords$kml.text.51.189.), ',', fixed = TRUE)))
+str(coords)
+coords$X1 <- as.numeric(as.character(coords$X1))
+coords$X2 <- as.numeric(as.character(coords$X2))
+coords$X3 <- as.numeric(as.character(coords$X3))
+colnames(coords) <- c('x','y','z')
+str(coords)
+
+## SAVE COORDINATES TO CSV
+write.table(coords, "_dat/poly_coordinates draft 2.csv", sep = ",", row.names = F)
+
+library(sp)
+xy <- cbind(coords$x, coords$y)
+plot(xy, type = 'l')
+xy.poly <- Polygon(xy)## MAKE A POLYGON
+## NOW MAKE A POLYGONS OBJECT
+## WE ONLY HAVE 1 POLYGON 
+bl<- Polygons(list(xy.poly), ID=1)
+
+
+## HERE IS WHERE THE PROJECTION HAPPENS
+bl <- SpatialPolygons(list(bl),
+	proj4string=CRS("+proj=longlat +datum=NAD83"))
+
+plot(bl) ## THAT LOOKS MUCH BETTER
+
+## NOW TRANSFORM TO UTM
+## I PERSONALLY LIKE UTM B/C THE GRID IS 1 METER
+bl_utm<-spTransform(bl, 
+    CRS("+proj=utm +zone=16 +datum=NAD83"))
+
+#making a grid
+grid <- makegrid(bl, cellsize = 0.00001) # cellsize in map units!
+
+# grid is a data.frame. To change it to a spatial data set we have to
+grid <- SpatialPoints(grid, proj4string = CRS(proj4string(bl)))
+grid <- grid[bl]
+plot(bl)
+plot(grid, pch = 1, add = T)
+write.table(grid, "_dat/poly_grid draft 2.csv", sep = ",", row.names = F)
+
+
+
+#options for sample site locations
+xy.points.reg.23 <- spsample(bl_utm, n = 23, type = "regular") # n is sample size
+plot(bl_utm,axes=TRUE)
+points(xy.points.reg.23, pch =10)
+
+set.seed(123)
+xy.points.nonal.23 <- spsample(bl_utm, n = 23, type = "nonaligned") # n is sample size
+plot(xy.points.nonal.23, add = TRUE, pch = 3)
+write.table(xy.points.nonal.23, "point_coordinates.csv", sep = ",", row.names = F) 

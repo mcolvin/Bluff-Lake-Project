@@ -1,0 +1,26 @@
+[general]
+creator=R package 'raster'
+created=2019-02-13 13:50:55
+[georeference]
+nrows=4163
+ncols=4848
+xmin=586455.75905228
+ymin=1347223.5306775
+xmax=634935.75905228
+ymax=1388853.5306775
+projection=NA
+[data]
+datatype=FLT4S
+byteorder=little
+nbands=1
+bandorder=BIL
+categorical=FALSE
+minvalue=108.716697692871
+maxvalue=644.209289550781
+nodatavalue=-3.4e+38
+[legend]
+legendtype=
+values=
+color=
+[description]
+layername=noxubee10

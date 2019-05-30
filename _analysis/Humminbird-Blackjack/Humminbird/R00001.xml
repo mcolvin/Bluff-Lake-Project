@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<HumViewer> 
+    <Mode>SiMode</Mode>
+    <SonarSplitScreen>3 View</SonarSplitScreen> 
+    <SonarShowGrid>true</SonarShowGrid>
+    <PlaySpeed>10</PlaySpeed>
+
+    <SonarSplitScreenPosition-LeftTopBottom>55</SonarSplitScreenPosition-LeftTopBottom> 
+    <SonarSplitScreenPosition-SideBySide>36</SonarSplitScreenPosition-SideBySide>
+    <SonarSplitScreenPosition-RightTopBottom>53</SonarSplitScreenPosition-RightTopBottom>
+
+    <LastUtility>Zoom</LastUtility>
+
+    <GradientDepth>5</GradientDepth> 
+    <GradientRange>20</GradientRange>
+
+    <LeftTop> 
+        <ColorModel>2D Default</ColorModel> 
+        <CropFromDepth>0</CropFromDepth>
+        <CropToDepth>-1</CropToDepth> 
+        <SonarImage>2D Down 1</SonarImage>
+        <ImageType>2D Down</ImageType> 
+    </LeftTop> 
+    <RightTop>
+        <ColorModel>Green/Blue</ColorModel> 
+        <CropFromDepth>0</CropFromDepth>
+        <CropToDepth>-1</CropToDepth> 
+        <SonarImage>SI Both</SonarImage> 
+        <ImageType>SI Both</ImageType> 
+    </RightTop> 
+    <LeftBottom> 
+        <ColorModel>2D Default</ColorModel>
+        <SonarImage>2D Trackplot</SonarImage> 
+        <ImageType>2D Trackplot</ImageType>
+        <CropFromDepth>0</CropFromDepth> 
+        <CropToDepth>Depth</CropToDepth> 
+    </LeftBottom>
+    <RightBottom>
+        <ColorModel>2D Default</ColorModel> 
+        <SonarImage>2D Down 1</SonarImage>
+        <ImageType>2D Down</ImageType> 
+        <CropFromDepth>0</CropFromDepth>
+        <CropToDepth>All</CropToDepth> 
+    </RightBottom> 
+
+    <Waypoints/>
+    <UserTracks/>
+</HumViewer>
