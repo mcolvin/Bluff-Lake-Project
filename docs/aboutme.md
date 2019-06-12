@@ -4,13 +4,18 @@ title: About me
 subtitle: Why you'd want to go on a date with me
 ---
 
-My name is Inigo Montoya. I have the following qualities:
+## The problem
 
-- I rock a great mustache
-- I'm extremely loyal to my family
-
-What else do you need?
-
-### my history
-
-To be honest, I'm having some trouble remembering right now, so why don't you just watch [my movie](http://en.wikipedia.org/wiki/The_Princess_Bride_%28film%29) and it will answer **all** your questions.
+Bluff Lake is a 1,200-acre shallow lake on the Sam D. Hamilton Noxubee 
+National Wildlife Refuge. Currently the lake undergoes seasonal 
+drawdowns to provide cultivated moist soil plants for migrating duck 
+forage and to increase concentrations of fish in shallow water habitats 
+for piscivorous wading birds. Based on the work done by Chelsea 
+Gilliland, refuge managers can also use these drawdowns to influence 
+paddlefish populations located below Bluff Lake’s water control 
+structure on Oktoc Creek (2018). However, due to lack of current or 
+historical fisheries data, it is unknown how these management practices 
+impact the fish assemblage, fishery, and water quality of Bluff Lake. 
+Comprehensive assessments of how the drawdown impacts the fishery, fish 
+assemblage, and water quality need to be completed in order to ensure 
+that best management practices are being followed. 
