@@ -98,15 +98,15 @@ plot(dor)     # THAT LOOKS MUCH BETTER
 dor_utm<-spTransform(dor, 
                     CRS("+proj=utm +zone=16 +datum=NAD83"))
 plot(dor_utm,axes=TRUE, main="Water Quaility Sampling Sites")
-set.seed(23)
-dor.xy.points.nonal.20 <- spsample(dor_utm, n = 20, type = "nonaligned") # n is sample size
+set.seed(5)
+dor.xy.points.nonal.20 <- spsample(dor_utm, n =4 , type = "nonaligned") # n is sample size
 plot(dor.xy.points.nonal.20, add = TRUE, pch = 3)
 write.table(dor.xy.points.nonal.20, "_dat/Dorman_point_coordinates.csv", sep = ",", row.names = F) 
 
 
 ###making plots
-par(mfrow=c(1,2))
-plot(bl_utm,axes=TRUE, main="Bluff Lake", pch=7)
+par(mfrow=c(1,2),)
+plot(bl_utm,axes=TRUE, xlab= "UTM Easting", ylab="UTM Northing", main="Bluff Lake", pch=7)
 plot(xy.points.nonal.20, add = TRUE, pch = 3)
-plot(dor_utm,axes=TRUE, main="Dorman Lake")
+plot(dor_utm,axes=TRUE, xlab= "UTM Easting", ylab="UTM Northing", main="Dorman Lake")
 plot(dor.xy.points.nonal.20, add = TRUE, pch = 3)

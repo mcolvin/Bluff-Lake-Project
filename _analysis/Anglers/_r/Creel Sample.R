@@ -5,8 +5,8 @@
   #2 time blocks 7-2, 2-9 (equal probabilities 1st month then adaptive)
   #simulated coin flips for start direction of interviews, and starting site
 
-Week<- c(3,4,5,6,7,10,11,12,13,14,17,18,19,20,21,24,25,26,27,28)
-WeekEnd<- c(1,2,8,9,15,16,22,23,29,30)
+Week<- c(1,2,5,6,7,8,9,12,13,14,15,16,19,20,21,22,23,26,27,28,29,30)
+WeekEnd<- c(3,4,10,11,17,18,24,25,31)
 timeslots = c('7', '2')
 Weekdays<-sample(Week, 3, FALSE)
 Weekends<-sample(WeekEnd, 4, FALSE)
@@ -14,11 +14,11 @@ Days<- c(Weekdays,Weekends)
 sites<- c("S1","S2","S3")
 Start_DIR<- c("Clockwise", "Counter Clockwise")
 
-Junesampleschedule = data.frame(TIME = sample(timeslots, 7, replace = T), 
+AugustSampleschedule = data.frame(TIME = sample(timeslots, 7, replace = T), 
                                DAY = sample(Days, 7, replace = F), 
                                START_SITE= sample(sites, 7, replace = T), 
                                START_DIR= sample(Start_DIR, 7, replace = T))
-write.table(Junesampleschedule, "_dat/Junesampleschedule.csv", sep = ",", row.names = F) 
+write.table(AugustSampleschedule, "_dat/Sampling Dates/2019-8.csv", sep = ",", row.names = F) 
 
 
 

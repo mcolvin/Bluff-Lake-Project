@@ -1,8 +1,8 @@
 TIME,DAY,START_SITE,START_DIR
-7,9,S2,Counter Clockwise
+7,15,S2,Counter Clockwise
 7,16,S2,Clockwise
-2,18,S1,Clockwise
-7,19,S2,Clockwise
+2,21,S1,Clockwise
 2,23,S1,Counter Clockwise
 2,24,S3,Counter Clockwise
+7,27,S2,Clockwise
 7,29,S2,Counter Clockwise
