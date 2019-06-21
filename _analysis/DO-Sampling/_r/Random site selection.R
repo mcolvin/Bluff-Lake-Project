@@ -18,7 +18,7 @@ colnames(coords) <- c('x','y','z')
 str(coords)
 
 ## SAVE COORDINATES TO CSV
-write.table(coords, "_dat/poly_coordinates_Bluff_SampleArea.csv", sep = ",", row.names = F)
+#write.table(coords, "_dat/poly_coordinates_Bluff_SampleArea.csv", sep = ",", row.names = F)
 
 library(sp)
 xy <- cbind(coords$x, coords$y)
@@ -41,15 +41,19 @@ bl_utm<-spTransform(bl,
     CRS("+proj=utm +zone=16 +datum=NAD83"))
 
 #making a grid
-#grid <- makegrid(bl, cellsize = 0.00001) # cellsize in map units!
+grid <- makegrid(bl, cellsize = 0.0008) # cellsize in map units!
 
 # grid is a data.frame. To change it to a spatial data set we have to
-#grid <- SpatialPoints(grid, proj4string = CRS(proj4string(bl)))
-#grid <- grid[bl]
-#plot(bl)
-#plot(grid, pch = 1, add = T)
-#write.table(grid, "_dat/poly_grid Sampling Area.csv", sep = ",", row.names = F)
-
+grid <- SpatialPoints(grid, proj4string = CRS(proj4string(bl)))
+grid <- grid[bl]
+plot(bl)
+plot(grid, pch = 1, add = T)
+#write.table(grid, "_dat/00005SampleGrid.csv", sep = ",", row.names = F)
+GP<-read.csv("_dat/00005SampleGrid.csv")
+TrotPoints <- sample(GP$N, size = 18, replace = F)
+GillPoints <- sample(GP$N, size = 12, replace = F)
+FP<-read.csv("_dat/Fyke Points.csv")
+FykePoints <- sample(FP$N, size = 12, replace = F)
 
 
 #Bluff Lake sample site locations
@@ -60,7 +64,43 @@ plot(xy.points.nonal.20, add = TRUE, pch = 3)
 write.table(xy.points.nonal.20, "_dat/Bluff_point_coordinates.csv", sep = ",", row.names = F)
 
 
+#Loakfoma Site Locations
+kml.text <- readLines("_dat/Loakfoma.kml")
 
+#change seccond number based on coordinates in kml file (kml.text[51:?])
+dcoords <- data.frame(kml.text[51:112])                
+dcoords <- data.frame(do.call('rbind', strsplit(as.character(dcoords$kml.text.51.112.), ',', fixed = TRUE)))
+str(dcoords)
+dcoords$X1 <- as.numeric(as.character(dcoords$X1))
+dcoords$X2 <- as.numeric(as.character(dcoords$X2))
+dcoords$X3 <- as.numeric(as.character(dcoords$X3))
+colnames(dcoords) <- c('x','y','z')
+str(dcoords)
+
+## SAVE COORDINATES TO CSV
+write.table(dcoords, "_dat/poly_coordinates_Loakfoma_SampleArea.csv", sep = ",", row.names = F)
+
+library(sp)
+dxy <- cbind(dcoords$x,dcoords$y)
+plot(dxy, type = 'l')
+dxy.poly <- Polygon(dxy)## MAKE A POLYGON
+## NOW MAKE A POLYGONS OBJECT
+## WE ONLY HAVE 1 POLYGON 
+dor<-Polygons(list(dxy.poly), ID=1)
+
+## HERE IS WHERE THE PROJECTION HAPPENS
+dor<-SpatialPolygons(list(dor),
+                     proj4string=CRS("+proj=longlat +datum=NAD83"))
+plot(dor)     # THAT LOOKS MUCH BETTER
+## NOW TRANSFORM TO UTM
+## I PERSONALLY LIKE UTM B/C THE GRID IS 1 METER
+dor_utm<-spTransform(dor, 
+                     CRS("+proj=utm +zone=16 +datum=NAD83"))
+plot(dor_utm,axes=TRUE, main="Water Quaility Sampling Sites")
+set.seed(57)
+dor.xy.points.nonal.20 <- spsample(dor_utm, n =10 , type = "nonaligned") # n is sample size
+plot(dor.xy.points.nonal.20, add = TRUE, pch = 3)
+points<-write.table(dor.xy.points.nonal.20, "_dat/Loakfoma_point_coordinates.csv", sep = ",", row.names = F) 
 
 
 
