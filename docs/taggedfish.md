@@ -1,6 +1,6 @@
 ---
 layout: page
-title: About tagged fish
+title: Tagged Fish
 bigimg: /img/bluff.jpg
 ---
 
