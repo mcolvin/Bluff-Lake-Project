@@ -1,21 +1,8 @@
 ---
 layout: page
-title: About tagged fish
+title: Tagged Fish
 bigimg: /img/bluff.jpg
 ---
 
-## The problem
-
-Bluff Lake is a 1,200-acre shallow lake on the Sam D. Hamilton Noxubee 
-National Wildlife Refuge. Currently the lake undergoes seasonal 
-drawdowns to provide cultivated moist soil plants for migrating duck 
-forage and to increase concentrations of fish in shallow water habitats 
-for piscivorous wading birds. Based on the work done by Chelsea 
-Gilliland, refuge managers can also use these drawdowns to influence 
-paddlefish populations located below Bluff Lake’s water control 
-structure on Oktoc Creek (2018). However, due to lack of current or 
-historical fisheries data, it is unknown how these management practices 
-impact the fish assemblage, fishery, and water quality of Bluff Lake. 
-Comprehensive assessments of how the drawdown impacts the fishery, fish 
-assemblage, and water quality need to be completed in order to ensure 
-that best management practices are being followed. 
+## Fish on Bluff Lake are sporting new accessories!!!
+Thanks to graduate student Victoria Starnes and her technicians, the crappie and bass of Bluff Lake could now be sporting some new bling! Starting in June of 2019 any crappie or bass above a certain size will receive a gray floy tag. This is simply a small plastic tag with a 5-digit number that helps students keep track of a few individual fish. If you are fishing and you happen to catch one of these fish, feel free to harvest it! However, please return the tag to the visitor’s center, or one of the three red PVC tag return stations soon to be posted at the Bluff Lake Boardwalk, Cypress Boardwalk, or at the Bluff Lake Boat Ramp.
