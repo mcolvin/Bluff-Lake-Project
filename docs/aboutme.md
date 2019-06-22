@@ -1,7 +1,7 @@
 ---
 layout: page
 title: About the project
-bigimg: /img/bluff.jpg
+bigimg: /img/Drawdown_narrow.jpg
 ---
 
 ## The problem
