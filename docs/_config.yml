@@ -24,6 +24,7 @@ description: Bluff Lake Project
 # List of links in the navigation bar
 navbar-links:
   About the project: "aboutme"
+  Fishes of Bluff Lake: "BluffFish"
   Tagged fish: "taggedfish"
 
 # Image to show in the navigation bar - image must be a square (width = height)
