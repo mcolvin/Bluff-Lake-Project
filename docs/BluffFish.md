@@ -12,6 +12,5 @@ Refuge. The refuge was established June 14, 1940 under the Migratory Bird Conser
 
 # A crappie
 
-[](/image/fish1.jpg)
+[](/img/fish1.jpg)
 
-'
