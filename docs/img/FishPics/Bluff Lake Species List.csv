@@ -1,10 +1,19 @@
-﻿Fish ID,Reference Photo,Capture Method
-Spotted Gar,DSCF1784,Gillnet
-Smallmouth Buffalo,"DSCF1785, DSCF1786",Gillnet
-Gizzard Shad,DSCF1787,Gillnet
-Channel Catfish,DSCF1791,"Gillnet, Trotline"
-Warmouth,,Angler
-White Crappie,,Angler
-Black Crappie,,Angler
-Largemouth Bass,,Angler
-Flathead Catfish,,Reported Angler
+Fish ID	Reference Photo	Capture Method
+Spotted Gar	DSCF1784	Gillnet
+Longnose Gar		Gillnet
+Shortnose Gar		Gillnet
+Smallmouth Buffalo	"DSCF1785, DSCF1786"	Gillnet
+Common Carp		Gillnet
+Channel Catfish	DSCF1791	"Gillnet, Trotline"
+Flathead Catfish		Angler
+Warmouth		Angler
+White Crappie		"Angler, Gillnet, Fyke"
+Black Crappie		Angler
+Redear Sunfish		Fyke
+Bluegill		Fyke
+Green Sunfish		Fyke
+Largemouth Bass		"Angler, Gillnet"
+Gizzard Shad		Gillnet
+Threadfin Shad		Gillnet
+Skipjack Herring		Gillnet
+River Redhorse		Gillnet
