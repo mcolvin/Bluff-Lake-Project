@@ -1,7 +1,7 @@
 ---
 layout: page
 title: Tagged Fish
-bigimg: /img/bluff.jpg
+bigimg: /img/Bluff Lake Photos/Lilypads.jpg
 ---
 
 ## Fish on Bluff Lake are sporting new accessories!!!
