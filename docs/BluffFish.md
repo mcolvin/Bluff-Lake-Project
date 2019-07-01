@@ -6,19 +6,19 @@ bigimg: /img/Bluff Lake Photos/20190328_132050.jpg
 
 # Smallmouth Buffalo
 
-![](FishPics/DSCF1785.jpg)
+![](img/FishPics/DSCF1785.jpg)
 
 # Spotted Gar
 
-![](/img/FishPics/DSCF1784.jpg)
+![](FishPics/DSCF1784.jpg)
 
 # River Redhorse
 
-![](/img/FishPics/DSCF1831.jpg)
+![](DSCF1831.jpg)
 
 # Skipjack Herring
 
-![](/img/FishPics/DSCF1836.jpg)
+![](/docs/img/FishPics/DSCF1836.jpg)
 
 # Threadfin Shad
 
