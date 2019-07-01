@@ -50,7 +50,7 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 
 # Spotted Gar, *Lepisosteus oculatus*
 
-![Lepisosteus oculatus](FishPics/DSCF1784.jpg)
+![Lepisosteus oculatus](img/FishPics/DSCF1784.jpg)
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=756
 
@@ -65,17 +65,17 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 
 # Skipjack Herring, *Alosa chrysochloris*
 
-![Alosa chrysochloris](/docs/img/FishPics/DSCF1836.jpg)
+![Alosa chrysochloris](img/FishPics/DSCF1836.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=489
 
 # Threadfin Shad, *Dorosoma petenense*
 
-![Dorosoma petenense](/img/FishPics/DSCF1826.jpg)
+![Dorosoma petenense](img/FishPics/DSCF1826.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=493
 
 # Gizzard Shad, *Dorosoma cepedianum*
 
-![Dorosoma cepedianum](/img/FishPics/DSCF1787.jpg)
+![Dorosoma cepedianum](img/FishPics/DSCF1787.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=492
 
 # Common Carp, *Cyprinus carpio*
