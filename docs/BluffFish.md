@@ -6,7 +6,7 @@ bigimg: /img/Bluff Lake Photos/20190328_132050.jpg
 
 # Smallmouth Buffalo
 
-![](/img/FishPics/DSCF1785.jpg)
+![](FishPics/DSCF1785.jpg)
 
 # Spotted Gar
 
