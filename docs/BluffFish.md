@@ -6,7 +6,7 @@ bigimg: /img/Bluff Lake Photos/20190328_132050.jpg
 
 # White Crappie, *Pomoxis annularis*
 
-![White Crappie](img/FishPics/DSCF1785.jpg)
+![White Crappie](img/FishPics/DSCF1785.JPG)
 
 
 
