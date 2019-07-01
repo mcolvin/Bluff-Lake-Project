@@ -8,6 +8,9 @@ bigimg: /img/Bluff Lake Photos/20190328_132050.jpg
 
 ![White Crappie](img/FishPics/DSCF1785.jpg)
 
+
+
+<!-- html comment out
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?speciesID=408
 
 # Black Crappie, *Pomoxis nigromaculatus*
@@ -81,3 +84,4 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.a
 # Common Carp, *Cyprinus carpio*
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?speciesID=4
+-->
