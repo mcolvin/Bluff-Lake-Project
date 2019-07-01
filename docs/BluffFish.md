@@ -44,13 +44,13 @@ Follow this link to find out more:  https://nas.er.usgs.gov/queries/FactSheet.as
 
 # Smallmouth Buffalo, *Ictiobus bubalus*
 
-![*Ictiobus bubalus*](img/FishPics/DSCF1785.jpg)
+![Ictiobus bubalus](img/FishPics/DSCF1785.jpg)
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=361
 
 # Spotted Gar, *Lepisosteus oculatus*
 
-![*Lepisosteus oculatus*](FishPics/DSCF1784.jpg)
+![Lepisosteus oculatus](FishPics/DSCF1784.jpg)
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=756
 
@@ -60,22 +60,22 @@ Follow this link to find out more:   https://www.floridamuseum.ufl.edu/discover-
 
 # Golden Redhorse, *Moxostoma erythrurum*
 
-![*Moxostoma erythrurum*](DSCF1831.jpg)
+![Moxostoma erythrurum](DSCF1831.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=365
 
 # Skipjack Herring, *Alosa chrysochloris*
 
-![*Alosa chrysochloris*](/docs/img/FishPics/DSCF1836.jpg)
+![Alosa chrysochloris](/docs/img/FishPics/DSCF1836.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=489
 
 # Threadfin Shad, *Dorosoma petenense*
 
-![*Dorosoma petenense*](/img/FishPics/DSCF1826.jpg)
+![Dorosoma petenense](/img/FishPics/DSCF1826.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=493
 
 # Gizzard Shad, *Dorosoma cepedianum*
 
-![*Dorosoma cepedianum*](/img/FishPics/DSCF1787.jpg)
+![Dorosoma cepedianum](/img/FishPics/DSCF1787.jpg)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=492
 
 # Common Carp, *Cyprinus carpio*
