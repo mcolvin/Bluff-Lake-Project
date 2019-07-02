@@ -6,12 +6,11 @@ bigimg: /img/Bluff Lake Photos/20190328_132050.jpg
 
 # White Crappie, *Pomoxis annularis*
 
-![White Crappie](img/FishPics/DSCF1785.JPG)
+![White Crappie](img/FishPics/DSCF1828.JPG)
 
-
+Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?speciesID=408
 
 <!-- html comment out
-Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?speciesID=408
 
 # Black Crappie, *Pomoxis nigromaculatus*
 
