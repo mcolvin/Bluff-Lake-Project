@@ -1,0 +1,122 @@
+---
+title: "Analsis of Temperature and Dissolved Oxygen"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+author: "V. Starnes"
+---
+
+```{r,echo=FALSE,eval=FALSE}
+rmarkdown::render("DO_analysis.Rmd",
+    output_format="html_document")
+```
+
+#Objective
+Water quality measurements including dissolved oxygen, temperature, and turbidity were taken from a grid of 20 points within Bluff Lake on June 13th of 2019. Throughout the sampling day points were remeasured four times. The objective of this analysis is to describe how temperature and dissolved oxygen changed with time as well as illustrate the interaction of temperature and dissolved oxygen.
+
+#Temperature
+
+As expected, water temperature increases between each set of measurements. This change follows a linear trend, however, there is increased variation in sampling times 2 and 3. The variation between each set of sampling points (denoted by color) increases with time. This could be a result of shading caused by floating aquatic vegetation or cypress trees. 
+
+```{r echo=FALSE}
+dat<-read.csv("_dat/2019_6_13edt.csv")
+```
+
+```{r echo=FALSE}
+plot(Decimal.Time~Temp,data=dat, main="Time vs. Temperature",
+     xlab="Temperature (C)",
+     ylab="Military Time",
+     type="n")
+points(Decimal.Time~Temp,data=dat,
+       subset=Measurement.Number=="1",
+       col="red")
+points(Decimal.Time~Temp,data=dat,
+       subset=Measurement.Number=="2",
+       col="blue")
+points(Decimal.Time~Temp,data=dat,
+       subset=Measurement.Number=="3",
+       col="green")
+points(Decimal.Time~Temp,data=dat,
+       subset=Measurement.Number=="4",
+       col="purple")
+abline(lm(Decimal.Time~Temp, data=dat), col="red")
+legend("bottomright",title="Sampling Times", legend=c("1", "2", "3", "4"), col=c("red", "blue", "green", "purple") , pch=1, cex=0.8, text.font=4)
+```
+
+```{r}
+lm(Decimal.Time~Temp, data=dat)
+```
+
+# Dissolved oxygen
+
+The relationship between time and dissolved oxygen is less obvious. The high variability in measurements within each set of 20 points could be due to variable amounts of vegetation cover. However, an increasing trend in DO is still visible. Looking at the raw data and considering daily fluctuations of dissolved oxygen, a non-linear model might be a better fit.  There is a large increase in dissolved oxygen from period 1 to 2. This is a result of increasing dissolved oxygen produced by aquatic plants switching from respiration to photosynthesis. 
+
+```{r echo=FALSE}
+plot(Decimal.Time~DO,data=dat,  main="Time vs Dissolved Oxygen",
+     xlab="Dissolved Oxygen (mg/L)",
+     ylab="Military Time",
+     type="n")
+points(Decimal.Time~DO,data=dat,
+       subset=Measurement.Number=="1",
+       col="red")
+points(Decimal.Time~DO,data=dat,
+       subset=Measurement.Number=="2",
+       col="blue")
+points(Decimal.Time~DO,data=dat,
+       subset=Measurement.Number=="3",
+       col="green")
+points(Decimal.Time~DO,data=dat,
+       subset=Measurement.Number=="4",
+       col="purple")
+abline(lm(Decimal.Time~DO, data=dat), col="red")
+legend("bottomright",title="Sampling Times", legend=c("1", "2", "3", "4"), col=c("red", "blue", "green", "purple") , pch=1, cex=0.8, text.font=4)
+
+```
+
+```{r}
+lm(Decimal.Time~DO, data = dat)
+```
+
+#Dissolved Oxygen and Temperature
+
+This graph illustrates an increase in the amount of dissolved oxygen with increasing temperature. However, the ability of water to retain oxygen is known to decrease with increasing temperature. The results shown are confounded by time. More plants are producing oxygen over time, as temperature is increasing over time. This graph would only be useful to illustrate dissolved oxygen saturation as a nonlinear function of temperature. 
+
+```{r echo=FALSE}
+plot(DO~Temp,data=dat, main="DO vs. Temperature",
+     xlab="Temperature (C)",
+     ylab="Dissolved Oxygen",
+     type="n")
+points(DO~Temp,data=dat,
+       subset=Measurement.Number=="1",
+       col="red")
+points(DO~Temp,data=dat,
+       subset=Measurement.Number=="2",
+       col="blue")
+points(DO~Temp,data=dat,
+       subset=Measurement.Number=="3",
+       col="green")
+points(DO~Temp,data=dat,
+       subset=Measurement.Number=="4",
+       col="purple")
+abline(lm(DO~Temp, data=dat), col="red")
+legend("bottomright",title="Sampling Times", legend=c("1", "2", "3", "4"), col=c("red", "blue", "green", "purple") , pch=1, cex=0.8, text.font=4)
+
+```
+
+
+```{r}
+lm(DO~Temp, data=dat)
+
+```
+
+
+# Vegetation
+
+Visual observations of vegetation cover were also made at each sampling point. These boxplots illustrate how vegetation could affect both dissolved oxygen and turbidity. Dissolved oxygen in areas with dense vegetation tens to have lower dissolved oxygen. This could be a combined effect of decomposition and shading caused by surrounding plants. As plants decompose they deplete the surrounding water of oxygen. Also, if plants are shaded, they could be undergoing respiration further depleting the surrounding water of oxygen. Temperature, however, does not seem to be affected. This could be because this is a well-mixed system with some continual flow-through.
+
+```{r echo=FALSE}
+boxplot(DO~Veg, data=dat, main="Dissolved Oxygen",xlab="Vegetation", ylab="DO (mg/L)")
+boxplot(Turbidity~Veg, data=dat, main="Turbidity", xlab="Vegetation", ylab="Secchi Depth (cm)")
+boxplot(Temp~Veg, data=dat, main="Temperature", xlab="Vegetation", ylab="Temperature (C)")
+
+```
+
+
