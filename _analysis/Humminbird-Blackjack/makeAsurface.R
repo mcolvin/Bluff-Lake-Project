@@ -5,7 +5,7 @@ library(gstat)
 library(sp)
 
 ## READ IN COORINDATES AND DEPTHS
-vals <- read.csv("SonarTRX/SonarTRX-R00001-20190211-091600/NavTrackProfile.csv")
+vals <- read.csv("Bathymetry_Logger/_dat/Bathymetry/CombinedCorrected.csv")
 
 ## ASSIGN LONGITUED AND LATITUDE AS X AND Y 
 ## COORINDATES
@@ -20,8 +20,8 @@ yrange <- range(vals@coords[,2])
 
 ## MAKE A GRID TO INTERPOLATE 
 grd <- expand.grid(x=seq(from=xrange[1], 
-    to=xrange[2], by=0.000002), 
-    y=seq(from=yrange[1], to=yrange[2], by=0.000002))
+    to=xrange[2], by=0.000004), 
+    y=seq(from=yrange[1], to=yrange[2], by=0.000004))
 ## CONVERT THE GRID TO A SPATIAL PIXEL CLASS
 coordinates(grd) <- ~ x+y
 gridded(grd) <- TRUE
@@ -46,7 +46,8 @@ gridded(xxoutput)<-TRUE
 plot(xxoutput["depth"],zlim=c(-3,0))
 points(vals, col='white', type='l') # PUT DOWN TRACK
 
+write.csv(xxoutput, "2019Layer000004.csv")
+install.packages(arcgisbinding)
+arc.check_product()
 
-
-
-  arc.write(path, data, ..., overwrite = FALSE)
+arc.write(path='Bathymetry_Logger/_dat/Bathymetry/2019Layer.shp', xxoutput, overwrite = FALSE)
