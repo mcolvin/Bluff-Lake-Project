@@ -40,7 +40,12 @@ abline(lm(Decimal.Time~Temp, data=dat), col="red")
 
 
 ##Temperature is obviously increasing with time.
+
+```{r}
 lm(Decimal.Time~Temp, data=dat)
+```
+
+
 
 # Dissolved oxygen
 
