@@ -51,6 +51,8 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=492
 
 <!-- html comment out
+-->
+# Also, I've found the following species as well, but I need to get better pictures!
 
 # Black Crappie, *Pomoxis nigromaculatus*
 
@@ -87,4 +89,3 @@ Follow this link to find out more:   https://www.floridamuseum.ufl.edu/discover-
 # Common Carp, *Cyprinus carpio*
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?speciesID=4
--->
