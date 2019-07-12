@@ -31,7 +31,7 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 
 # Golden Redhorse, *Moxostoma erythrurum*
 
-![Moxostoma erythrurum](DSCF1831.JPG)
+![Golden Redhorse](img/FishPics/DSCF1831.JPG)
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=365
 
