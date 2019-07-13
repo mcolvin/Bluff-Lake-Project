@@ -70,7 +70,7 @@ Follow this link to find out more:   https://www.nps.gov/miss/learn/nature/chann
 
 # Largemouth Bass, *Micropterus salmoides*
 
-![Flathead Catfish](img/FishPics/lmb.JPG)
+![Largemouth Bass](img/FishPics/lmb.JPG)
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=401
 
@@ -84,7 +84,7 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 
 # Bluegill, *Lepomis macrochirus*
 
-![Flathead Catfish](img/FishPics/heronfish.JPG)
+![Bluegill](img/FishPics/heronfish.JPG)
 
 Follow this link to find out more:   https://www.fws.gov/fisheries/freshwater-fish-of-america/bluegill.html
 
@@ -94,6 +94,6 @@ Follow this link to find out more:   https://www.floridamuseum.ufl.edu/discover-
 
 # Common Carp, *Cyprinus carpio*
 
-![Flathead Catfish](img/FishPics/commoncarp.JPG)
+![Common Carp](img/FishPics/commoncarp.JPG)
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?speciesID=4
