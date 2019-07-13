@@ -12,7 +12,7 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 
 # Channel Catfish, *Ictalurus punctatus*
 
-![Channel Catfish](img/FishPics/DSCF1791.JPG)
+![Channel Catfish](img/FishPics/DSCF1790.JPG)
 
 Follow this link to find out more:   https://www.nps.gov/miss/learn/nature/channel-catfish-ictalurus-punctatus-and-flathead-catfish-pylodictis-olivaris.htm
 
@@ -55,8 +55,16 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.a
 ![Dorosoma cepedianum](img/FishPics/DSCF1787.JPG)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=492
 
+# Black Bullhead, *Ameiurus melas*
+![Dorosoma cepedianum](img/FishPics/blackbullhead.JPG)
+Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=730
+
+# Warmouth, *Lepomis gulosus*
+![Warmouth](img/FishPics/warmouth.JPG)
+Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=376
+
 <!-- html comment out
--->
+
 
 # Also, I've found the following species as well, but I need to get my own pictures! These images have been borrowed from the Sam D. Hamilton Noxubee National Wildlife Refuge Facebook Page.
 
@@ -64,23 +72,19 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.a
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=409
 
 # Flathead Catfish, *Pylodictis olivaris*
-![Flathead Catfish](img/FishPics/flathead.JPG)
+![Flathead Catfish](img/FishPics/002.JPG)
 Follow this link to find out more:   https://www.nps.gov/miss/learn/nature/channel-catfish-ictalurus-punctatus-and-flathead-catfish-pylodictis-olivaris.htm
 
 # Largemouth Bass, *Micropterus salmoides*
-![Largemouth Bass](img/FishPics/lmb.JPG)
+![Largemouth Bass](img/FishPics/004.JPG)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=401
 
 # Green Sunfish, *Lepomis cyanellus*
 
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?speciesID=380
 
-# Warmouth, *Lepomis gulosus*
-![Warmouth](img/FishPics/warmouth.JPG)
-Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=376
-
 # Bluegill, *Lepomis macrochirus*
-![Bluegill](img/FishPics/heronfish.JPG)
+![Bluegill](img/FishPics/003.JPG)
 Follow this link to find out more:   https://www.fws.gov/fisheries/freshwater-fish-of-america/bluegill.html
 
 # Longnose Gar, *Lepisosteus osseus*
@@ -88,6 +92,7 @@ Follow this link to find out more:   https://www.fws.gov/fisheries/freshwater-fi
 Follow this link to find out more:   https://www.floridamuseum.ufl.edu/discover-fish/species-profiles/lepisosteus-osseus/
 
 # Common Carp, *Cyprinus carpio*
-![Common Carp](img/FishPics/commoncarp.JPG)
+![Common Carp](img/FishPics/001.JPG)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?speciesID=4
 
+-->
