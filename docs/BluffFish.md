@@ -57,18 +57,17 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.a
 
 <!-- html comment out
 -->
+
 # Also, I've found the following species as well, but I need to get my own pictures! These images have been borrowed from the Sam D. Hamilton Noxubee National Wildlife Refuge Facebook Page.
 
 # Black Crappie, *Pomoxis nigromaculatus*
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=409
 
 # Flathead Catfish, *Pylodictis olivaris*
-
 ![Flathead Catfish](img/FishPics/flathead.JPG)
 Follow this link to find out more:   https://www.nps.gov/miss/learn/nature/channel-catfish-ictalurus-punctatus-and-flathead-catfish-pylodictis-olivaris.htm
 
 # Largemouth Bass, *Micropterus salmoides*
-
 ![Largemouth Bass](img/FishPics/lmb.JPG)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?SpeciesID=401
 
@@ -77,11 +76,10 @@ Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.a
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?speciesID=380
 
 # Warmouth, *Lepomis gulosus*
-![Dorosoma cepedianum](img/FishPics/warmouth.JPG)
+![Warmouth](img/FishPics/warmouth.JPG)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/FactSheet.aspx?SpeciesID=376
 
 # Bluegill, *Lepomis macrochirus*
-
 ![Bluegill](img/FishPics/heronfish.JPG)
 Follow this link to find out more:   https://www.fws.gov/fisheries/freshwater-fish-of-america/bluegill.html
 
@@ -90,6 +88,6 @@ Follow this link to find out more:   https://www.fws.gov/fisheries/freshwater-fi
 Follow this link to find out more:   https://www.floridamuseum.ufl.edu/discover-fish/species-profiles/lepisosteus-osseus/
 
 # Common Carp, *Cyprinus carpio*
-
 ![Common Carp](img/FishPics/commoncarp.JPG)
 Follow this link to find out more:   https://nas.er.usgs.gov/queries/factsheet.aspx?speciesID=4
+
