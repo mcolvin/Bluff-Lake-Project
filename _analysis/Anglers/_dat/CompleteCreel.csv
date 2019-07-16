@@ -1,0 +1,51 @@
+Date,Month,Time ,Weather,Air Temperature,Creel Start Time,County/State,Time Started,Time Interviewed,Hours Fished,DecimalTime,Num. in Party,Bank/Boat 0=Bank 1=Boat,Spp. Sought,Spp. Caught,# Kept,Weight (kg),# Released,Location,Method,Catch/Release,Smallest fish you would keep,Complete/Incomplete,Creel Type,Notes (50 char. max)
+3/1/2019,March,3,Cloudy,50,3,Oktibbeha,13:00,14:13,1:13,1.22,2,0,Crappie/ Bass,Bass,0,,1,,,,"6"" release",,Roving,"6"" release"
+3/1/2019,March,3,Cloudy,50,3,Choctaw,13:00,14:13,1:13,1.22,1,0,Crappie,Crappie,0,,1,,,Yes,,,Roving,catch & release ~2lb crappie
+3/1/2019,March,3,Cloudy,50,3,Clay,13:30,14:13,0:43,0.72,2,0,Crappie/ Bass,,0,,0,,,,,,Roving,
+3/1/2019,March,3,Cloudy,50,3,NA,14:30,15:36,1:06,1.1,1,0,Crappie,Bream,0,,1,,,,,,Roving,"Reased ""several"" bream"
+3/1/2019,March,3,Cloudy,50,3,NA,9:00,15:37,6:37,6.62,1,0,Crappie,,0,,0,,,,,,Roving,
+3/1/2019,March,3,Cloudy,50,3,Winston,6:00,15:52,9:52,9.87,1,0,Bass,Bass,6,,3,,,,1 lb bass,,Roving,6 Largemouth Bass
+3/1/2019,March,3,Cloudy,50,3,Oktibbeha,16:00,16:09,0:09,0.15,1,0,Crappie/ Bass,Crappie/Bream,9,4.1,20,,,,,,Roving,5 White Crapppie2.6kg
+3/1/2019,March,3,Cloudy,50,3,Oktibbeha,17:00,17:58,0:58,0.97,1,0,Crappie,Crappie,1,0.4,0,,,,,,Roving,1 White Crappie 0.4kg
+3/1/2019,March,3,Cloudy,50,3,Choctaw,6:00,15:23,9:23,9.38,1,1,Crappie,Crappie/Bass,11,6.4,2,,,,,,Roving,5 BC at 3kg
+3/3/2019,March,7,Rain,44,7,Winston,6:20,7:27,1:07,1.12,1,0,Bass,Crappie,1,1,0,,,,,,Roving,1 Black Crappie
+3/3/2019,March,7,Rain,44,7,Oktibbeha,7:30,7:50,0:20,0.33,1,0,Crappie,,0,,0,,,,,,Roving,
+3/3/2019,March,7,Rain,44,7,Choctaw,7:00,7:23,0:23,0.38,1,1,Crappie,Crappie,1,,0,,,,,,Roving,
+3/16/2019,March,11,Cloudy,57,11,Winston,11:35,12:35,1:00,1,3,0,Crappie,,2,1.2,0,3,,,,,Roving,2 White Crappie
+3/16/2019,March,11,Cloudy,57,11,Oktibbeha,12:30,13:30,1:00,1,2,0,Any,,0,,0,3,,,,,Roving,2 adults and three small children in group
+3/16/2019,March,11,Cloudy,57,11,Winston,13:00,13:37,0:37,0.62,2,0,Catfish,,0,,0,,trotline,,,,Roving,
+3/16/2019,March,11,Cloudy,57,11,Winston,10:00,14:39,4:39,4.65,2,1,Crappie,,1,,0,,,,,,Roving,
+3/17/2019,March,7,Sunny,37,7,Oktibbeha,9:00,9:30,0:30,0.5,1,0,Crappie,,0,,0,3,,,,,Roving,
+3/17/2019,March,7,Sunny,37,7,Oktibbeha,10:30,10:58,0:28,0.47,1,0,Any,,0,,0,3,,,,,Roving,
+3/22/2019,March,3,Cloudy,67,3,Oktibbeha,15:30,15:34,0:04,0.07,1,0,Bass,,0,,0,,1 pole/person,,,,Roving,
+3/22/2019,March,3,Cloudy,67,3,Noxubee,10:00,15:42,5:42,5.7,1,0,Catfish,,0,,0,,3 pole/person,,,,Roving,
+3/25/2019,March,11,Cloudy,70,3,Oktibbeha,14:30,15:26,0:56,0.93,1,0,Bream,,0,,0,,,,,,Roving,
+3/25/2019,March,11,Cloudy,70,11,Choctaw,11:30,15:14,3:44,3.73,2,1,Crappie,Crappie/Bream,14,,11,3,,,,,Roving,Released: 6 BR
+3/29/2019,March,3,Sunny,77,3,Oktibbeha,12:30,15:24,2:54,2.9,2,0,Any,,0,,0,,2 pole/person,,,,Roving,
+3/29/2019,March,3,Sunny,77,3,Oktibbeha,15:00,15:28,0:28,0.47,1,0,Any,,0,,0,,1 pole/person,,,,Roving,
+4/6/2019,April,3,Cloudy,75,3,Winston,13:00,15:00,2:00,2,1,0,Any,Bream,0,,2,,,No,"5""",,Roving,
+4/6/2019,April,3,Cloudy,75,3,Oktibbeha,15:00,15:54,0:54,0.9,1,0,Any,,0,,0,1,,Yes,,,Roving,
+4/6/2019,April,3,Cloudy,75,3,Noxubee,12:00,15:58,3:58,3.97,1,0,Any,Bream,3,0.4,0,,,No,,,Roving,
+4/20/2019,April,7,Sunny,47,7,Winston,6:00,7:16,1:16,1.27,1,0,Crappie/ Bass,,0,,0,3,,No,6 Crappie/Bream,,Roving,
+4/21/2019,April,11,Sunny,71,11,Noxubee,9:00,11:11,2:11,2.18,1,0,Any,,0,,0,3,,No,6 Bream,,Roving,
+4/21/2019,April,11,Sunny,71,11,Oktibbeha,11:00,11:23,0:23,0.38,1,0,Bream,,0,,0,1,,No,Any,,Roving,
+4/21/2019,April,11,Sunny,71,11,Oktibbeha,11:00,11:28,0:28,0.47,2,0,Bream,,0,,0,1,,Yes,N/A,,Roving,
+4/29/2019,April,3,Sunny,83,3,Noxubee,14:30,15:20,0:50,0.83,1,0,Crappie/ Catfish,Crappie,1,0.68,0,3,,No,13 Crappie,,Roving,White Crappie 381 mm
+4/29/2019,April,3,Sunny,83,3,Noxubee,9:00,15:50,6:50,6.83,1,0,Any,,0,,0,1,,No,10 Crappie,,Roving,
+5/8/2019,May,7,Sunny,59,7,Oktibbeha,6:30,7:25,0:55,0.92,1,0,Bream,Bream,12,2,4,1,1 pole/person,No,5,,Roving,11 bluegill (190
+5/8/2019,May,7,Sunny,59,7,Oktibbeha,7:15,7:39,0:24,0.4,2,0,Bream,,0,,0,1,1 pole/person,No,,,Roving,
+5/10/2019,May,7,Rain,61,7,Winston,8:00,9:15,1:15,1.25,1,0,Crappie,,0,,0,3,1 pole/person,No,8 inch crappie,,Roving,
+5/10/2019,May,7,Rain,61,7,Oktibbeha,9:00,9:48,0:48,0.8,1,0,Bream,,0,,1,1,1 pole/person,No,5 inch Bream,,Roving,
+5/19/2019,May,11,Cloudy,73,11,Noxubee,10:01,11:03,1:02,1.03,1,0,Bream,Bream,4,,0,3,1 pole/person,No,"2""",,Roving,
+6/15/2019,June,10,Sunny,75,7,Oktibbeha,7:30,10:24,2:54,2.9,2,0,Bream,Bream,22,3.1,6,1,1 pole/person,No,"4""",Incomplete,Bus,
+6/15/2019,June,10,Sunny,75,7,Oktibbeha,11:49,12:28,0:39,0.65,2,0,Any,,0,,0,3,1 pole/person,Yes,,Complete,Bus,
+6/15/2019,June,10,Sunny,75,7,Oktibbeha,12:24,13:15,0:51,0.85,2,0,Bream,Bream,4,,4,3,1 pole/person,No,Any,Complete,Bus,
+6/15/2019,June,10,Sunny,75,7,Oktibbeha,6:30,8:11,1:41,1.68,1,0,Bass/ Bream,Bream,0,,1,2,1 pole/person,Yes,,Complete,Bus,
+6/16/2019,June,10,Cloudy,82,7,Oktibbeha,9:15,10:48,1:33,1.55,3,0,Bream,Bream,7,,2,3,1 pole/person,No,Any,Incomplete,Bus,
+6/16/2019,June,10,Cloudy,82,7,Oktibbeha,6:30,13:09,6:39,6.65,2,0,Bream,Bream,52,6.8,0,1,1 pole/person,No,"6""",Complete,Bus,
+6/21/2019,June,4,Sunny,92,2,Winston,18:10,18:37,0:27,0.45,1,0,Bass/ Bream,,0,,0,3,,Yes,,Complete,Bus,
+6/21/2019,June,4,Sunny,92,2,Noxubee,15:15,16:45,1:30,1.5,1,0,Bream,,0,,0,2,1 pole/person,No,"6""",Complete,Bus,
+6/24/2019,June,4,Sunny,87,2,Noxubee,17:30,17:57,0:27,0.45,2,0,Bream,,0,,0,2,1 pole/person,No,"6""",Complete,Bus,
+6/29/2019,June,4,Sunny,88,2,Oktibbeha,16:30,17:32,1:02,1.03,1,0,Bream,,0,,0,3,1 pole/person,Yes,,Complete,Bus,
+6/29/2019,June,4,Sunny,88,2,Oktibbeha,16:30,17:41,1:11,1.18,1,0,Bream,,7,,0,1,1 pole/person,No,"5""",Complete,Bus,
+7/6/2019,July,4,Cloudy,87,2,Oktibbeha,16:18,17:00,0:42,0.7,1,0,Any,Bream,0,,0,3,1 pole/person,Yes,,Complete,Bus,
