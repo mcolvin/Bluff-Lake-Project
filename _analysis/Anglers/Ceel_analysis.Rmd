@@ -1,5 +1,5 @@
 ---
-title: "Analsis of 2019 Creel Survey Data"
+title: "Analysis of 2019 Creel Survey Data"
 author: "V. Starnes"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
@@ -14,10 +14,20 @@ dat2<-read.csv("_dat/CompleteInst.csv")
 dat3<-read.csv("_dat/CompleteVehicle.csv")
 dat4<-read.csv("_dat/Spp.csv")
 dat5<-read.csv("_dat/FishingVehicle.csv")
+source("_r/Creel Sample.R")
 ```
+
+
+
 #Objective
 
-A roving creel survey was competed from March 1st-May 31st 2019, and a modified bus route creel survey was completed from June 1st-July 1st 2019. Data from these surveys can be used to estimate the average effort, CPUE, and harvest of anglers. Additional estimates of refuge usage patterns can be made from vehicle counts and observations taken during the bus route design.
+A roving creel survey was competed from March 1st-May 31st 2019, and a 
+modified bus route creel survey was completed from June 1st-July 1st 
+2019. Data from these surveys can be used to estimate the average 
+effort, CPUE, and harvest of anglers. Additional estimates of refuge 
+usage patterns can be made from vehicle counts and observations taken 
+during the bus route design. 
+
 
 
 ```{r echo=FALSE}
@@ -69,7 +79,7 @@ HarvestJune<-JuneAH*CPUE
 #HarvestJUNE<-AH*CPUE
 ```
 **March (Roving)**
-Angler hours - 335.64
+Angler hours - `r round(HarvestMarch,2)`
 CPUE - 1.12
 Esimated Harvest for March - 376
 
@@ -84,9 +94,10 @@ CPUE - 3.97
 Esimated Harvest for March - 77.5
 
 **June (Roving Design)**
-Angler hours - 80.95
-CPUE - 3.39
-Esimated Harvest for March - 275
+
+* Angler hours - 80.95  
+* CPUE - 3.39  
+* Esimated Harvest for March - 275  
 
 
 #Fish Targeted By Anglers
