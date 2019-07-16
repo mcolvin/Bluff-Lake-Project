@@ -200,7 +200,7 @@ During the bus route creel survey creel clerks waited at three different sites w
 ```{r echo=FALSE}
 par(mar=c(6, 4.1, 4.1, 2.1))
 labs <- paste(c("Bank Fishing","Bird Watching","Boat Fishing", "Kayaking","Other","Photography", "Walking"))
-boxplot(dat3$DecimalTime~dat3$Description.of.Activity, main="Parking Time by Activity",ylab="Interview Counts", col = c("red", "blue", "green", "purple", "orange", "gray", "lightgreen"), xaxt="n", xlab="")
+boxplot(dat3$DecimalTime~dat3$Description.of.Activity, main="Parking Time by Activity",ylab="Wait Time at Access", col = c("red", "blue", "green", "purple", "orange", "gray", "lightgreen"), xaxt="n", xlab="")
 axis(1, labels = FALSE)
 text(x =  seq_along(labs), y = par("usr")[3]-.2, srt = 45, adj = 1,
      labels = labs, xpd = TRUE)
