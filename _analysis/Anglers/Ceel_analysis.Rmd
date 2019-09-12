@@ -14,10 +14,15 @@ dat2<-read.csv("_dat/CompleteInst.csv")
 dat3<-read.csv("_dat/CompleteVehicle.csv")
 dat4<-read.csv("_dat/Spp.csv")
 dat5<-read.csv("_dat/FishingVehicle.csv")
-source("_r/Creel Sample.R")
+#source("_r/Creel Sample.R")
 ```
 
-
+Change counts to relative frequency
+Stacked line graph instead of stacked bars
+No pie charts
+Calculate variances
+Change to bullets
+Make Colvin's Code Edits
 
 #Objective
 
@@ -80,23 +85,23 @@ HarvestJune<-JuneAH*CPUE
 ```
 **March (Roving)**
 Angler hours - `r round(HarvestMarch,2)`
-CPUE - 1.12
+Fish Caught per Hour Fished - 1.12
 Esimated Harvest for March - 376
 
 **April (Roving)**
 Angler hours - 80.7
-CPUE - 0.28
+Fish Caught per Hour Fished - 0.28
 Esimated Harvest for March - 23
 
 **May (Roving)**
 Angler hours - 19.48
-CPUE - 3.97
+Fish Caught per Hour Fished - 3.97
 Esimated Harvest for March - 77.5
 
 **June (Roving Design)**
 
 * Angler hours - 80.95  
-* CPUE - 3.39  
+* Fish Caught per Hour Fished - 3.39  
 * Esimated Harvest for March - 275  
 
 
@@ -148,22 +153,22 @@ boxplot(DecimalTime~Month, data=dat,  main="Time Fished by Month",xlab="Month", 
 ```
 
 ```{r echo=FALSE}
-plot(Air.Temperature~DecimalTime,data=dat, main="Temperature vs. Time Fished",
-     ylab="Temperature (F)",
-     xlab="Time Fished", type="n")
-points(Air.Temperature~DecimalTime,data=dat,
+plot(DecimalTime~Air.Temperature,data=dat, main="Time Fished vs Temperature",
+     ylab="Time Fished",
+     xlab="Temperature (F)", type="n")
+points(DecimalTime~Air.Temperature,data=dat,
        subset=Month=="March",
        col="red")
-points(Air.Temperature~DecimalTime,data=dat,
+points(DecimalTime~Air.Temperature,data=dat,
        subset=Month=="April",
        col="blue")
-points(Air.Temperature~DecimalTime,data=dat,
+points(DecimalTime~Air.Temperature,data=dat,
        subset=Month=="May",
        col="green")
-points(Air.Temperature~DecimalTime,data=dat,
+points(DecimalTime~Air.Temperature,data=dat,
        subset=Month=="June",
        col="purple")
-points(Air.Temperature~Hours.Fished,data=dat,
+points(DecimalTime~Air.Temperature,data=dat,
        subset=Month=="July",
        col="orange")
 legend("topright",title="Sampling Times", legend=c("March", "April", "May", "June", "July"), col=c("red", "blue", "green", "purple", "orange") , pch=1, cex=0.8, text.font=4)
@@ -171,7 +176,7 @@ legend("topright",title="Sampling Times", legend=c("March", "April", "May", "Jun
 
 ```{r echo=FALSE}
 sum<-dat$X..Kept+dat$X..Released
-plot(DecimalTime~sum, data=dat, main="Time Fished vs # of Fish Hooked",xlab="Number of Fish Hooked", ylab="Time Fished")
+plot(sum~DecimalTime, data=dat, main="Number of Fish Hooked vs Time Fished",xlab="Time Fished", ylab="Number of Fish Hooked")
 ```
 
 #Environmental Covariates
