@@ -2,7 +2,7 @@
 
 The flow is area adjusted to Bluff Lake by taking ratio between presumed 
 watershed area above Bluff Lake (220 mi^2) and watershed area at Macon 
-gage (768 m^2). Watershed area feeding into Bluff Lake may be incorrect 
+gage (768 mi^2). Watershed area feeding into Bluff Lake may be incorrect 
 based on current knowledge (as of 4/26/2019) of stream network above 
 Bluff Lake. 
 
