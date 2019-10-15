@@ -5,8 +5,10 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 ---
 
 ```{r,echo=FALSE,eval=FALSE}
-rmarkdown::render("Creel_analysis.Rmd",
-    output_format="html_document")
+#rmarkdown::render("Creel_analysis.Rmd",
+ #   output_format="html_document")
+library(ggplot2)
+library(dplyr)
 ```
 ```{r echo=FALSE}
 dat<-read.csv("_dat/CompleteCreel.csv")
@@ -14,15 +16,14 @@ dat2<-read.csv("_dat/CompleteInst.csv")
 dat3<-read.csv("_dat/CompleteVehicle.csv")
 dat4<-read.csv("_dat/Spp.csv")
 dat5<-read.csv("_dat/FishingVehicle.csv")
+dat6<-read.csv("_dat/SppCaughtbyMO.csv")
+dat7<-read.csv("_dat/FishTime.csv")
 #source("_r/Creel Sample.R")
 ```
 
-Change counts to relative frequency
 Stacked line graph instead of stacked bars
 No pie charts
 Calculate variances
-Change to bullets
-Make Colvin's Code Edits
 
 #Objective
 
@@ -38,16 +39,17 @@ during the bus route design.
 ```{r echo=FALSE}
 #March
 sumMarch<-sum(subset(dat$X..Kept, subset = dat$Month=="March")+subset(dat$X..Released, subset = dat$Month=="March"))
-EF<-sum(subset(dat$DecimalTime, subset = dat$Month=="March"))
+EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="March"))
 meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="March")))
 AH<-meangrp*EF
 MarchAH<-(AH/7)*31
 CPUE<- sumMarch/AH
 HarvestMarch<-MarchAH*CPUE
 
+
 #April
 sumApril<-sum(subset(dat$X..Kept, subset = dat$Month=="April")+subset(dat$X..Released, subset = dat$Month=="April"))
-EF<-sum(subset(dat$DecimalTime, subset = dat$Month=="April"))
+EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="April"))
 meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="April")))
 AH<-meangrp*EF
 AprilAH<-(EF/7)*30
@@ -56,7 +58,7 @@ HarvestApril<-AprilAH*CPUE
 
 #May
 sumMay<-sum(subset(dat$X..Kept, subset = dat$Month=="May")+subset(dat$X..Released, subset = dat$Month=="May"))
-EF<-sum(subset(dat$DecimalTime, subset = dat$Month=="May"))
+EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="May"))
 meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="May")))
 AH<-meangrp*EF
 MayAH<-(EF/7)*31
@@ -65,12 +67,32 @@ HarvestMay<-MayAH*CPUE
 
 #June
 sumJune<-sum(subset(dat$X..Kept, subset = dat$Month=="June")+subset(dat$X..Released, subset = dat$Month=="June"))
-EF<-sum(subset(dat$DecimalTime, subset = dat$Month=="June"))
+EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="June"))
 meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="June")))
 AH<-meangrp*EF
 JuneAH<-(EF/7)*30
 CPUE<- sumJune/AH
 HarvestJune<-JuneAH*CPUE
+
+#July
+sumJuly<-sum(subset(dat$X..Kept, subset = dat$Month=="July")+subset(dat$X..Released, subset = dat$Month=="July"))
+EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="July"))
+meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="July")))
+AH<-meangrp*EF
+JulyAH<-(EF/7)*31
+CPUE<- sumJuly/AH
+HarvestJuly<-JulyAH*CPUE
+
+#August
+sumAugust<-sum(subset(dat$X..Kept, subset = dat$Month=="August")+subset(dat$X..Released, subset = dat$Month=="August"))
+EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="August"))
+meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="August")))
+AH<-meangrp*EF
+AugustAH<-(EF/7)*31
+CPUE<- sumAugust/AH
+HarvestAugust<-AugustAH*CPUE
+
+
 
 #June ETPH (Something Bad Happened Here)
 #w<-na.omit(dat5$CreelWait)
@@ -84,25 +106,39 @@ HarvestJune<-JuneAH*CPUE
 #HarvestJUNE<-AH*CPUE
 ```
 **March (Roving)**
-Angler hours - `r round(HarvestMarch,2)`
-Fish Caught per Hour Fished - 1.12
-Esimated Harvest for March - 376
+* Angler hours - `r round(HarvestMarch,2)`
+* Fish Caught per Hour Fished - 1.12
+* Esimated Harvest for March - 376
 
 **April (Roving)**
-Angler hours - 80.7
-Fish Caught per Hour Fished - 0.28
-Esimated Harvest for March - 23
+* Angler hours - `r round(HarvestApril,2)`
+* Fish Caught per Hour Fished - 0.28
+* Esimated Harvest for March - 23
 
 **May (Roving)**
-Angler hours - 19.48
-Fish Caught per Hour Fished - 3.97
-Esimated Harvest for March - 77.5
+* Angler hours - `r round(HarvestMay,2)`
+* Fish Caught per Hour Fished - 3.97
+* Esimated Harvest for March - 77.5
 
 **June (Roving Design)**
 
-* Angler hours - 80.95  
+* Angler hours - `r round(HarvestJune,2)`  
 * Fish Caught per Hour Fished - 3.39  
-* Esimated Harvest for March - 275  
+* Esimated Harvest for March - 275 
+
+**July (Roving Design)**
+
+* Angler hours - `r round(HarvestJuly,2)`  
+* Fish Caught per Hour Fished - 3.39  
+* Esimated Harvest for March - 27
+
+**August (Roving Design)**
+
+* Angler hours - `r round(HarvestAugust,2)`  
+* Fish Caught per Hour Fished - 3.39  
+* Esimated Harvest for March - 27
+
+
 
 
 #Fish Targeted By Anglers
@@ -111,16 +147,23 @@ During interviews anglers were asked what kind of fish they were hoping to catch
 
 
 ```{r echo=FALSE}
-counts2 <- table(dat4$Spp..Sought)
-barplot(na.omit(counts2), main="Fish Targeted by Anglers", xlab="Categories",ylab="Interview Counts", col=c("red", "blue", "green", "purple", "orange", "black", "yellow"),  ylim=c(0,20))
+barplot(table(dat4$Spp..Sought)/nrow(dat4), main="Fish Targeted by Anglers", xlab="Categories",ylab="Relative Frequency")
 ```
 
 ```{r echo=FALSE}
-dat4$Month<-factor(dat4$Month, levels=c("March", "April", "May", "June", "July"))
-counts1 <- table(dat4$Spp..Sought, dat4$Month)
-barplot(counts1, main="Fish Sought by Month",
-   xlab="Month", ylab="Interview Counts" , col=c("red", "blue", "green", "purple", "orange", "black", "yellow", "gray"),ylim=c(0,30),
-  legend = rownames(counts1))
+#dat4$Month<-factor(dat4$Month, levels=c("March", "April", "May", "June", "July", "August", "September"))
+#counts1 <- table(dat4$Spp..Sought, dat4$Month)/nrow(dat4)
+#barplot(counts1, main="Fish Sought by Month",
+#   xlab="Month", ylab="Relative Frequency",
+#  legend = rownames(counts1),beside=TRUE)
+
+#counts1 <- table(dat4$Spp..Sought, dat4$Month)
+mydata <- data.frame(March=c(0.2068,0.2068,0.345,0.067, 0.483), April=c(0.455,0.099,0.188,0.099, 0.188), May=c(0,0,0.8,0, 0.2), 
+                     June=c(0.077,0.154,0.769,0, 0), July=c(1,0,0,0, 0), August=c(1,0,0,0, 0))
+
+barplot(as.matrix(mydata), main="Fish Sought by Month",
+   xlab="Month", ylab="Relative Frequency", beside=TRUE, col = c("gray8","gray28", "gray48", "gray68", "gray88"))
+legend("topleft", inset=.02, c("Any","Bass","Bream","Catfish","Crappie"), cex=0.8, fill = c("gray8","gray28", "gray48", "gray68", "gray88"))
 ```
 
 # Species Caught By Anglers
@@ -129,17 +172,22 @@ During interviews the type of fish caught by anglers was recorded. The following
 
 
 ```{r echo=FALSE}
-counts3 <- table(dat4$Spp..Caught)
-barplot(na.omit(counts3), main="Fish Caught by Anglers", 
-   xlab="Categories", ylab="Interview Counts", col=c("blue", "green", "orange"))
+barplot(table(dat6$Spp.Caught)/nrow(dat6), main="Fish Caught by Anglers", xlab="Categories",ylab="Relative Frequency")
+
 ```
 
 ```{r echo=FALSE}
-dat4$Month<-factor(dat4$Month, levels=c("March", "April", "May", "June", "July"))
-counts2 <- table(dat4$Spp..Caught, dat4$Month)
-barplot(counts2, main="Fish Caught by Month",
-   xlab="Categories", ylab="Interview Counts",col=c("blue", "green", "orange"),ylim=c(0,30),
-  legend = rownames(counts2))
+#dat6$ï..Month<-factor(dat6$ï..Month, levels=c("March", "April", "May", "June", "July", "August"))
+dat11<- table(dat6$Spp.Caught, dat6$ï..Month)
+#barplot(dat11, main="Fish Caught By Month",
+ #  xlab="Categories", ylab="Relative Frequency",
+  #legend = rownames(dat11))
+
+mydata2 <- data.frame(March=c(0.133,0.108,0.759), April=c(0,0.833,0.166), May=c(0,1,0), 
+                     June=c(0,1,0), July=c(0,1,0), August=c(0,1,0))
+barplot(as.matrix(mydata2), main="Fish Caught by Month",
+   xlab="Month", ylab="Relative Frequency", beside=TRUE, col = c("gray8", "gray48", "gray88"))
+legend("topleft", inset=.02, c("Bass","Bream","Crappie"), cex=0.8, fill = c("gray8", "gray48", "gray88"))
 ```
 
 # Time Fished 
@@ -148,35 +196,42 @@ The following two graphs depict the time fished by month, time fished by tempera
 
 
 ```{r echo=FALSE}
-dat$Month<-factor(dat$Month, levels=c("March", "April", "May", "June", "July"))
-boxplot(DecimalTime~Month, data=dat,  main="Time Fished by Month",xlab="Month", ylab="Time Fished")
+dat$Month<-factor(dat$Month, levels=c("March", "April", "May", "June", "July", "August"))
+boxplot(DecimalTime~Month, data=dat,  main="Time Fished by Month",xlab="Month", ylab="Time Fished (hours)")
+.
 ```
 
 ```{r echo=FALSE}
-plot(DecimalTime~Air.Temperature,data=dat, main="Time Fished vs Temperature",
+plot(Total.Effort~Air.Temperature,data=dat, main="Time Fished vs Temperature",
      ylab="Time Fished",
-     xlab="Temperature (F)", type="n")
-points(DecimalTime~Air.Temperature,data=dat,
+     xlab="Temperature (F)", type="n", ylim=c(0,15))
+points(Total.Effort~Air.Temperature,data=dat,
        subset=Month=="March",
        col="red")
-points(DecimalTime~Air.Temperature,data=dat,
+points(Total.Effort~Air.Temperature,data=dat,
        subset=Month=="April",
        col="blue")
-points(DecimalTime~Air.Temperature,data=dat,
+points(Total.Effort~Air.Temperature,data=dat,
        subset=Month=="May",
        col="green")
-points(DecimalTime~Air.Temperature,data=dat,
+points(Total.Effort~Air.Temperature,data=dat,
        subset=Month=="June",
        col="purple")
-points(DecimalTime~Air.Temperature,data=dat,
+points(Total.Effort~Air.Temperature,data=dat,
        subset=Month=="July",
        col="orange")
-legend("topright",title="Sampling Times", legend=c("March", "April", "May", "June", "July"), col=c("red", "blue", "green", "purple", "orange") , pch=1, cex=0.8, text.font=4)
+points(Total.Effort~Air.Temperature,data=dat,
+       subset=Month=="August",
+       col="yellow")
+points(Total.Effort~Air.Temperature,data=dat,
+       subset=Month=="September",
+       col="black")
+legend("topright",title="Sampling Times", legend=c("March", "April", "May", "June", "July", "August", "September"), col=c("red", "blue", "green", "purple", "orange", "yellow", "black") , pch=1, cex=0.8, text.font=4)
 ```
 
 ```{r echo=FALSE}
 sum<-dat$X..Kept+dat$X..Released
-plot(sum~DecimalTime, data=dat, main="Number of Fish Hooked vs Time Fished",xlab="Time Fished", ylab="Number of Fish Hooked")
+plot(sum~Total.Effort, data=dat, main="Number of Fish Hooked vs Time Fished",xlab="Time Fished", ylab="Number of Fish Hooked", xlim=c(0,15))
 ```
 
 #Environmental Covariates
@@ -185,7 +240,7 @@ During survey dates general weather conditions were described as cloudy, raining
 
 
 ```{r echo=FALSE}
-boxplot(DecimalTime~Weather, data=dat, main="Time Fished Durring Generalized Weather Conditions",xlab="Weather", ylab="Time Fished")
+boxplot(Total.Effort~Weather, data=dat, main="Time Fished Durring Generalized Weather Conditions",xlab="Weather", ylab="Time Fished")
 ```
 
 ```{r echo=FALSE}
@@ -204,8 +259,8 @@ During interviews anglers reported their resident county. All counties reported 
 
 
 ```{r echo=FALSE}
-counts5 <- table(dat$County.State)
-barplot(na.omit(counts5), main="Angler Origin", xlab="Categories",ylab="Interview Counts",col = c("red", "blue", "green", "purple", "orange", "gray", "lightgreen"),ylim=c(0,30))
+counts5 <- table(na.omit(dat$County.State))/nrow(dat)
+barplot(na.omit(counts5), main="Angler Origin", xlab="Counties",ylab="Interview Counts",ylim=c(0,0.5))
 ```
 
 # Activities on the Refuge
@@ -224,9 +279,4 @@ text(x =  seq_along(labs), y = par("usr")[3]-.2, srt = 45, adj = 1,
 
 
 
-```{r echo=FALSE}
-mytable <- table(dat3$Description.of.Activity)
-lbls <- paste(names(mytable))
-pie(mytable, labels = lbls, 
-   main="Refuge Visitors", col = c("red", "blue", "green", "purple", "orange", "gray", "lightgreen"))
-```
+``

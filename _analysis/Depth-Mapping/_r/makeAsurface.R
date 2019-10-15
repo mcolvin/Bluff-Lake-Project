@@ -1,6 +1,3 @@
-
-
-
 library(gstat)
 library(sp)
 setwd("C:/Users/Victoria Starnes/Documents/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping")
@@ -26,7 +23,9 @@ plot(vals_utm,axes=TRUE)
 
 ## GET THE RANGE FOR X AND Y 
 xrange <- range(vals_utm@coords[,1])
+xrange <- c(xrange[1]-70, xrange[2]+60)
 yrange <- range(vals_utm@coords[,2])
+yrange <- c(yrange[1]-60, yrange[2]+500)
 
 ## MAKE A GRID TO INTERPOLATE 15X15 METER GRID
 grd <- expand.grid(x=seq(from=xrange[1], 
@@ -37,17 +36,6 @@ grd <- expand.grid(x=seq(from=xrange[1],
 coordinates(grd) <- ~ x+y
 gridded(grd) <- TRUE
 proj4string(grd) <-CRS("+proj=utm +zone=16 ellps=WGS84")
-
-##Clip the Grid
-gClip <- function(shp, bb){
-  if(class(bb) == "matrix") b_poly <- as(extent(as.vector(t(bb))), "SpatialPolygons")
-  else b_poly <- as(extent(bb), "SpatialPolygons")
-  gIntersection(shp, b_poly, byid = T)
-}
-b<-
-zones_clipped <- gClip(grd, b)
-
-plot(zones_clipped)
 
 ## PLOT THE GRID AND THE DEPTH COORDINATES
 plot(grd, cex=1.5)
@@ -64,11 +52,10 @@ names(xxoutput)[1:3]<-c("long","lat","depth")
 ## ASSIGN COORDINATES TO THE INTERPOLOATIONS AND SPATIAL GRID
 coordinates(xxoutput) = ~long+lat
 gridded(xxoutput)<-TRUE
-
+write.csv(xxoutput, "_dat/Bathymetry/InterpolatedDepths.csv")
 ## PLOT THE INTERPOLATED GRID
 plot(xxoutput["depth"],zlim=c(-3,0))
 points(vals_utm, col='white', type='l') # PUT DOWN TRACK
 
-install.packages("arcgisbinding")
-arc.write("coverage", data, ..., overwrite = FALSE)
+
 
