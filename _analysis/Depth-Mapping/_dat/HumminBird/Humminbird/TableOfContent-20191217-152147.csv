@@ -1,0 +1,5 @@
+File, InfoStatus, Channel, Orientation, Pings, StartTime, Duration, StartLatitude, StartLongitude, FilePath
+R00001.DAT,1,,,37330,2005-01-01T00:00:00.0000000Z,00:24:26.996,,,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00001.DAT
+,,1,DownScan,37330,2005-01-01T00:00:00.0000000Z,00:24:26.996,33.4457110,-88.7793948,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00001.DAT
+,,2,SideScanLeft,37330,2005-01-01T00:00:00.0000000Z,00:24:26.996,33.4457110,-88.7793948,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00001.DAT
+,,3,SideScanRight,37330,2005-01-01T00:00:00.0000000Z,00:24:26.996,33.4457110,-88.7793948,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00001.DAT

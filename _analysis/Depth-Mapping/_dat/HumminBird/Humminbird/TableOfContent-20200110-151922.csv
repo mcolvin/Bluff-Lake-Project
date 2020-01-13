@@ -1,0 +1,21 @@
+File, InfoStatus, Channel, Orientation, Pings, StartTime, Duration, StartLatitude, StartLongitude, FilePath
+R00006.DAT,1,,,284564,2020-01-07T19:33:51.0000000Z,02:13:48.136,,,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00006.DAT
+,,0,DownScan,142282,2020-01-07T19:33:51.0270000Z,02:13:48.109,33.2815368,-88.7811285,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00006.DAT
+,,1,DownScan,142282,2020-01-07T19:33:51.0000000Z,02:13:48.109,33.2815368,-88.7811285,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00006.DAT
+,,2,SideScanLeft,284564,2020-01-07T19:33:51.0000000Z,02:13:48.136,33.2815368,-88.7811285,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00006.DAT
+,,3,SideScanRight,284564,2020-01-07T19:33:51.0000000Z,02:13:48.136,33.2815368,-88.7811285,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00006.DAT
+R00007.DAT,1,,,9239,2020-01-08T20:31:01.0000000Z,00:04:13.698,,,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00007.DAT
+,,0,DownScan,4620,2020-01-08T20:31:01.0000000Z,00:04:13.698,33.2804503,-88.7862576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00007.DAT
+,,1,DownScan,4619,2020-01-08T20:31:01.0320000Z,00:04:13.640,33.2804503,-88.7862576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00007.DAT
+,,2,SideScanLeft,9239,2020-01-08T20:31:01.0000000Z,00:04:13.698,33.2804503,-88.7862576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00007.DAT
+,,3,SideScanRight,9239,2020-01-08T20:31:01.0000000Z,00:04:13.698,33.2804503,-88.7862576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00007.DAT
+R00008.DAT,1,,,21697,2020-01-08T20:41:42.0000000Z,00:10:00.976,,,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00008.DAT
+,,0,DownScan,10848,2020-01-08T20:41:42.0270000Z,00:10:00.922,33.2806767,-88.7884315,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00008.DAT
+,,1,DownScan,10849,2020-01-08T20:41:42.0000000Z,00:10:00.976,33.2806767,-88.7884315,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00008.DAT
+,,2,SideScanLeft,21697,2020-01-08T20:41:42.0000000Z,00:10:00.976,33.2806767,-88.7884315,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00008.DAT
+,,3,SideScanRight,21697,2020-01-08T20:41:42.0000000Z,00:10:00.976,33.2806767,-88.7884315,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00008.DAT
+R00009.DAT,1,,,83273,2020-01-08T20:54:58.0000000Z,00:38:23.587,,,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00009.DAT
+,,0,DownScan,41637,2020-01-08T20:54:58.0000000Z,00:38:23.587,33.2817330,-88.7930576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00009.DAT
+,,1,DownScan,41636,2020-01-08T20:54:58.0310000Z,00:38:23.530,33.2817330,-88.7930576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00009.DAT
+,,2,SideScanLeft,83273,2020-01-08T20:54:58.0000000Z,00:38:23.587,33.2817330,-88.7930576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00009.DAT
+,,3,SideScanRight,83273,2020-01-08T20:54:58.0000000Z,00:38:23.587,33.2817330,-88.7930576,C:\Users\Victoria Starnes\Documents\GitHub\Bluff-Lake-Project\_analysis\Depth-Mapping\_dat\HumminBird\Humminbird\R00009.DAT
