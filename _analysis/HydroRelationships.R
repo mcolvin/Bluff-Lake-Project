@@ -2,8 +2,9 @@
 #each board is assumed 22 cm
 #base elevation 66.45402
 # one point=6.25m^2
+library(lubridate)
 setwd("~/GitHub/Bluff-Lake-Project/_analysis")
-dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2.csv")
+dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 
 # ---- Waterbirds
 # areas must be less than 20 cm in depth
@@ -58,7 +59,7 @@ BBBBBBBBB <- BBBBBBBBB*1.56*0.4374 #convert to area
 elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1000000
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="DEDs (millions)", main = "Duck Energy Days")
+plot(elevation, boards, xlab="Water Surface Elevation", ylab="DEDs (millions)", main = "Duck Energy Days", type="l", col="red")
 
 # ---- Fish
 # Areas greater than 1 meter in depth
@@ -85,7 +86,7 @@ BBBBBBBBB <- BBBBBBBBB*1.56 #convert to area
 elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Fish Habitat")
+plot(elevation, boards, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Fish Habitat", type="l", col="red")
 
 #### ---- Anglers
 # For now, following fish model, Areas greater than 1 meter in depth
@@ -136,9 +137,17 @@ BBBBBBBBB <- sum(BBBBBBBBB)
 elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="Volume (m^3)", main = "Bluff Lake Volume")
-lm<-lm(boards~elevation)
-
+plot(elevation, boards, xlab="Water Surface Elevation", ylab="Volume (m^3)", main = "Bluff Lake Volume", type="l", col="red", ylim=c(100500000,102000000), xlim=c(66.5,68.5))
+gam_1 <- gam(boards ~ s(elevation, bs = "cr"),
+             data = matrix_gam,
+             family = gaussian)
+summary(gam_1)
+gam_2 <- gam(elevation ~ s(volume, bs = "cr"),
+             data = matrix_gam,
+             family = gaussian)
+summary(gam_2)
+par(new=T)
+plot(gam_1$fitted.values~elevation, ylim=c(100500000,102000000), xlim=c(66.5,68.5), col="blue", type="l")
 # ---- Lake Elevation and Gauge Data
 Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
 Gauge <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon.csv")
@@ -218,16 +227,18 @@ plot(ElevationDec$`mean(WSElevation)`~GaugeDec$Discharge_cms, main="December Cyp
 
 
 #Gauge
-Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEle.csv")
+Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEl.csv")
 Gauge <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon.csv")
-Elevation <- subset(Elevation, Elevation$ï..Location == "Gauge")
-Elevation<-Elevation %>% group_by(Elevation$Date.Time,) %>% 
+Elevation$Date.Time<- as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y")
+Gauge$Date.Time<- as.POSIXct(Gauge$Date.Time, format="%m/%d/%Y")
+Elevation<- subset(Elevation, Elevation$ï..Location == "Gauge")
+Elevation$Date.Time<-round_date(Elevation$Date.Time, "day")
+Elevation<-Elevation %>% group_by(Elevation$Date.Time) %>% 
   summarise(mean(WSElevation))
-month<-Elevation$`Elevation$Date.Time`
-Elevation$month<- month(as.POSIXlt(month, format="%m/%d/%Y"), label= T)
-Gauge$month <- month(as.POSIXlt(Gauge$datetime, format="%m/%d/%Y"), label= T)
-Gauge<-subset(Gauge, Gauge$datetime %in% Elevation$`Elevation$Date.Time`)
-Elevation2 <- subset(Elevation,  Elevation$`Elevation$Date.Time`  %in% Gauge$datetime)
+Elevation$month<- month(as.POSIXct(Elevation$`Elevation$Date.Time`, format="%m/%d/%Y"), label= T)
+Gauge$month <- month(as.POSIXct(Gauge$Date.Time, format="%m/%d/%Y"), label= T)
+Gauge<-subset(Gauge, Gauge$Date.Time %in% Elevation$`Elevation$Date.Time`)
+Elevation2 <- subset(Elevation,  Elevation$`Elevation$Date.Time`  %in% Gauge$Date.Time)
 
 par(mfrow=c(3,3))
 plot( Elevation2$`mean(WSElevation)`~Gauge$Discharge_cms, 
@@ -284,10 +295,6 @@ plot( ElevationOct$`mean(WSElevation)`~GaugeOct$Discharge_cms, main="October Lev
 ElevationNov <- subset(Elevation2, Elevation2$month == "Nov")
 GaugeNov <- subset(Gauge, Gauge$month=="Nov")
 plot( ElevationNov$`mean(WSElevation)`~GaugeNov$Discharge_cms, main="November Levee Gauge")
-#December
-ElevationDec <- subset(Elevation2, Elevation2$month == "Dec")
-GaugeDec <- subset(Gauge, Gauge$month=="Dec")
-plot(ElevationDec$`mean(WSElevation)`~GaugeDec$Discharge_cms, main="December Levee Gauge")
 
 # Time Series Plot
 # There were strange patterns in the plots elevation~discharge plots (above). Dischare was increasing as water levels within Bluff Lake decreased or remained the same. We wanted to determine if there was a lag in "peaking" between Bluff Lake and the Gauge.
@@ -317,7 +324,7 @@ legend("topright", c("Discharge", "Lake Elevation"),
  # geom_line(color = "#6BB100", size = 2)
 #DECEMBER
 dat2Dec<-subset(dat2, dat2$month=="Dec")
-plot(dat2Dec$CFS~dat2Dec$ï..datetime, main="December",type='l',col="red")
+plot(dat2Dec$ï..CFS~dat2Dec$Date.Time, main="December",type='l',col="red")
 ElevationDec<-subset(Elevation, Elevation$month=="Dec")
 par(new=TRUE)
 ElevationDec<-ElevationDec[order(ElevationDec$Date.Time),]
@@ -409,7 +416,7 @@ library(ggplot2)
 library(grid)
 dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
 dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
-dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = T)
+dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = F)
 dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
 CMS<-ddply(dat2, c("Date.Time","month"), summarize,
            meanCMS=mean(ï..CFS))
@@ -417,30 +424,27 @@ CMS<-ddply(dat2, c("Date.Time","month"), summarize,
 Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
 Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
 Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
-Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
+Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= F)
 data<-merge(Elevation, CMS)
 
-M1<-lm(WSElevation~meanCMS, data)
-summary(M1)
-plot(M1)
-plot(WSElevation~meanCMS, data)
+# M1<-lm(WSElevation~meanCMS, data)
+# summary(M1)
+# plot(M1)
 
-M2<-lm(WSElevation~meanCMS+month,data)
-summary(M2)
-plot(M2)
-plot(WSElevation~meanCMS+month, data)
-
-M3<-lm(WSElevation~meanCMS+month+ meanCMS*month,data)
-summary(M3)
-plot(M3)
-plot(WSElevation~meanCMS, data)
-data$FitLM3<- M3$fitted.values
-plot(FitLM3~Date.Time, data, type="l", col="red", ylim=c(68.6,69.8), 
-     main="Linear Model 4")
-par(new=T)
-plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8))
-legend("topleft", c("Predicted", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
+# M2<-lm(WSElevation~meanCMS+month,data)
+# summary(M2)
+# plot(M2)
+# 
+# M3<-lm(WSElevation~meanCMS+month+ meanCMS*month,data)
+# summary(M3)
+# plot(M3)
+# data$FitLM3<- M3$fitted.values
+# plot(FitLM3~Date.Time, data, type="l", col="red", ylim=c(68.6,69.8), 
+#      main="Linear Model 4")
+# par(new=T)
+# plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8))
+# legend("topleft", c("Predicted", "Lake Elevation"),
+#        col = c("red", "black"), lty = c(1, 1))
 
 #try GAM
 library(mgcv)
@@ -495,26 +499,26 @@ plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8))
 legend("topleft", c("Predicted", "Lake Elevation"),
        col = c("red", "black"), lty = c(1, 1))
 
-gam_5 <- gam(Ele ~ s(CMS, bs = "cr", k = 48) +
-               s(Month, bs = "ps", k = 8) +
-               ti(CMS, Month,
-                  k = c(48, 7),
-                  bs = c("cr", "ps")),
-             data = matrix_gam,
-             family = gaussian)
-summary(gam_5)$r.sq
-summary(gam_5)$s.table
-
-gam_6 <- gam(Ele ~ t2(CMS, Month,
-                       k = c(48, 7),
-                       bs = c("cr", "ps"),
-                       full = TRUE),
-             data = matrix_gam,
-             family = gaussian)
-summary(gam_6)$r.sq
-summary(gam_6)$s.table
-
-AIC(gam_4, gam_5, gam_6)
+# gam_5 <- gam(Ele ~ s(CMS, bs = "cr", k = 48) +
+#                s(Month, bs = "ps", k = 8) +
+#                ti(CMS, Month,
+#                   k = c(48, 7),
+#                   bs = c("cr", "ps")),
+#              data = matrix_gam,
+#              family = gaussian)
+# summary(gam_5)$r.sq
+# summary(gam_5)$s.table
+# 
+# gam_6 <- gam(Ele ~ t2(CMS, Month,
+#                        k = c(48, 7),
+#                        bs = c("cr", "ps"),
+#                        full = TRUE),
+#              data = matrix_gam,
+#              family = gaussian)
+# summary(gam_6)$r.sq
+# summary(gam_6)$s.table
+# 
+# AIC(gam_4, gam_5, gam_6)
 
 #group data by day
 data$Date.Time<-round_date(data$Date.Time, "day")
@@ -524,7 +528,8 @@ data2<-data
 #differce between days elevation
 data2$DeltaEle<-c(NA, diff(data$WSElevation))
 #convert Elevation to volume
-data2$Vol<-(56446953+(577084*data2$WSElevation))
+data2$elevation<-data2$WSElevation
+data2$Vol<- predict(gam_1, data2)
 #change in volume
 data2$DeltaVol<-c(NA,diff(data2$Vol))
 #difference between days CMS
@@ -588,7 +593,7 @@ plot(DeltaVol~meanCMS, data5, col="blue", main="Change in Lake Volume vs Dischar
 par(new=T)
 plot(Neggam$fitted.values~data5$meanCMS, col="red")
 legend("bottomleft", c("Predicted", "Actual"),
-       col = c("red", "blue"), lty = c(1, 1))
+       col = c("red", "blue"), pch = c(1, 1))
 
 #DeltaVol
 #for positive 10140.42+728.45*meanCMS
@@ -655,8 +660,8 @@ lines(NextDay_P12~Date.Time,data6, col="blue4")
 lines(NextDay_P13~Date.Time,data6, col="red2")
 lines(NextDay_P14~Date.Time,data6, col="purple3")
 lines(NextDay_P15~Date.Time,data6, col="green4")
-abline(96036526,0)
-abline(95761000,0)
+# abline(96036526,0)
+# abline(95761000,0)
 
 
 data4$NextDay_P0<- data4$Vol+Posgam$fitted.values-(0)
@@ -675,12 +680,12 @@ plot(NextDay_P0~Date.Time,data6, ylab="Next Day Volume", xlab="Date", main="Resu
 lines(NextDay_P1~Date.Time,data6, col="purple")
 lines(NextDay_P2~Date.Time,data6, col="green")
 lines(NextDay_P3~Date.Time,data6, col="blue")
-abline(96036526,0)
-abline(95761000,0)
-abline(95581226,0)
-abline(95458173,0)
-abline(95390602,0)
-abline(95370439,0, col="red")
+# abline(96036526,0)
+# abline(95761000,0)
+# abline(95581226,0)
+# abline(95458173,0)
+# abline(95390602,0)
+# abline(95370439,0, col="red")
 
 
 write.csv(data6, "Paddlefish.csv")
