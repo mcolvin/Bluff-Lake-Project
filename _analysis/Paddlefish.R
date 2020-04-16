@@ -2,91 +2,93 @@ library(tidyverse)
 library(lubridate)
 library(scales)
 library(zoo)
-#
- dat<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
- dat$ï..datetime <- as.POSIXct(dat$ï..datetime, format="%m/%d/%Y")
- names(dat)[1]<-"Date"
- #add in missing dates
- Date<-seq(as.Date("1945/1/1"), as.Date("2019/12/31"), "days")
- Date<-as.data.frame(Date)
- Date$Date<-as.POSIXct(Date$Date, format="%Y/%m/%d")
- Date$Date<-round_date(Date$Date, "day")
- library(dplyr)
- dat<-left_join(Date, dat, by = "Date")
- dat$Discharge_cfs<-na.approx(dat$Discharge_cfs)
- dat$Discharge_cms<-dat$Discharge_cfs*0.028316847
- 
- dat$month<- lubridate::month(as.POSIXct(dat$Date, format="%Y/%m/%d"), label = T)
- dat$year<-lubridate::year(dat$Date)
- dat$day<-lubridate::day(dat$Date)
- dat$DeltaCMS<-c(NA,diff(dat$Discharge_cms))
- dat$meanCMS<-dat$Discharge_cms
+library(dplyr)
+library(mgcv)
+# #
+#  dat<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
+#  dat$ï..datetime <- as.POSIXct(dat$ï..datetime, format="%m/%d/%Y")
+#  names(dat)[1]<-"Date"
+#  #add in missing dates
+#  Date<-seq(as.Date("1945/1/1"), as.Date("2019/12/31"), "days")
+#  Date<-as.data.frame(Date)
+#  Date$Date<-as.POSIXct(Date$Date, format="%Y/%m/%d")
+#  Date$Date<-round_date(Date$Date, "day")
+#  library(dplyr)
+#  dat<-left_join(Date, dat, by = "Date")
+#  dat$Discharge_cfs<-na.approx(dat$Discharge_cfs)
+#  dat$Discharge_cms<-dat$Discharge_cfs*0.028316847
+# 
+#  dat$month<- lubridate::month(as.POSIXct(dat$Date, format="%Y/%m/%d"), label = T)
+#  dat$year<-lubridate::year(dat$Date)
+#  dat$day<-lubridate::day(dat$Date)
+#  dat$DeltaCMS<-c(NA,diff(dat$Discharge_cms))
+#  dat$meanCMS<-dat$Discharge_cms
+# 
+# #
+# #####
+#  dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+#  dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
+#  dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = T)
+#  dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
+#  CMS<-dplyr::ddply(dat2, c("Date.Time","month"), summarize,
+#             meanCMS=mean(ï..CFS))
+#  Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
+#  Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
+#  Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
+#  Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
+#  data<-merge(Elevation, CMS)
+# 
+#  M3<-lm(WSElevation~meanCMS+month+ meanCMS*month,data)
+#  summary(M3)
+# 
+# # #try GAM
+#  library(mgcv)
+#  library(data.table)
+#  #group data by day
+#  data$Date.Time<-round_date(data$Date.Time, "day")
+#  data<-data %>% dplyr::group_by(data$Date.Time) %>%
+#    dplyr::summarise_all(funs(mean))
+#  data2<-data
+# 
+#  #differce between days elevation
+#  data2$DeltaEle<-c(NA, diff(data2$WSElevation))
+#  #convert Elevation to volume
+#  data2$elevation<-data2$WSElevation
+#  data2$Vol<- predict(gam_1, data2)
+#   #change in volume
+#  data2$DeltaVol<-c(NA,diff(data2$Vol))
+#  #difference between days CMS
+#  data2$DeltaCMS<-c(NA,diff(data2$meanCMS))
+#  #add month back
+#  data2$month<- lubridate::month(as.POSIXct(data2$Date.Time, format="%m/%d/%Y"), label= T)
+# # #Get rid of Negatives
+#  data4<-data2
+#  data4 <- filter(data4, DeltaVol>0)
+#  data4 <- filter(data4, DeltaCMS>0)
+#  Posgam <- gam(DeltaVol ~ s(meanCMS),
+#                data = data4,
+#                family = gaussian)
+#  summary(Posgam)
+#  data5<-data2
+#  data5 <- filter(data5, DeltaVol<0)
+#  data5 <- filter(data5, DeltaCMS<0)
+#  Neggam <- gam(DeltaVol ~ s(meanCMS),
+#                data = data5,
+#                family = gaussian)
+# summary(Neggam)
+# 
+# ####Now use GAM to predict change in volume given discharge
+# datP <- filter(dat, DeltaCMS>0)
+# datP$DeltaVol<-predict(Posgam, datP)
+# datN <- filter(dat, DeltaCMS<0)
+# datN$DeltaVol<-predict(Neggam, datN)
+# data<-rbind(datN, datP)
+# names(data)[1]<-"Date"
 
-#
-#####
- dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
- dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
- dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = T)
- dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
- CMS<-ddply(dat2, c("Date.Time","month"), summarize,
-            meanCMS=mean(ï..CFS))
- Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
- Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
- Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
- Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
- data<-merge(Elevation, CMS)
- 
- M3<-lm(WSElevation~meanCMS+month+ meanCMS*month,data)
- summary(M3)
-
-# #try GAM
- library(mgcv)
- library(data.table)
- #group data by day
- data$Date.Time<-round_date(data$Date.Time, "day")
- data<-data %>% dplyr::group_by(data$Date.Time) %>%
-   dplyr::summarise_all(funs(mean))
- data2<-data
- 
- #differce between days elevation
- data2$DeltaEle<-c(NA, diff(data2$WSElevation))
- #convert Elevation to volume
- data2$elevation<-data2$WSElevation
- data2$Vol<- predict(gam_1, data2)
-  #change in volume
- data2$DeltaVol<-c(NA,diff(data2$Vol))
- #difference between days CMS
- data2$DeltaCMS<-c(NA,diff(data2$meanCMS))
- #add month back
- data2$month<- lubridate::month(as.POSIXct(data2$Date.Time, format="%m/%d/%Y"), label= T)
-# #Get rid of Negatives
- data4<-data2
- data4 <- filter(data4, DeltaVol>0)
- data4 <- filter(data4, DeltaCMS>0)
- Posgam <- gam(DeltaVol ~ s(meanCMS),
-               data = data4,
-               family = gaussian)
- summary(Posgam)
- data5<-data2
- data5 <- filter(data5, DeltaVol<0)
- data5 <- filter(data5, DeltaCMS<0)
- Neggam <- gam(DeltaVol ~ s(meanCMS),
-               data = data5,
-               family = gaussian)
-summary(Neggam)
-
-####Now use GAM to predict change in volume given discharge
-datP <- filter(dat, DeltaCMS>0)
-datP$DeltaVol<-predict(Posgam, datP)
-datN <- filter(dat, DeltaCMS<0)
-datN$DeltaVol<-predict(Neggam, datN)
-data<-rbind(datN, datP)
-names(data)[1]<-"Date"
 
 
 
-
-write.csv(data, "~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
+# write.csv(data, "~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
 
 fish=read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
 
@@ -115,7 +117,7 @@ fish3$month<-as.numeric(format(fish3$Date2, "%m"))
 fish3$year<-as.numeric(format(fish3$Date2, "%Y"))
 fish3$day<-as.numeric(format(fish3$Date2, "%d"))
 
-fish3=mutate(fish3, fishD=ifelse(day==1|day==7|day==14|day==21|day==28, 325600, 0)) #for the 1st and 15th create the discharges
+fish3=mutate(fish3, fishD=ifelse(day==1|day==7|day==14|day==21|day==28, 488160, 0)) #for the 1st and 15th create the discharges
 
 
 
@@ -132,8 +134,10 @@ for(i in 1:length(combos))
     indx<-which(fish3$yr_month==combos[i]) # ROW INDICES FOR THE YEAR MONTH COMBINATION SHOULD BE A VECTOR OF ~ 30 VALUES
     ## FIRST DAY
     first_day_row_indx<- indx[1]
-    fish3$volume[first_day_row_indx]<-101976479
-    ## INITIAL VOLUME AT THE FIRST OF THE MONTH
+    fish3$volume[first_day_row_indx]<-101976480
+    ## INITIAL VOLUME AT THE FIRST OF THE MONTH-
+    #100447697 100762656 101047557 101227827 101257957 
+    #101294378 101377521 101514389 101703873 101976480
     ## LOOP OVER REMAINING DAYS IN THE MONTH
     for(j in 2:length(indx))
         {
@@ -144,7 +148,7 @@ for(i in 1:length(combos))
     }
 
 fish3$elevation<-predict(gam_2, fish3)
-write.csv(fish3, "9Boards.csv")
+write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
 
 theme_set(theme_classic())
 

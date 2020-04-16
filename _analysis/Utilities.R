@@ -1,6 +1,7 @@
 library(scales)
+library(mgcv)
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
-dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9boards.csv")
+dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
 
 # ---- Lake Volume
 # one point=6.25m^2
@@ -87,7 +88,6 @@ WB <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
 WB<-rescale(WB, to=c(0,1))
 plot(elevation, WB, xlab="Water Surface Elevation", ylab="Hectares (<20cm)", main = "Waterbird Habitat", type="l", col="red")
 WBM <- gam(WB ~ s(elevation, bs = "cr"),
-             data = matrix_gam,
              family = gaussian)
 par(new=T)
 plot(WBM$fitted.values~elevation, col="blue", type="l")
@@ -120,7 +120,6 @@ WF <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/100000
 WF<-rescale(WF, to=c(0,1))
 plot(elevation, WF, xlab="Water Surface Elevation", ylab="DEDs (millions)", main = "Duck Energy Days", type="l", col="red")
 WFM <- gam(WF ~ s(elevation, bs = "cr"),
-             data = matrix_gam,
              family = gaussian)
 par(new=T)
 plot(WFM$fitted.values~elevation, col="blue", type="l")
@@ -152,7 +151,6 @@ Fish <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1000
 Fish <-rescale(Fish, to=c(0,1))
 plot(elevation, Fish, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Fish Habitat", type="l", col="red")
 FishM <- gam(Fish ~ s(elevation, bs = "cr"),
-             data = matrix_gam,
              family = gaussian)
 par(new=T)
 plot(FishM$fitted.values~elevation, col="blue", type="l")
@@ -185,7 +183,6 @@ Anglers <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1
 Anglers<-rescale(Anglers, to=c(0,1))
 plot(elevation, Anglers, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Shoreline Fishing", type="l", col="red")
 AnglersM <- gam(Anglers ~ s(elevation, bs = "cr"),
-             data = matrix_gam,
              family = gaussian)
 par(new=T)
 plot(AnglersM$fitted.values~elevation, col="blue", type="l")
@@ -218,12 +215,12 @@ Ramp <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
 Ramp<-rescale(Ramp, to=c(0,1))
 plot(elevation, Ramp, xlab="Water Surface Elevation", ylab="Wetted Area (m^2)", main = "Ramp Access", type="l", col="red")
 RampM <- gam(Ramp ~ s(elevation, bs = "cr"),
-                data = matrix_gam,
                 family = gaussian)
 par(new=T)
 plot(RampM$fitted.values~elevation, col="blue", type="l")
 
 #Utilities
+dat2$elevation<-predict(gam_2, dat2)
 dat2$WFUt<-predict(WFM, dat2)
 dat2$WBUt<-predict(WBM, dat2)
 dat2$FishUt<-predict(FishM, dat2)
@@ -236,16 +233,10 @@ dat2$FishUt <- ifelse(dat2$FishUt  < 0, 0, dat2$FishUt )
 dat2$AngUt <- ifelse(dat2$AngUt < 0, 0, dat2$AngUt)
 dat2$RampUt <- ifelse(dat2$RampUt < 0, 0, dat2$RampUt)
 
-dat2$WFUt <- ifelse(dat2$WFUt > 1 , 1, dat2$WFUt)
-dat2$WBUt<- ifelse(dat2$WBUt > 1 , 1, dat2$WBUt)
-dat2$FishUt <- ifelse(dat2$FishUt  > 1 , 1, dat2$FishUt )
-dat2$AngUt <- ifelse(dat2$AngUt > 1 , 1, dat2$AngUt)
-dat2$RampUt <- ifelse(dat2$RampUt > 1 , 1, dat2$RampUt)
-
-dat2$Utility<- dat2$RampUt+dat2$AngUt+dat2$FishUt+dat2$WBUt+dat2$WFUt
+dat2$Utility<- dat2$RampUt+dat2$AngUt+dat2$FishUt+dat2$WBUt+dat2$WFUt+1.5
 
 
 #colMeans(matrix(dat2$Utility, nrow=7))
 
-write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/Weekly11.3cms.csv")
+write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
 

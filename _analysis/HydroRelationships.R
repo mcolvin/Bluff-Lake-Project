@@ -136,14 +136,12 @@ BBBBBBBBB <- BBBBBBBBB*1.56
 BBBBBBBBB <- sum(BBBBBBBBB) 
 elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="Volume (m^3)", main = "Bluff Lake Volume", type="l", col="red", ylim=c(100500000,102000000), xlim=c(66.5,68.5))
+volume <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
+plot(elevation, volume, xlab="Water Surface Elevation", ylab="Volume (m^3)", main = "Bluff Lake Volume", type="l", col="red", ylim=c(100500000,102000000), xlim=c(66.5,68.5))
 gam_1 <- gam(boards ~ s(elevation, bs = "cr"),
-             data = matrix_gam,
              family = gaussian)
 summary(gam_1)
 gam_2 <- gam(elevation ~ s(volume, bs = "cr"),
-             data = matrix_gam,
              family = gaussian)
 summary(gam_2)
 par(new=T)
