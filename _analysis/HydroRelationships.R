@@ -6,146 +6,146 @@ library(lubridate)
 setwd("~/GitHub/Bluff-Lake-Project/_analysis")
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 
-# ---- Waterbirds
-# areas must be less than 20 cm in depth
-Z <- length(which(dat$POINT_Z > (66.45402-.20))) #add board hight and required depth
-Z <- Z*1.56 #convert to area
-B <- length(which(dat$POINT_Z > (66.45402+.22-.20))) #add board hight and required depth
-B <- B*1.56 #convert to area
-BB <- length(which(dat$POINT_Z > (66.45402+.44-.20))) #add board hight and required depth
-BB <- BB*1.56 #convert to area
-BBB <- length(which(dat$POINT_Z > (66.45402+.66-.20))) #add board hight and required depth
-BBB <- BBB*1.56 #convert to area
-BBBB <- length(which(dat$POINT_Z > (66.45402+.88-.20))) #add board hight and required depth
-BBBB <- BBBB*1.56 #convert to area
-BBBBB <- length(which(dat$POINT_Z > (66.45402+1.1-.20))) #add board hight and required depth
-BBBBB <- BBBBB*1.56 #convert to area
-BBBBBB <- length(which(dat$POINT_Z > (66.45402+1.32-.20))) #add board hight and required depth
-BBBBBB <- BBBBBB*1.56 #convert to area
-BBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.54-.20))) #add board hight and required depth
-BBBBBBB <- BBBBBBB*1.56 #convert to area
-BBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.76-.20))) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*1.56 #convert to area
-BBBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.98-.20))) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*1.56 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="Hectares (<20cm)", main = "Waterbird Habitat", type="l", col="red")
-
-# ---- Waterfowl
-# DED/m^2=0.4374
-# Dry Areas
-Z <- sum(dat$POINT_Z > (66.45402)) #add board hight and required depth
-Z <- Z*1.56*0.4374 #convert to area
-B <- sum(dat$POINT_Z > (66.45402+.22)) #add board hight and required depth
-B <- B*1.56*0.4374 #convert to area
-BB <- sum(dat$POINT_Z > (66.45402+.44)) #add board hight and required depth
-BB <- BB*1.56*0.4374 #convert to area
-BBB <- sum(dat$POINT_Z > (66.45402+.66)) #add board hight and required depth
-BBB <- BBB*1.56*0.4374 #convert to area
-BBBB <- sum(dat$POINT_Z > (66.45402+.88)) #add board hight and required depth
-BBBB <- BBBB*1.56*0.4374 #convert to area
-BBBBB <- sum(dat$POINT_Z > (66.45402+1.1)) #add board hight and required depth
-BBBBB <- BBBBB*1.56*0.4374 #convert to area
-BBBBBB <- sum(dat$POINT_Z > (66.45402+1.32)) #add board hight and required depth
-BBBBBB <- BBBBBB*1.56*0.4374 #convert to area
-BBBBBBB <- sum(dat$POINT_Z > (66.45402+1.54)) #add board hight and required depth
-BBBBBBB <- BBBBBBB*1.56*0.4374 #convert to area
-BBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.76)) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*1.56*0.4374 #convert to area
-BBBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.98)) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*1.56*0.4374 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1000000
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="DEDs (millions)", main = "Duck Energy Days", type="l", col="red")
-
-# ---- Fish
-# Areas greater than 1 meter in depth
-Z <- sum(dat$POINT_Z < (66.45402+1)) #add board hight and required depth
-Z <- Z*1.56 #convert to area
-B <- sum(dat$POINT_Z < (66.45402+1+.22)) #add board hight and required depth
-B <- B*1.56 #convert to area
-BB <- sum(dat$POINT_Z < (66.45402+1+.44)) #add board hight and required depth
-BB <- BB*1.56 #convert to area
-BBB <- sum(dat$POINT_Z < (66.45402+1+.66)) #add board hight and required depth
-BBB <- BBB*1.56 #convert to area
-BBBB <- sum(dat$POINT_Z < (66.45402+1+.88)) #add board hight and required depth
-BBBB <- BBBB*1.56 #convert to area
-BBBBB <- sum(dat$POINT_Z < (66.45402+1+1.1)) #add board hight and required depth
-BBBBB <- BBBBB*1.56 #convert to area
-BBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.32)) #add board hight and required depth
-BBBBBB <- BBBBBB*1.56 #convert to area
-BBBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.54)) #add board hight and required depth
-BBBBBBB <- BBBBBBB*1.56 #convert to area
-BBBBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.76)) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*1.56 #convert to area
-BBBBBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.98)) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*1.56 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
-plot(elevation, boards, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Fish Habitat", type="l", col="red")
-
-#### ---- Anglers
-# For now, following fish model, Areas greater than 1 meter in depth
-# Need to deliniate shorelines and establish "end" of boat ramp
-
-# ---- Lake Volume
-# one point=6.25m^2
-Z <- c(dat$POINT_Z < (66.45402+0))
-Z <- c((66.45402+0-Z))
-Z <- Z*1.56
-Z <- sum(Z)
-B <- c(dat$POINT_Z < (66.45402+.22)) 
-B <- c((66.45402+.22-B))
-B <- B*1.56
-B <- sum(B) #convert to volume
-BB <- c(dat$POINT_Z < (66.45402+.44)) #add board hight and required depth
-BB <- c((66.45402+.44-BB))
-BB <- BB*1.56 
-BB <- sum(BB) 
-BBB <- c(dat$POINT_Z < (66.45402+.66)) #add board hight and required depth
-BBB <- c((66.45402+.66-BBB))
-BBB <- BBB*1.56
-BBB <- sum(BBB) 
-BBBB <- c(dat$POINT_Z < (66.45402+.88)) #add board hight and required depth
-BBBB <- c((66.45402+.88-BBBB))
-BBBB <- BBBB*1.56 
-BBBB <- sum(BBBB) 
-BBBBB <- c(dat$POINT_Z < (66.45402+1.1)) #add board hight and required depth
-BBBBB <- c((66.45402+1.1-BBBBB))
-BBBBB <- BBBBB*1.56 
-BBBBB <- sum(BBBBB) 
-BBBBBB <- c(dat$POINT_Z < (66.45402+1.32)) #add board hight and required depth
-BBBBBB <- c((66.45402+1.32-BBBBBB))
-BBBBBB <- BBBBBB*1.56 
-BBBBBB <- sum(BBBBBB) 
-BBBBBBB <- c(dat$POINT_Z < (66.45402+1.54)) #add board hight and required depth
-BBBBBBB <- c((66.45402+1.54-BBBBBBB))
-BBBBBBB <- BBBBBBB*1.56 
-BBBBBBB <- sum(BBBBBBB) 
-BBBBBBBB <- c(dat$POINT_Z < (66.45402+1.76)) #add board hight and required depth
-BBBBBBBB <- c((66.45402+1.76-BBBBBBBB))
-BBBBBBBB <- BBBBBBBB*1.56 
-BBBBBBBB <- sum(BBBBBBBB) 
-BBBBBBBBB <- c(dat$POINT_Z < (66.45402+1.98)) #add board hight and required depth
-BBBBBBBBB <- c((66.45402+1.98-BBBBBBBBB))
-BBBBBBBBB <- BBBBBBBBB*1.56 
-BBBBBBBBB <- sum(BBBBBBBBB) 
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-volume <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
-plot(elevation, volume, xlab="Water Surface Elevation", ylab="Volume (m^3)", main = "Bluff Lake Volume", type="l", col="red", ylim=c(100500000,102000000), xlim=c(66.5,68.5))
-gam_1 <- gam(boards ~ s(elevation, bs = "cr"),
-             family = gaussian)
-summary(gam_1)
-gam_2 <- gam(elevation ~ s(volume, bs = "cr"),
-             family = gaussian)
-summary(gam_2)
-par(new=T)
-plot(gam_1$fitted.values~elevation, ylim=c(100500000,102000000), xlim=c(66.5,68.5), col="blue", type="l")
+# # ---- Waterbirds
+# # areas must be less than 20 cm in depth
+# Z <- length(which(dat$POINT_Z > (66.45402-.20))) #add board hight and required depth
+# Z <- Z*1.56 #convert to area
+# B <- length(which(dat$POINT_Z > (66.45402+.22-.20))) #add board hight and required depth
+# B <- B*1.56 #convert to area
+# BB <- length(which(dat$POINT_Z > (66.45402+.44-.20))) #add board hight and required depth
+# BB <- BB*1.56 #convert to area
+# BBB <- length(which(dat$POINT_Z > (66.45402+.66-.20))) #add board hight and required depth
+# BBB <- BBB*1.56 #convert to area
+# BBBB <- length(which(dat$POINT_Z > (66.45402+.88-.20))) #add board hight and required depth
+# BBBB <- BBBB*1.56 #convert to area
+# BBBBB <- length(which(dat$POINT_Z > (66.45402+1.1-.20))) #add board hight and required depth
+# BBBBB <- BBBBB*1.56 #convert to area
+# BBBBBB <- length(which(dat$POINT_Z > (66.45402+1.32-.20))) #add board hight and required depth
+# BBBBBB <- BBBBBB*1.56 #convert to area
+# BBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.54-.20))) #add board hight and required depth
+# BBBBBBB <- BBBBBBB*1.56 #convert to area
+# BBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.76-.20))) #add board hight and required depth
+# BBBBBBBB <- BBBBBBBB*1.56 #convert to area
+# BBBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.98-.20))) #add board hight and required depth
+# BBBBBBBBB <- BBBBBBBBB*1.56 #convert to area
+# elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
+#                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+# boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+# plot(elevation, boards, xlab="Water Surface Elevation", ylab="Hectares (<20cm)", main = "Waterbird Habitat", type="l", col="red")
+# 
+# # ---- Waterfowl
+# # DED/m^2=0.4374
+# # Dry Areas
+# Z <- sum(dat$POINT_Z > (66.45402)) #add board hight and required depth
+# Z <- Z*1.56*0.4374 #convert to area
+# B <- sum(dat$POINT_Z > (66.45402+.22)) #add board hight and required depth
+# B <- B*1.56*0.4374 #convert to area
+# BB <- sum(dat$POINT_Z > (66.45402+.44)) #add board hight and required depth
+# BB <- BB*1.56*0.4374 #convert to area
+# BBB <- sum(dat$POINT_Z > (66.45402+.66)) #add board hight and required depth
+# BBB <- BBB*1.56*0.4374 #convert to area
+# BBBB <- sum(dat$POINT_Z > (66.45402+.88)) #add board hight and required depth
+# BBBB <- BBBB*1.56*0.4374 #convert to area
+# BBBBB <- sum(dat$POINT_Z > (66.45402+1.1)) #add board hight and required depth
+# BBBBB <- BBBBB*1.56*0.4374 #convert to area
+# BBBBBB <- sum(dat$POINT_Z > (66.45402+1.32)) #add board hight and required depth
+# BBBBBB <- BBBBBB*1.56*0.4374 #convert to area
+# BBBBBBB <- sum(dat$POINT_Z > (66.45402+1.54)) #add board hight and required depth
+# BBBBBBB <- BBBBBBB*1.56*0.4374 #convert to area
+# BBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.76)) #add board hight and required depth
+# BBBBBBBB <- BBBBBBBB*1.56*0.4374 #convert to area
+# BBBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.98)) #add board hight and required depth
+# BBBBBBBBB <- BBBBBBBBB*1.56*0.4374 #convert to area
+# elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
+#                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+# boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1000000
+# plot(elevation, boards, xlab="Water Surface Elevation", ylab="DEDs (millions)", main = "Duck Energy Days", type="l", col="red")
+# 
+# # ---- Fish
+# # Areas greater than 1 meter in depth
+# Z <- sum(dat$POINT_Z < (66.45402+1)) #add board hight and required depth
+# Z <- Z*1.56 #convert to area
+# B <- sum(dat$POINT_Z < (66.45402+1+.22)) #add board hight and required depth
+# B <- B*1.56 #convert to area
+# BB <- sum(dat$POINT_Z < (66.45402+1+.44)) #add board hight and required depth
+# BB <- BB*1.56 #convert to area
+# BBB <- sum(dat$POINT_Z < (66.45402+1+.66)) #add board hight and required depth
+# BBB <- BBB*1.56 #convert to area
+# BBBB <- sum(dat$POINT_Z < (66.45402+1+.88)) #add board hight and required depth
+# BBBB <- BBBB*1.56 #convert to area
+# BBBBB <- sum(dat$POINT_Z < (66.45402+1+1.1)) #add board hight and required depth
+# BBBBB <- BBBBB*1.56 #convert to area
+# BBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.32)) #add board hight and required depth
+# BBBBBB <- BBBBBB*1.56 #convert to area
+# BBBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.54)) #add board hight and required depth
+# BBBBBBB <- BBBBBBB*1.56 #convert to area
+# BBBBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.76)) #add board hight and required depth
+# BBBBBBBB <- BBBBBBBB*1.56 #convert to area
+# BBBBBBBBB <- sum(dat$POINT_Z < (66.45402+1+1.98)) #add board hight and required depth
+# BBBBBBBBB <- BBBBBBBBB*1.56 #convert to area
+# elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
+#                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+# boards <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+# plot(elevation, boards, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Fish Habitat", type="l", col="red")
+# 
+# #### ---- Anglers
+# # For now, following fish model, Areas greater than 1 meter in depth
+# # Need to deliniate shorelines and establish "end" of boat ramp
+# 
+# # ---- Lake Volume
+# # one point=6.25m^2
+# Z <- c(dat$POINT_Z < (66.45402+0))
+# Z <- c((66.45402+0-Z))
+# Z <- Z*1.56
+# Z <- sum(Z)
+# B <- c(dat$POINT_Z < (66.45402+.22)) 
+# B <- c((66.45402+.22-B))
+# B <- B*1.56
+# B <- sum(B) #convert to volume
+# BB <- c(dat$POINT_Z < (66.45402+.44)) #add board hight and required depth
+# BB <- c((66.45402+.44-BB))
+# BB <- BB*1.56 
+# BB <- sum(BB) 
+# BBB <- c(dat$POINT_Z < (66.45402+.66)) #add board hight and required depth
+# BBB <- c((66.45402+.66-BBB))
+# BBB <- BBB*1.56
+# BBB <- sum(BBB) 
+# BBBB <- c(dat$POINT_Z < (66.45402+.88)) #add board hight and required depth
+# BBBB <- c((66.45402+.88-BBBB))
+# BBBB <- BBBB*1.56 
+# BBBB <- sum(BBBB) 
+# BBBBB <- c(dat$POINT_Z < (66.45402+1.1)) #add board hight and required depth
+# BBBBB <- c((66.45402+1.1-BBBBB))
+# BBBBB <- BBBBB*1.56 
+# BBBBB <- sum(BBBBB) 
+# BBBBBB <- c(dat$POINT_Z < (66.45402+1.32)) #add board hight and required depth
+# BBBBBB <- c((66.45402+1.32-BBBBBB))
+# BBBBBB <- BBBBBB*1.56 
+# BBBBBB <- sum(BBBBBB) 
+# BBBBBBB <- c(dat$POINT_Z < (66.45402+1.54)) #add board hight and required depth
+# BBBBBBB <- c((66.45402+1.54-BBBBBBB))
+# BBBBBBB <- BBBBBBB*1.56 
+# BBBBBBB <- sum(BBBBBBB) 
+# BBBBBBBB <- c(dat$POINT_Z < (66.45402+1.76)) #add board hight and required depth
+# BBBBBBBB <- c((66.45402+1.76-BBBBBBBB))
+# BBBBBBBB <- BBBBBBBB*1.56 
+# BBBBBBBB <- sum(BBBBBBBB) 
+# BBBBBBBBB <- c(dat$POINT_Z < (66.45402+1.98)) #add board hight and required depth
+# BBBBBBBBB <- c((66.45402+1.98-BBBBBBBBB))
+# BBBBBBBBB <- BBBBBBBBB*1.56 
+# BBBBBBBBB <- sum(BBBBBBBBB) 
+# elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 
+#                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+# volume <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
+# plot(elevation, volume, xlab="Water Surface Elevation", ylab="Volume (m^3)", main = "Bluff Lake Volume", type="l", col="red", ylim=c(100500000,102000000), xlim=c(66.5,68.5))
+# gam_1 <- gam(boards ~ s(elevation, bs = "cr"),
+#              family = gaussian)
+# summary(gam_1)
+# gam_2 <- gam(elevation ~ s(volume, bs = "cr"),
+#              family = gaussian)
+# summary(gam_2)
+# par(new=T)
+# plot(gam_1$fitted.values~elevation, ylim=c(100500000,102000000), xlim=c(66.5,68.5), col="blue", type="l")
 # ---- Lake Elevation and Gauge Data
 Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
 Gauge <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon.csv")
@@ -165,7 +165,7 @@ Gauge<-subset(Gauge, Gauge$Date.Time %in% Elevation$`Elevation$Date.Time`)
 Elevation <- subset(Elevation,  Elevation$`Elevation$Date.Time`  %in% Gauge$Date.Time)
 par(mfrow=c(3,3))
 
-plot(Elevation$`mean(WSElevation)`~Gauge$Discharge_cms, main="Bluff Lake Levee Gauge")
+plot(Elevation$`mean(WSElevation)`~Gauge$Discharge_cms, main="Bluff Lake Levee Gauge", xlab="Discharge at Macon Gauge", ylab="Water Surface Elevation")
 points(Elevation$`mean(WSElevation)`~Gauge$Discharge_cms,
        subset=Gauge$month=="May",
        col="red")
@@ -452,32 +452,32 @@ matrix_gam <- data.table(Ele = data$WSElevation,
                          CMS = data$meanCMS,
                          Month = data$month)
 
-gam_1 <- gam(Ele ~ s(CMS, bs = "cr") +
-  s(Month, bs = "ps", k = 8),
-             data = matrix_gam,
-             family = gaussian)
-summary(gam_1)
-
-gam_2 <- gam(Ele ~ s(CMS, Month),
-             data = matrix_gam,
-             family = gaussian)
-summary(gam_2)
-
-gam_3 <- gam(Ele ~ te(CMS, Month,
-                       bs = c("cr", "ps")),
-             data = matrix_gam,
-             family = gaussian)
-summary(gam_3)
-summary(gam_3)$s.table
-
-as.data.frame(data)
-data$FitG3<- gam_3$fitted.values
-
-plot(FitG3~Date.Time, data, type="l", col="red", ylim=c(68.6,69.8), main="GAM Model 3")
-par(new=T)
-plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8))
-legend("topleft", c("Predicted", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
+# gam_1 <- gam(Ele ~ s(CMS, bs = "cr") +
+#   s(Month, bs = "ps", k = 8),
+#              data = matrix_gam,
+#              family = gaussian)
+# summary(gam_1)
+# 
+# gam_2 <- gam(Ele ~ s(CMS, Month),
+#              data = matrix_gam,
+#              family = gaussian)
+# summary(gam_2)
+# 
+# gam_3 <- gam(Ele ~ te(CMS, Month,
+#                        bs = c("cr", "ps")),
+#              data = matrix_gam,
+#              family = gaussian)
+# summary(gam_3)
+# summary(gam_3)$s.table
+# 
+# as.data.frame(data)
+# data$FitG3<- gam_3$fitted.values
+# 
+# plot(FitG3~Date.Time, data, type="l", col="red", ylim=c(68.6,69.8), main="GAM Model 3")
+# par(new=T)
+# plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8))
+# legend("topleft", c("Predicted", "Lake Elevation"),
+#        col = c("red", "black"), lty = c(1, 1))
 
 
 #I don't know what's going on after this point, but specifying knots for the model helps... but edf shoot through the roof. Out of 4,5, & 6 gam_4 socres the best (AIC)
@@ -491,9 +491,9 @@ summary(gam_4)$s.table
 
 data$FitG4<- gam_4$fitted.values
 plot(FitG4~Date.Time, data, type="l", col="red", ylim=c(68.6,69.8), 
-     main="GAM Model 4")
+     main="GAM Model 4", xlab="Date", ylab="Water Surface Elevation")
 par(new=T)
-plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8))
+plot(WSElevation~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8),ylab=NA, xlab=NA)
 legend("topleft", c("Predicted", "Lake Elevation"),
        col = c("red", "black"), lty = c(1, 1))
 

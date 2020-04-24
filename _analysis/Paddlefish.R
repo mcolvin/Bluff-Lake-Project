@@ -117,7 +117,7 @@ fish3$month<-as.numeric(format(fish3$Date2, "%m"))
 fish3$year<-as.numeric(format(fish3$Date2, "%Y"))
 fish3$day<-as.numeric(format(fish3$Date2, "%d"))
 
-fish3=mutate(fish3, fishD=ifelse(day==1|day==7|day==14|day==21|day==28, 488160, 0)) #for the 1st and 15th create the discharges
+fish3=mutate(fish3, fishD=ifelse(day==1|day==7|day==14|day==21|day==28, 0, 0)) #for the 1st and 15th create the discharges
 
 
 
@@ -148,7 +148,7 @@ for(i in 1:length(combos))
     }
 
 fish3$elevation<-predict(gam_2, fish3)
-write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
+write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9Boards.csv")
 
 theme_set(theme_classic())
 
