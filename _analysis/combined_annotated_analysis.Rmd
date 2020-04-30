@@ -2,13 +2,18 @@
 title: "Combined Analysis"
 author: "V. Starnes"
 date: "April 23, 2020"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
 ```
 
+##Linking Water Surface Elevation and Lake Volume
+
+Bathymetric data for Bluff Lake was collected in the winter of 2019 and 2020. Transect data was extrapolated to the whole reservoir and converted to a point layer of elevations in Arc GIS. In this section we link different WCS board heights and corresponding water surface elevation to water volume. Board elevations were supplied by the USFWS.First, all the points in the bathymetric data less than a given board hight are selected. Then those elevations are subtracted from the water surface elevation to give depths. Lastly, the depths are multiplied by the area surrounding each point to yeild volume. Then lake volume can be plotted against lake elevation and predictive models can be fit.
 
 ```{r Linking WSE to Volume, echo=FALSE}
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
@@ -17,6 +22,13 @@ library(mgcv)
 library(lubridate)
 library(dplyr)
 library(tidyverse)
+library(zoo)
+library(data.table)
+library(tidyverse)
+library(plyr)
+library(car)
+library(ggplot2)
+library(grid)
 
 # ---- Lake Volume
 # one point=6.25m^2
@@ -71,37 +83,97 @@ gam_2 <- gam(elevation ~ s(volume, bs = "cr"),
              family = gaussian)
 summary(gam_2)
 par(new=T)
-plot(gam_1$fitted.values~elevation, ylim=c(100500000,102000000), xlim=c(66.5,68.5), col="blue", type="l")
+plot(gam_1$fitted.values~elevation, ylim=c(100500000,102000000), xlim=c(66.5,68.5), col="blue", type="l", xlab=NA, ylab=NA)
 ```
 
-## Lake Level Dynamics
+##Lake Level Dynamics
+
+Two water level loggers set to record every 15 minutes were deployed within Bluff Lake.The logger located at the Cypress Boardwalk contained the most consistant an uninterupted data, so this logger was selected for use in analysis. In this section logger data is plotted with upstream discharge data collected from the Macon USGS gauge.
 
 ```{r lake, echo=FALSE}
 par(mfrow=c(1,1))
 dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
 dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
 dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
-dat2Jan<-subset(dat2, dat2$month=="Jan")
-plot(dat2Jan$ï..CFS~dat2Jan$Date.Time, type='l',col="red")
-#ggplot(data = dat2Jan, aes(x = ï..datetime, y = CFS))+
- # geom_line(color = "#00BF7D", size = 2)
-
 Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
 Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
 Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
 Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
-ElevationJan<-subset(Elevation, Elevation$month=="Jan")
+Elevation$WSElevation<-rescale(Elevation$WSElevation, to=c(0,1))
+dat2$ï..CFS<-rescale(dat2$ï..CFS, to=c(0,1))
+
+
+#May
+dat2May<-subset(dat2, dat2$month=="May")
+plot(dat2May$ï..CFS~dat2May$Date.Time, main="May 2019",type='l',col="red", ylab="")
+ElevationMay<-subset(Elevation, Elevation$month=="May")
 par(new=TRUE)
-ElevationJan<-ElevationJan[order(ElevationJan$Date.Time),]
-plot(WSElevation~Date.Time,ElevationJan, main="January",type="l", 
+ElevationMay<-ElevationMay[order(ElevationMay$Date.Time),]
+plot(WSElevation~Date.Time,ElevationMay, type="l", 
      xaxt = "n", yaxt = "n", ylab = "", xlab = "")
 legend("topright", c("Discharge", "Lake Elevation"),
        col = c("red", "black"), lty = c(1, 1))
-#ggplot(data = ElevationJan, aes(x = Date.Time, y = WSElevation))+
- # geom_line(color = "#6BB100", size = 2)
+#June
+dat2Jun<-subset(dat2, dat2$month=="Jun")
+plot(dat2Jun$ï..CFS~dat2Jun$Date.Time, main="June 2019",type='l',col="red", ylab="" )
+ElevationJun<-subset(Elevation, Elevation$month=="Jun")
+par(new=TRUE)
+ElevationJun<-ElevationJun[order(ElevationJun$Date.Time),]
+plot(WSElevation~Date.Time,ElevationJun, type="l", 
+     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+legend("topright", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+#July
+dat2Jul<-subset(dat2, dat2$month=="Jul")
+  plot(dat2Jul$ï..CFS~dat2Jul$Date.Time, main="July 2019",type='l',col="red", ylab="")
+ElevationJul<-subset(Elevation, Elevation$month=="Jul")
+par(new=TRUE)
+ElevationJul<-ElevationJul[order(ElevationJul$Date.Time),]
+plot(WSElevation~Date.Time,ElevationJul, type="l", 
+     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+legend("topleft", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+#August
+dat2Aug<-subset(dat2, dat2$month=="Aug")
+plot(dat2Aug$ï..CFS~dat2Aug$Date.Time, main="August 2019",type='l',col="red", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+ElevationAug<-subset(Elevation, Elevation$month=="Aug")
+par(new=TRUE)
+ElevationAug<-ElevationAug[order(ElevationAug$Date.Time),]
+plot(WSElevation~Date.Time,ElevationAug, type="l", ylab="")
+legend("topleft", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+#September
+dat2Sep<-subset(dat2, dat2$month=="Sep")
+plot(dat2Sep$ï..CFS~dat2Sep$Date.Time, main="September 2019",type='l',col="red", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+ElevationSep<-subset(Elevation, Elevation$month=="Sep")
+par(new=TRUE)
+ElevationSep<-ElevationSep[order(ElevationSep$Date.Time),]
+plot(WSElevation~Date.Time,ElevationSep, type="l", ylab="")
+legend("topright", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+#October
+dat2Oct<-subset(dat2, dat2$month=="Oct")
+  plot(dat2Oct$ï..CFS~dat2Oct$Date.Time , main="October 2019",type='l',col="red", ylab="")
+ElevationOct<-subset(Elevation, Elevation$month=="Oct")
+par(new=TRUE)
+ElevationOct<-ElevationOct[order(ElevationOct$Date.Time),]
+plot(WSElevation~Date.Time,ElevationOct, type="l", 
+     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+legend("topleft", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+#November
+dat2Nov<-subset(dat2, dat2$month=="Nov")
+plot(dat2Nov$ï..CFS~dat2Nov$Date.Time, main="November 2019",type='l',col="red", ylab="")
+ElevationNov<-subset(Elevation, Elevation$month=="Nov")
+par(new=TRUE)
+ElevationNov<-ElevationNov[order(ElevationNov$Date.Time),]
+plot(WSElevation~Date.Time,ElevationNov, type="l", 
+     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
+legend("topright", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
 #DECEMBER
 dat2Dec<-subset(dat2, dat2$month=="Dec")
-plot(dat2Dec$ï..CFS~dat2Dec$Date.Time, main="December",type='l',col="red")
+plot(dat2Dec$ï..CFS~dat2Dec$Date.Time, main="December 2019",type='l',col="red", ylab="")
 ElevationDec<-subset(Elevation, Elevation$month=="Dec")
 par(new=TRUE)
 ElevationDec<-ElevationDec[order(ElevationDec$Date.Time),]
@@ -110,90 +182,25 @@ plot(WSElevation~Date.Time,ElevationDec, type="l",
 legend("topleft", c("Discharge", "Lake Elevation"),
        col = c("red", "black"), lty = c(1, 1))
 
-#November
-dat2Nov<-subset(dat2, dat2$month=="Nov")
-plot(dat2Nov$ï..CFS~dat2Nov$Date.Time, main="November",type='l',col="red")
-ElevationNov<-subset(Elevation, Elevation$month=="Nov")
+dat2Jan<-subset(dat2, dat2$month=="Jan")
+plot(dat2Jan$ï..CFS~dat2Jan$Date.Time, type='l',col="red", ylab="")
+ElevationJan<-subset(Elevation, Elevation$month=="Jan")
 par(new=TRUE)
-ElevationNov<-ElevationNov[order(ElevationNov$Date.Time),]
-plot(WSElevation~Date.Time,ElevationNov, type="l", 
+ElevationJan<-ElevationJan[order(ElevationJan$Date.Time),]
+plot(WSElevation~Date.Time,ElevationJan, main="January 2020",type="l", 
      xaxt = "n", yaxt = "n", ylab = "", xlab = "")
 legend("topright", c("Discharge", "Lake Elevation"),
        col = c("red", "black"), lty = c(1, 1))
-#October
-dat2Oct<-subset(dat2, dat2$month=="Oct")
-  plot(dat2Oct$ï..CFS~dat2Oct$Date.Time , main="October",type='l',col="red")
-ElevationOct<-subset(Elevation, Elevation$month=="Oct")
-par(new=TRUE)
-ElevationOct<-ElevationOct[order(ElevationOct$Date.Time),]
-plot(WSElevation~Date.Time,ElevationOct, type="l", 
-     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
-legend("topleft", c("Discharge", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
-#September
-dat2Sep<-subset(dat2, dat2$month=="Sep")
-plot(dat2Sep$ï..CFS~dat2Sep$Date.Time, main="September",type='l',col="red", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
-ElevationSep<-subset(Elevation, Elevation$month=="Sep")
-par(new=TRUE)
-ElevationSep<-ElevationSep[order(ElevationSep$Date.Time),]
-plot(WSElevation~Date.Time,ElevationSep, type="l")
-legend("topright", c("Discharge", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
-#August
-dat2Aug<-subset(dat2, dat2$month=="Aug")
-plot(dat2Aug$ï..CFS~dat2Aug$Date.Time, main="August",type='l',col="red", xaxt = "n", yaxt = "n", ylab = "", xlab = "")
-ElevationAug<-subset(Elevation, Elevation$month=="Aug")
-par(new=TRUE)
-ElevationAug<-ElevationAug[order(ElevationAug$Date.Time),]
-plot(WSElevation~Date.Time,ElevationAug, type="l")
-legend("topleft", c("Discharge", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
-#July
-dat2Jul<-subset(dat2, dat2$month=="Jul")
-  plot(dat2Jul$ï..CFS~dat2Jul$Date.Time, main="July",type='l',col="red")
-ElevationJul<-subset(Elevation, Elevation$month=="Jul")
-par(new=TRUE)
-ElevationJul<-ElevationJul[order(ElevationJul$Date.Time),]
-plot(WSElevation~Date.Time,ElevationJul, type="l", 
-     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
-legend("topleft", c("Discharge", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
-#June
-dat2Jun<-subset(dat2, dat2$month=="Jun")
-plot(dat2Jun$ï..CFS~dat2Jun$Date.Time, main="June",type='l',col="red")
-ElevationJun<-subset(Elevation, Elevation$month=="Jun")
-par(new=TRUE)
-ElevationJun<-ElevationJun[order(ElevationJun$Date.Time),]
-plot(WSElevation~Date.Time,ElevationJun, type="l", 
-     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
-legend("topright", c("Discharge", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
-#May
-dat2May<-subset(dat2, dat2$month=="May")
-plot(dat2May$ï..CFS~dat2May$Date.Time, main="May",type='l',col="red")
-ElevationMay<-subset(Elevation, Elevation$month=="May")
-par(new=TRUE)
-ElevationMay<-ElevationMay[order(ElevationMay$Date.Time),]
-plot(WSElevation~Date.Time,ElevationMay, type="l", 
-     xaxt = "n", yaxt = "n", ylab = "", xlab = "")
-legend("topright", c("Discharge", "Lake Elevation"),
-       col = c("red", "black"), lty = c(1, 1))
-
 ```
 
-## Predict WSE given Discharge
+##Predict WSE given Discharge
+
+Macon gauge data was collected every 30 minutes. Water level data within Bluff Lake was recorded t 15 minute intervals. To match time recordings, Lake level logger readings were averaged every 30 minutes. A generalized addative model was then used to predict lake elevation given discharge. The actual and predicted values were then plotted together.
 
 ```{r Pred-WSE, echo=FALSE}
 #Links between water surface elevation and Macon gauge discharge
 par(mfrow=c(1,1))
-library(tidyverse)
-library(lubridate)
-library(plyr)
-library(data.table)
-library(mgcv)
-library(car)
-library(ggplot2)
-library(grid)
+
 dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
 dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
 dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = F)
@@ -207,8 +214,7 @@ Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M")
 Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= F)
 data<-merge(Elevation, CMS)
 #try GAM
-library(mgcv)
-library(data.table)
+
 
 matrix_gam <- data.table(Ele = data$WSElevation,
                          CMS = data$meanCMS,
@@ -233,13 +239,10 @@ legend("topleft", c("Predicted", "Lake Elevation"),
 
 ##Predict Change in Volume given Discharge 
 
+In this section we take the above fit a step further by attempting to predict change in lake volume given changes in discharge. Discharge and Elevation data were averaged for each day. Then, differences between days for both Discharge and Elevation were obtained. Lake elevations were converted to volumes using the gam_1 model from section one. The data was then split based on positive or negative discharge. Seperate GAM models were fit to alternate discharges. The actual and predicted lake volumes were then plotted against discharge for both models. Then, using the new models, lake volume was predicted for all available gauge data spanning 1945-2020.
+
 ```{r Pred-Volume, echo=FALSE}
-library(tidyverse)
-library(lubridate)
-library(scales)
-library(zoo)
-library(dplyr)
-library(mgcv)
+
  dat<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
  dat$ï..datetime <- as.POSIXct(dat$ï..datetime, format="%m/%d/%Y")
  names(dat)[1]<-"Date"
@@ -248,9 +251,14 @@ library(mgcv)
  Date<-as.data.frame(Date)
  Date$Date<-as.POSIXct(Date$Date, format="%Y/%m/%d")
  Date$Date<-round_date(Date$Date, "day")
- library(dplyr)
+
  dat<-left_join(Date, dat, by = "Date")
- dat$Discharge_cfs<-na.approx(dat$Discharge_cfs)
+  dat$year<-lubridate::year(dat$Date)
+  
+  dat<- dat %>% 
+  group_by(year) %>% 
+    filter(!is.na(Discharge_cfs))
+ #dat$Discharge_cfs<-na.approx(dat$Discharge_cfs)
  dat$Discharge_cms<-dat$Discharge_cfs*0.028316847
 
  dat$month<- lubridate::month(as.POSIXct(dat$Date, format="%Y/%m/%d"), label = T)
@@ -259,8 +267,6 @@ library(mgcv)
  dat$DeltaCMS<-c(NA,diff(dat$Discharge_cms))
  dat$meanCMS<-dat$Discharge_cms
 
-#
-#####
  dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
  dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
  dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = T)
@@ -273,16 +279,12 @@ library(mgcv)
  Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
  data<-merge(Elevation, CMS)
 
- M3<-lm(WSElevation~meanCMS+month+ meanCMS*month,data)
- summary(M3)
-
 # #try GAM
- library(mgcv)
- library(data.table)
  #group data by day
  data$Date.Time<-round_date(data$Date.Time, "day")
  data<-data %>% dplyr::group_by(data$Date.Time) %>%
-   dplyr::summarise_all(funs(mean))
+   dplyr::summarize(meanCMS=mean(meanCMS),
+                    WSElevation=mean(WSElevation))
  data2<-data
 
  #differce between days elevation
@@ -295,6 +297,7 @@ library(mgcv)
  #difference between days CMS
  data2$DeltaCMS<-c(NA,diff(data2$meanCMS))
  #add month back
+ data2$Date.Time<-data2$`data$Date.Time`
  data2$month<- lubridate::month(as.POSIXct(data2$Date.Time, format="%m/%d/%Y"), label= T)
 # #Get rid of Negatives
  data4<-data2
@@ -341,6 +344,13 @@ write.csv(data, "~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE
 
 ```
 
+##Simulate Lake Level
+
+We then combined predictions of daily lake volume change with different board elevations and discharge strategies to simulate monthly water level variations. A starting water volume was assigned at the beginning of every month. This volumes corresponds to the lake elevation for varying numbers of boards in the water control structure. Then paddlefish dicharges were subtracted weekly on the 1, 7, 14, 21, and 28 of each month. Variable starting lake level elevation as well as differing combinations of paddlefish discharges can be used to look at different management scenarios.
+
+#This section should be re-run for variable starting elevation and discharge combinations.
+
+
 ```{r Paddlefish, echo=FALSE}
 fish=read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
 
@@ -369,8 +379,8 @@ fish3$month<-as.numeric(format(fish3$Date2, "%m"))
 fish3$year<-as.numeric(format(fish3$Date2, "%Y"))
 fish3$day<-as.numeric(format(fish3$Date2, "%d"))
 
-fish3=mutate(fish3, fishD=ifelse(day==1|day==7|day==14|day==21|day==28, 325440, 0)) #for the 1st and 15th create the discharges
-#Run different discharges: 0, 81360, 162720, 244080, 325440, 488160
+fish3=mutate(fish3, fishD=ifelse(day==1|day==7|day==14|day==21|day==28, 488160, 0)) #for the 1st and 15th create the discharges
+#Run different discharges: 0, 81360, 162720, 244080, 325440, 406800, 488160
 
 
 ## COMBINE YEAR AND MONTH TO LOOP OVER 
@@ -399,7 +409,7 @@ for(i in 1:length(combos))
         }
     }
 
-write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9Boards.csv")
+write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
 
 theme_set(theme_classic())
 
@@ -636,6 +646,12 @@ ggplot(Dec, aes(day, volume, group = year, color = year)) +
 
 
 ```
+## Linking Objectives to Lake Level Elevation
+
+Bathymetric data for Bluff Lake was collected in the winter of 2019 and 2020. Transect data was extrapolated to the whole reservoir and converted to a point layer of elevations in Arc GIS. In this section we link different WCS board heights and corresponding water surface elevation to metrics associated with refuge objectives. NNWR objectives for waterfowl, waterbirds, fish, and anglers can be linked to water surface elevation. Metrics for waterfowl and waterbirds assigned within the CCP describe optimal quantities of exposed shoreline and associated depths. However, metrics for fish and anglers were not directly assigned. In this section we used hectares >1m as available fish habitat, shoreline areas >1m of depth as fishable for bank anglers, and boat ramp area >0.5m as a representation of boat angler access. Board elevations were supplied by the USFWS. First, all the points in the bathymetric data greater or less than the metric criteria are selected. Then the slected points are multiplied by the area surrounding each point to yeild the associated number of hectares. Lastly, those metrics are converted to interpretable information. For example fish habitat was converted to water volume, and exposed lake area was converted to it's yeild of DEDs. Then metrics can be plotted against lake elevation and predictive models can be fit.
+
+
+
 
 ```{r Objectives.VS.Elevation, echo=FALSE}
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
@@ -720,6 +736,7 @@ elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 Fish <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
 plot(elevation, Fish, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Fish Habitat", type="l", col="red")
+
 #### ---- Anglers
 # For now, following fish model, Areas greater than 1 meter in depth
 Adat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Anglers.csv")
@@ -747,6 +764,7 @@ elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 Anglers <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
 plot(elevation, Anglers, xlab="Water Surface Elevation", ylab="Hectares (>1m)", main = "Shoreline Fishing", type="l", col="red")
+
 # Need to deliniate shorelines and establish "end" of boat ramp
 #areas >.5m in depth
 Bdat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Boat.csv")
@@ -777,6 +795,9 @@ plot(elevation, Ramp, xlab="Water Surface Elevation", ylab="Wetted Area (m^2)", 
 
 
 ```
+## Scaling Metrics
+
+Objective metrics are then scaled 0-1.
 
 ```{r Utilities, echo=FALSE}
 WB<- rescale(WB, to=c(0,1))
@@ -784,36 +805,43 @@ plot(elevation, WB, xlab="Water Surface Elevation", ylab="Utility", main = "Wate
 WBM <- gam(WB ~ s(elevation, bs = "cr"),
              family = gaussian)
 par(new=T)
-plot(WBM$fitted.values~elevation, col="blue", type="l")
+plot(WBM$fitted.values~elevation, col="blue", type="l", xlab=NA, ylab=NA)
 WF<-rescale(WF, to=c(0,1))
 plot(elevation, WF, xlab="Water Surface Elevation", ylab="Utility", main = "Duck Energy Days", type="l", col="red")
 WFM <- gam(WF ~ s(elevation, bs = "cr"),
              family = gaussian)
 par(new=T)
-plot(WFM$fitted.values~elevation, col="blue", type="l")
+plot(WFM$fitted.values~elevation, col="blue", type="l", xlab=NA, ylab=NA)
 Fish <-rescale(Fish, to=c(0,1))
 plot(elevation, Fish, xlab="Water Surface Elevation", ylab="Utility", main = "Fish Habitat", type="l", col="red")
 FishM <- gam(Fish ~ s(elevation, bs = "cr"),
              family = gaussian)
 par(new=T)
-plot(FishM$fitted.values~elevation, col="blue", type="l")
+plot(FishM$fitted.values~elevation, col="blue", type="l", xlab=NA, ylab=NA)
 Anglers<-rescale(Anglers, to=c(0,1))
 plot(elevation, Anglers, xlab="Water Surface Elevation", ylab="Utility", main = "Shoreline Fishing", type="l", col="red")
 AnglersM <- gam(Anglers ~ s(elevation, bs = "cr"),
              family = gaussian)
 par(new=T)
-plot(AnglersM$fitted.values~elevation, col="blue", type="l")
+plot(AnglersM$fitted.values~elevation, col="blue", type="l", xlab=NA, ylab=NA)
 Ramp<-rescale(Ramp, to=c(0,1))
 plot(elevation, Ramp, xlab="Water Surface Elevation", ylab="Utility", main = "Ramp Access", type="l", col="red")
 RampM <- gam(Ramp ~ s(elevation, bs = "cr"),
                 family = gaussian)
 par(new=T)
-plot(RampM$fitted.values~elevation, col="blue", type="l")
+plot(RampM$fitted.values~elevation, col="blue", type="l", xlab=NA, ylab=NA)
 ```
 
-```{r Utilities, echo=FALSE}
+
+##Forming Utilities 
+
+Here we combine the outputf from the preceeding three sections to form utilities. First we take our simulated lake levels for our data range (1945-2020), and assign daily utilities for each objective given water surface elevation. We then add these utilities together to form the total daily utility (objectives were unweighted).These total daily utilities were then averaged across years to account for annual variability.
+
+#This code should be re-run for each elevation/discharge combo, and for variable weighting strategies.
+
+```{r Assigning Utilities, echo=FALSE}
 #Utilities
-dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9Boards.csv")
+dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9Boards.csv")
 dat2$elevation<-predict(gam_2, dat2)
 dat2$WFUt<-predict(WFM, dat2)
 dat2$WBUt<-predict(WBM, dat2)
@@ -823,13 +851,19 @@ dat2$RampUt<-predict(RampM, dat2)
 
 dat2$WFUt <- ifelse(dat2$WFUt< 0, 0, dat2$WFUt)
 dat2$WBUt<- ifelse(dat2$WBUt < 0, 0, dat2$WBUt)
-dat2$FishUt <- ifelse(dat2$FishUt  < 0, 0, dat2$FishUt )
+dat2$FishUt <- ifelse(dat2$FishUt  < 0, 0, dat2$FishUt)
 dat2$AngUt <- ifelse(dat2$AngUt < 0, 0, dat2$AngUt)
 dat2$RampUt <- ifelse(dat2$RampUt < 0, 0, dat2$RampUt)
+dat2$WFUt <- ifelse(dat2$WFUt > 1, 1, dat2$WFUt)
+dat2$WBUt<- ifelse(dat2$WBUt > 1, 1, dat2$WBUt)
+dat2$FishUt <- ifelse(dat2$FishUt  > 1, 1, dat2$FishUt)
+dat2$AngUt <- ifelse(dat2$AngUt > 1, 1, dat2$AngUt)
+dat2$RampUt <- ifelse(dat2$RampUt > 1, 1, dat2$RampUt)
 
-dat2$Utility<- (dat2$RampUt)+(dat2$AngUt)+(dat2$FishUt)+(dat2$WBUt)+(dat2$WFUt)+(1)
+dat2$Utility<- ((dat2$RampUt)*.5) + ((dat2$AngUt)*.5)+((dat2$FishUt)) +
+  ((dat2$WBUt)) + ((dat2$WFUt))
 
-write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9Boards.csv")
+#write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9Boards.csv")
 
 
 #weekly average
@@ -866,11 +900,72 @@ ggplot(dat2, aes(day, mUtility, group = month, color = month)) +
        y="Utility",
        x="Day of Month"
   )
-# write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9BoardsUtilities.csv")
+write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9BoardsUtilities.csv")
 
 ```
 
+
+## Monthly Plots
+
+Utlilities given variable water level management or vairable padddlefish discharges can then be plotted by month. The optimal management strategey can then be selected.
+
 ```{r Monthly Plots, echo=FALSE}
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/1BoardsUtilities.csv")
+One$Discharge<- rep("0 cms",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/1BoardsUtilities.csv")
+Two$Discharge<- rep("2.825 cms",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/1BoardsUtilities.csv")
+Three$Discharge<- rep("5.65 cms",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/1BoardsUtilities.csv")
+Four$Discharge<- rep("8.475 cms",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/1BoardsUtilities.csv")
+Five$Discharge<- rep("11.3 cms",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/1BoardsUtilities.csv")
+Six$Discharge<- rep("14.125 cms",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/1BoardsUtilities.csv")
+Seven$Discharge<- rep("16.95 cms",nrow(Seven))
+
+data <- rbind(One, Two, Three, Four, Five, Six, Seven)
+
+ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
+  geom_line( )+
+  labs(title="Utility of Paddlefish Discharges 1 Board by month",
+       y="Utility",
+       x="Day of Month")+
+  scale_colour_discrete(
+            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms", 
+                     "14.125 cms", "16.95 cms"),
+            labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
+  facet_wrap(~ month)
+
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/5BoardsUtilities.csv")
+One$Discharge<- rep("0 cms",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/5BoardsUtilities.csv")
+Two$Discharge<- rep("2.825 cms",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/5BoardsUtilities.csv")
+Three$Discharge<- rep("5.65 cms",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/5BoardsUtilities.csv")
+Four$Discharge<- rep("8.475 cms",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/5BoardsUtilities.csv")
+Five$Discharge<- rep("11.3 cms",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/5BoardsUtilities.csv")
+Six$Discharge<- rep("14.125 cms",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/5BoardsUtilities.csv")
+Seven$Discharge<- rep("16.95 cms",nrow(Seven))
+
+data <- rbind(One, Two, Three, Four, Five, Six, Seven)
+
+ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
+  geom_line( )+
+  labs(title="Utility of Paddlefish Discharges 5 Board by month",
+       y="Utility",
+       x="Day of Month")+
+  scale_colour_discrete(
+            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms", 
+                     "14.125 cms", "16.95 cms"),
+            labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
+  facet_wrap(~ month)
+
 One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9BoardsUtilities.csv")
 One$Discharge<- rep("0 cms",nrow(One))
 Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/9BoardsUtilities.csv")
@@ -881,128 +976,21 @@ Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/p
 Four$Discharge<- rep("8.475 cms",nrow(Four))
 Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9BoardsUtilities.csv")
 Five$Discharge<- rep("11.3 cms",nrow(Five))
-# Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9BoardsUtilities.csv")
-# Six$Discharge<- rep(6,nrow(Six))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/9BoardsUtilities.csv")
+Six$Discharge<- rep("14.125 cms",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9BoardsUtilities.csv")
+Seven$Discharge<- rep("16.95 cms",nrow(Seven))
 
-data<-rbind(One,Two,Three,Four,Five)
-Jan<-subset(data, month==1)
-ggplot(Jan, aes(day, mUtility, group = Discharge, color = Discharge)) +
+data <- rbind(One, Two, Three, Four, Five, Six, Seven)
+
+ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
   geom_line( )+
-  labs(title="January- Utility of Paddlefish Discharges",
+  labs(title="Utility of Paddlefish Discharges 9 Boards by month",
        y="Utility",
        x="Day of Month")+
   scale_colour_discrete(
-            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-            labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Feb<-subset(data, month==2)
-ggplot(Feb, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="Feb- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Mar<-subset(data, month==3)
-ggplot(Mar, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="March- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Apr<-subset(data, month==4)
-ggplot(Apr, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="April- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-May<-subset(data, month==5)
-ggplot(May, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="May- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Jun<-subset(data, month==6)
-ggplot(Jun, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="June- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Jul<-subset(data, month==7)
-ggplot(Jul, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="July- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Aug<-subset(data, month==8)
-ggplot(Aug, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="August- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Sep<-subset(data, month==9)
-ggplot(Sep, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="September- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Oct<-subset(data, month==10)
-ggplot(Oct, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="October- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Nov<-subset(data, month==11)
-ggplot(Nov, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="November- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
-Dec<-subset(data, month==12)
-ggplot(Dec, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="December- Utility of Paddlefish Discharges",
-       y="Utility",
-       x="Day of Month"
-  )+
-  scale_colour_discrete(
-    breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms"),
-    labels=c("0", "2.825", "5.65", "8.475", "11.3"))
+            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms", 
+                     "14.125 cms", "16.95 cms"),
+            labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
+  facet_wrap(~ month)
 ```
-
