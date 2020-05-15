@@ -386,7 +386,7 @@ fish3=mutate(fish3, fishD=ifelse(DOP==1|DOP==7|DOP==14|DOP==21|DOP==28|DOP==35|D
 
 ## COMBINE YEAR AND Period TO LOOP OVER 
 fish3$yr_period<-paste(fish3$year,fish3$period,sep="-")
-fish3<-fish3[order(fish3$Date),]
+#fish3<-fish3[order(fish3$Date),]
 ## YEAR MONTH COMBINATIONS TO LOOP OVER
 combos<-unique(fish3$yr_period)
 #combos<- combos[-length(combos)]## DROP 2020-01 ONLY 1 DAY THERE
