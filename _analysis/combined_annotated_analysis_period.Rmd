@@ -18,6 +18,7 @@ Bathymetric data for Bluff Lake was collected in the winter of 2019 and 2020. Tr
 
 ```{r Linking WSE to Volume, echo=FALSE}
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 library(scales)
 library(mgcv)
 library(lubridate)
@@ -94,9 +95,11 @@ Two water level loggers set to record every 15 minutes were deployed within Bluf
 ```{r lake, echo=FALSE}
 par(mfrow=c(1,1))
 dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+dat2<- read.csv("Depth-Mapping/_dat/DischargeDataMacon15min.csv")
 dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
 dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
 Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
+Elevation <- read.csv("Depth-Mapping/_dat/Level_loggersEL.csv")
 Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
 Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
 Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
@@ -203,6 +206,7 @@ Macon gauge data was collected every 30 minutes. Water level data within Bluff L
 par(mfrow=c(1,1))
 
 dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+dat2<- read.csv("Depth-Mapping/_dat/DischargeDataMacon15min.csv")
 dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
 dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = F)
 dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
@@ -210,6 +214,7 @@ CMS<-ddply(dat2, c("Date.Time","month"), summarize,
            meanCMS=mean(ï..CFS))
 
 Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
+Elevation <- read.csv("_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
 Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
 Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
 Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= F)
@@ -245,6 +250,7 @@ In this section we take the above fit a step further by attempting to predict ch
 ```{r Pred-Volume, echo=FALSE}
 
  dat<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
+ dat<- read.csv("Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
  dat$ï..datetime <- as.POSIXct(dat$ï..datetime, format="%m/%d/%Y")
  names(dat)[1]<-"Date"
  #add in missing dates
@@ -269,6 +275,7 @@ In this section we take the above fit a step further by attempting to predict ch
  dat$meanCMS<-dat$Discharge_cms
 
  dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+ dat2<- read.csv("Depth-Mapping/_dat/DischargeDataMacon15min.csv")
  dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
  dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = T)
  dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
@@ -354,6 +361,7 @@ We then combined predictions of daily lake volume change with different board el
 
 ```{r Paddlefish, echo=FALSE}
 fish=read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
+fish=read.csv("Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
 
 fish$Date<-as.POSIXct(strptime(as.character(fish$Date),"%Y-%m-%d"))
 fish$month<-as.numeric(format(fish$Date, "%m"))
@@ -369,6 +377,8 @@ fish <- fish %>% dplyr::group_by(year) %>%
                dplyr::mutate(day2 = seq_along(year))
 fish$day2<-as.numeric(unlist(fish$day2))
 fish$period<-ifelse(test = fish$day2>=1 & fish$day2<=14, yes= "1", no=ifelse(fish$day2>=15 & fish$day2<=181, yes="2", no=ifelse(fish$day2>=182 & fish$day2<=195, yes="3", no=ifelse(fish$day2>=196 & fish$day2<=212, yes="4", no=ifelse(fish$day2>=213 & fish$day2<=226, yes="5", no=ifelse(fish$day2>=227 & fish$day2<=243, yes="6", no=ifelse(fish$day2>=244 & fish$day2<=334, yes="7", no=ifelse(fish$day2>=335 & fish$day2<=348, yes="8", no="9"))))))))
+
+
 
 fish3<-fish
 #interpolate missing values
@@ -391,6 +401,7 @@ fish3$yr_period<-paste(fish3$year,fish3$period,sep="-")
 combos<-unique(fish3$yr_period)
 #combos<- combos[-length(combos)]## DROP 2020-01 ONLY 1 DAY THERE
 
+
 fish3$volume<-NA  ## KEEP TRACK OF VOLUME THAT CHANGES DAILY AS VOL[PREV DAY] + IN - OUT
 for (i in 1:length(combos))
     {
@@ -402,6 +413,7 @@ for (i in 1:length(combos))
     #100447697 100762656 101047557 101227827 101257957 
     #101294378 101377521 101514389 101703873 101976480
     ## LOOP OVER REMAINING DAYS IN THE MONTH
+    print(i)
     for(j in 2:length(indx))
         {
         current_day<- indx[j]
@@ -409,6 +421,9 @@ for (i in 1:length(combos))
         fish3$volume[current_day]<- fish3$volume[day_before]+fish3$DeltaVol[current_day]-fish3$fishD[current_day]
         }
     }
+
+fish3[which(fish3$yr_period==combos[468]),]
+fish3[which(fish3$yr_period==combos[469]),]
 
 write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
 
