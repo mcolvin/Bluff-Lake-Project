@@ -5,6 +5,7 @@ date: "April 23, 2020"
 output:
   word_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE, echo=FALSE}
@@ -554,7 +555,8 @@ ggplot(Mar, aes(day, volume, group = year, color = year)) +
   labs(title="August Time Series of Lake Volume", 
        y="Volume m^3",
        x="Day of Month"
-  ) +
+  ) +0
+                      
   ylim(99000000, 103500000)+
   geom_hline(yintercept=101976479)+
   geom_hline(yintercept=101703873)+
@@ -833,6 +835,188 @@ plot(RampM$fitted.values~elevation, col="blue", type="l", xlab=NA, ylab=NA)
 ```
 
 
+```{r Assigning Utilities, echo=FALSE}
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Zero <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(Zero, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/AllBoards.csv")
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+One <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(One, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/AllBoards.csv")
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Two <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(Two, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/AllBoards.csv")
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Three <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(Three, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/AllBoards.csv")
+
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Four <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(Four, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/AllBoards.csv")
+
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Five <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(Five, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/AllBoards.csv")
+
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/0Boards.csv")
+Zero$Board<- rep("0B",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/1Boards.csv")
+One$Board<- rep("1B",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/2Boards.csv")
+Two$Board<- rep("2B",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/3Boards.csv")
+Three$Board<- rep("3B",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/4Boards.csv")
+Four$Board<- rep("4b",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Six <- rbind(Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine)
+write.csv(Six, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/AllBoards.csv")
+
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/AllBoards.csv")
+Zero$Discharge<- rep("0 cms",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/AllBoards.csv")
+One$Discharge<- rep("2.825 cms",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/AllBoards.csv")
+Two$Discharge<- rep("5.65 cms",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/AllBoards.csv")
+Three$Discharge<- rep("8.475 cms",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/AllBoards.csv")
+Four$Discharge<- rep("11.3 cms",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/AllBoards.csv")
+Five$Discharge<- rep("14.125 cms",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/AllBoards.csv")
+Six$Discharge<- rep("16.95 cms",nrow(Six))
+Six <- rbind(Zero, One, Two, Three, Four, Five, Six)
+write.csv(Six, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/AllBoardsAllDischarge.csv")
+```
 ##Forming Utilities 
 
 Here we combine the outputf from the preceeding three sections to form utilities. First we take our simulated lake levels for our data range (1945-2020), and assign daily utilities for each objective given water surface elevation. We then add these utilities together to form the total daily utility (objectives were unweighted).These total daily utilities were then averaged across years to account for annual variability.
@@ -841,7 +1025,9 @@ Here we combine the outputf from the preceeding three sections to form utilities
 
 ```{r Assigning Utilities, echo=FALSE}
 #Utilities
-dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9Boards.csv")
+dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/AllBoardsAllDischarge.csv")
+
+
 dat2$elevation<-predict(gam_2, dat2)
 dat2$WFUt<-predict(WFM, dat2)
 dat2$WBUt<-predict(WBM, dat2)
@@ -859,9 +1045,8 @@ dat2$WBUt<- ifelse(dat2$WBUt > 1, 1, dat2$WBUt)
 dat2$FishUt <- ifelse(dat2$FishUt  > 1, 1, dat2$FishUt)
 dat2$AngUt <- ifelse(dat2$AngUt > 1, 1, dat2$AngUt)
 dat2$RampUt <- ifelse(dat2$RampUt > 1, 1, dat2$RampUt)
-
-dat2$Utility<- ((dat2$RampUt)*.5) + ((dat2$AngUt)*.5)+((dat2$FishUt)) +
-  ((dat2$WBUt)) + ((dat2$WFUt))
+W<- c(.25,.25,.25,.25)
+dat2$Utility<-(W[1]*((dat2$RampUt*.5) + (dat2$AngUt*.5))) + (W[2]*dat2$FishUt) + (W[3]*dat2$WBUt) + (W[4]*dat2$WFUt)
 
 #write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9Boards.csv")
 
@@ -869,38 +1054,46 @@ dat2$Utility<- ((dat2$RampUt)*.5) + ((dat2$AngUt)*.5)+((dat2$FishUt)) +
 #weekly average
 dat2<-dat2 %>%
   filter(!is.na(Utility))
-dat2$Date <- as.POSIXct(dat2$Date)
-dat2$Date <-lubridate::round_date(dat2$Date, "7 days")
 dat2$Date <- as.POSIXct(dat2$Date, format="%m-%d-%Y")
-dat2 <- dat2 %>%
-  dplyr::group_by(Date) %>%
-  dplyr::summarize(mUtility = mean(Utility, na.rm = T),
-            mWFUt = mean(WFUt, na.rm = T),
-            mWBUt= mean(WBUt, na.rm = T),
-            mFishUt = mean(FishUt, na.rm = T),
-            mAngUt = mean(AngUt, na.rm = T),
-            mRampUt = mean(RampUt, na.rm = T))
+# dat2 <- dat2 %>%
+#   dplyr::group_by(Date) %>%
+#   dplyr::summarize(mUtility = sum(Utility, na.rm = T),
+#             mWFUt = sum(WFUt, na.rm = T),
+#             mWBUt= sum(WBUt, na.rm = T),
+#             mFishUt = sum(FishUt, na.rm = T),
+#             mAngUt = sum(AngUt, na.rm = T),
+#             mRampUt = sum(RampUt, na.rm = T))
 
-dat2$month<-lubridate::month(dat2$Date)
-dat2$day<-lubridate::day(dat2$Date)
-dat2$month_day<-paste(dat2$month,dat2$day,sep="-")
-dat2<-dat2 %>%
-  dplyr::group_by(month,day) %>%
-  dplyr::summarize(mUtility = mean(mUtility, na.rm = T),
-            mWFUt = mean(mWFUt, na.rm = T),
-            mWBUt= mean(mWBUt, na.rm = T),
-            mFishUt = mean(mFishUt, na.rm = T),
-            mAngUt = mean(mAngUt, na.rm = T),
-            mRampUt = mean(mRampUt, na.rm = T))
+# dat2$month<-lubridate::month(dat2$Date)
+# dat2$day<-lubridate::day(dat2$Date)
+# dat2$month_day<-paste(dat2$month,dat2$day,sep="-")
+# dat2<-dat2 %>%
+#   dplyr::group_by(Discharge, Board, Date, month, day) %>%
+#   dplyr::summarize(mUtility = mean(mUtility, na.rm = T),
+#             mWFUt = mean(mWFUt, na.rm = T),
+#             mWBUt= mean(mWBUt, na.rm = T),
+#             mFishUt = mean(mFishUt, na.rm = T),
+#             mAngUt = mean(mAngUt, na.rm = T),
+#             mRampUt = mean(mRampUt, na.rm = T))
+dat2$value <- paste(dat2$Board, dat2$Discharge, dat2$year, sep="_")
+dat2 <-dat2 %>%  dplyr::group_by(year, month, value)  %>%  
+  dplyr::mutate(CumUt = cumsum(Utility))
+write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/AllUtilities.csv")
 
-
-ggplot(dat2, aes(day, mUtility, group = month, color = month)) +
-  geom_line( )+
-  labs(title="Monthly Utility of 11.3cms Paddlefish Discharge",
+dat<-subset(dat2, Board=="5B")
+dat<-subset(dat, month==1)
+ggplot(dat, aes(day, CumUt, group = value, color = Discharge)) +
+  geom_line()+
+  labs(title="Utility of Paddlefish Discharges-5 Board-January",
        y="Utility",
-       x="Day of Month"
-  )
-write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9BoardsUtilities.csv")
+       x="Day of Month")+
+  scale_colour_discrete(
+            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms", 
+                     "14.125 cms", "16.95 cms"),
+            labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
+  facet_wrap(~ month)
+
+
 
 ```
 
@@ -910,25 +1103,11 @@ write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/
 Utlilities given variable water level management or vairable padddlefish discharges can then be plotted by month. The optimal management strategey can then be selected.
 
 ```{r Monthly Plots, echo=FALSE}
-One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/1BoardsUtilities.csv")
-One$Discharge<- rep("0 cms",nrow(One))
-Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/1BoardsUtilities.csv")
-Two$Discharge<- rep("2.825 cms",nrow(Two))
-Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/1BoardsUtilities.csv")
-Three$Discharge<- rep("5.65 cms",nrow(Three))
-Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/1BoardsUtilities.csv")
-Four$Discharge<- rep("8.475 cms",nrow(Four))
-Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/1BoardsUtilities.csv")
-Five$Discharge<- rep("11.3 cms",nrow(Five))
-Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/1BoardsUtilities.csv")
-Six$Discharge<- rep("14.125 cms",nrow(Six))
-Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/1BoardsUtilities.csv")
-Seven$Discharge<- rep("16.95 cms",nrow(Seven))
 
-data <- rbind(One, Two, Three, Four, Five, Six, Seven)
-
-ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
+dat<-subset(dat2, Board=="1B")
+#dat<-subset(dat, month==3)
+ggplot(dat, aes(day, CumUt, group = value, color = Discharge)) +
+  geom_line()+
   labs(title="Utility of Paddlefish Discharges 1 Board by month",
        y="Utility",
        x="Day of Month")+
@@ -938,25 +1117,10 @@ ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
             labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
   facet_wrap(~ month)
 
-One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/5BoardsUtilities.csv")
-One$Discharge<- rep("0 cms",nrow(One))
-Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/5BoardsUtilities.csv")
-Two$Discharge<- rep("2.825 cms",nrow(Two))
-Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/5BoardsUtilities.csv")
-Three$Discharge<- rep("5.65 cms",nrow(Three))
-Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/5BoardsUtilities.csv")
-Four$Discharge<- rep("8.475 cms",nrow(Four))
-Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/5BoardsUtilities.csv")
-Five$Discharge<- rep("11.3 cms",nrow(Five))
-Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/5BoardsUtilities.csv")
-Six$Discharge<- rep("14.125 cms",nrow(Six))
-Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/5BoardsUtilities.csv")
-Seven$Discharge<- rep("16.95 cms",nrow(Seven))
-
-data <- rbind(One, Two, Three, Four, Five, Six, Seven)
-
-ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
+dat<-subset(dat2, Board=="5B")
+#dat<-subset(dat, month==3)
+ggplot(dat, aes(day, CumUt, group = value, color = Discharge)) +
+  geom_line()+
   labs(title="Utility of Paddlefish Discharges 5 Board by month",
        y="Utility",
        x="Day of Month")+
@@ -966,26 +1130,11 @@ ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
             labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
   facet_wrap(~ month)
 
-One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_0cms_discharge/9BoardsUtilities.csv")
-One$Discharge<- rep("0 cms",nrow(One))
-Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_2.825cms_discharge/9BoardsUtilities.csv")
-Two$Discharge<- rep("2.825 cms",nrow(Two))
-Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_5.65cms_discharge/9BoardsUtilities.csv")
-Three$Discharge<- rep("5.65 cms",nrow(Three))
-Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_8.475cms_discharge/9BoardsUtilities.csv")
-Four$Discharge<- rep("8.475 cms",nrow(Four))
-Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_11.3cms_discharge/9BoardsUtilities.csv")
-Five$Discharge<- rep("11.3 cms",nrow(Five))
-Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_14.125cms_discharge/9BoardsUtilities.csv")
-Six$Discharge<- rep("14.125 cms",nrow(Six))
-Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/weekly_16.95cms_discharge/9BoardsUtilities.csv")
-Seven$Discharge<- rep("16.95 cms",nrow(Seven))
-
-data <- rbind(One, Two, Three, Four, Five, Six, Seven)
-
-ggplot(data, aes(day, mUtility, group = Discharge, color = Discharge)) +
-  geom_line( )+
-  labs(title="Utility of Paddlefish Discharges 9 Boards by month",
+dat<-subset(dat2, Board=="9B")
+#dat<-subset(dat, month==3)
+ggplot(dat, aes(day, CumUt, group = value, color = Discharge)) +
+  geom_line()+
+  labs(title="Utility of Paddlefish Discharges 9 Board by month",
        y="Utility",
        x="Day of Month")+
   scale_colour_discrete(

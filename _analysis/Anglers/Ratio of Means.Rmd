@@ -9,21 +9,14 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
  #   output_format="html_document")
 library(ggplot2)
 library(dplyr)
+library(lubridate)
 ```
 ```{r echo=FALSE}
-dat<-read.csv("_dat/CompleteCreel.csv")
-dat2<-read.csv("_dat/CompleteInst.csv")
+dat<-read.csv("_dat/CompleteCreel_gr30_spp.csv")
+dat2<-read.csv("_dat/CompleteInstedt.csv")
 dat3<-read.csv("_dat/CompleteVehicle.csv")
-dat4<-read.csv("_dat/Spp.csv")
-dat5<-read.csv("_dat/FishingVehicle.csv")
-#dat6<-read.csv("_dat/SppCaughtbyMO.csv")
-#dat7<-read.csv("_dat/FishTime.csv")
-#source("_r/Creel Sample.R")
+dat4<-read.csv("_dat/SPP2.csv")
 ```
-
-Stacked line graph instead of stacked bars
-No pie charts
-Calculate variances
 
 #Objective
 
@@ -35,113 +28,108 @@ usage patterns can be made from vehicle counts and observations taken
 during the bus route design. 
 
 
+```{r echo=FALSE}
+dat$Month<- lubridate::month(as.POSIXct(dat$ï..Date, format="%m/%d/%Y"), label = T)
+datC<-subset(dat, SoughtCrappie>0)
+datC2<-subset(dat, CaughtCrappie>0)
+datC<-rbind(datC, datC2)
+datC$CPUE<-datC$Crappie.Caught/datC$Total.Effort
+datC<-datC %>% dplyr::group_by(Month) %>%
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+missing<- data.frame(Month=c("Jun","Jul","Aug", "Sep"), mCPUE=c(NA,NA,NA,NA), var=c(NA,NA,NA,NA))
+datC<-rbind(datC,missing)
+datC$Group<-c("Crappie")
+datB<-subset(dat, SoughtBream>0)
+datB2<-subset(dat, CaughtBream>0)
+datB<-rbind(datB, datB2)
+datB$CPUE<-datB$Bream.Caught/datB$Total.Effort
+datB$CPUE<- datB$Bream.Caught/datB$Total.Effort
+datB<-datB %>% dplyr::group_by(Month) %>%
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+missing<- data.frame(Month=c("Sep"), mCPUE=c(NA), var=c(NA))
+datB<-rbind(datB,missing)
+datB$Group<-c("Bream")
+datA<-rbind(datC, datB)
+datA$CIhigh<-datA$mCPUE+1.96*sqrt(datA$var)
+datA$CIlow<-datA$mCPUE-1.96*sqrt(datA$var)
+datA$CIlow<-ifelse(datA$CIlow<0,0,datA$CIlow)
+#title = "Average Monthly CPUE by Group"
+ggplot(datA, aes(fill=Group, x = Month, y=mCPUE)) + geom_bar(position=position_dodge(), stat="identity") + theme_classic() +  scale_fill_grey()+labs(y= "Catch per Unit Effort (hours)", x = "Month") 
+
+dat$CPUE<- dat$Total.Caught/dat$Total.Effort
+dat<-dat %>% dplyr::group_by(Month) %>%
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+dat$CIhigh<-dat$mCPUE+1.96*sqrt(dat$var)
+dat$CIlow<-dat$mCPUE-1.96*sqrt(dat$var)
+dat$CIlow<-ifelse(dat$CIlow<0,0,dat$CIlow)
+#title = "Average Monthly CPUE for All Fish",
+ggplot(dat, aes(x = Month, y=mCPUE)) + geom_bar(stat="identity") + theme_classic() +labs( 
+                      y= "Catch per Unit Effort (hours)", x = "Month")
+```
 
 ```{r echo=FALSE}
-#March
-# sumMarch<-sum(subset(dat$X..Kept, subset = dat$Month=="March")+subset(dat$X..Released, subset = dat$Month=="March"))
-# EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="March"))
-# meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="March")))
-# AH<-meangrp*EF
-# MarchAH<-(AH/7)*31
-# CPUE<- sumMarch/AH
-# HarvestMarch<-MarchAH*CPUE
-datMar<-subset(dat, Month== "March")
-MeanofRatiosMar<-sum(datMar$CPUE)/7
-MeanofRatiosMar*31
+dat2$ï..Date<-as.POSIXct(dat2$ï..Date, format="%m/%d/%Y")
+dat2$Month<- lubridate::month(as.POSIXct(dat2$ï..Date, format="%m/%d/%Y"), label = T)
+dat$Month <- factor(dat$Month, levels=c("Mar", "Apr", "May", "Jun", "Jul","Aug", "Sept", "Oct"))
+Bank<-subset(dat2, Group.Type=="Bank")
+ExpandedHours<-Bank%>%dplyr::group_by(Month,Time)%>%
+  dplyr::summarise(mAngler.Hours=mean(Angler.Hours, na.rm=T), ndays= n())
+ExpandedHours<-ExpandedHours%>%dplyr::group_by(Month)%>%
+  dplyr::summarise(x=sum(mAngler.Hours), var=var(mAngler.Hours))
+ExpandedHours$Days<-c(31,30,31,30,31,31,30,31)
+ExpandedHours$Group<-c("Bank")
+ExpandedHours$Total<-ExpandedHours$x*ExpandedHours$Days
+ExpandedHours$var<-ExpandedHours$var*ExpandedHours$Days^2
+ExpandedHours$CIhigh<-ExpandedHours$Total+1.96*sqrt(ExpandedHours$var)
+ExpandedHours$CIlow<-ExpandedHours$Total-1.96*sqrt(ExpandedHours$var)
+ExpandedHours$CIlow<-ifelse(ExpandedHours$CIlow<0,0,ExpandedHours$CIlow)
+ggplot(ExpandedHours, aes(x = Month, y=Total)) + geom_bar(stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month")+
+    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+CrappieCatch<-ExpandedHours
+CrappieCatch$Catch<-ExpandedHours$Total*datC$mCPUE
+CrappieCatch$Species<- "Crappie"
+BreamC<-ExpandedHours
+BreamC$Catch<-ExpandedHours$Total*datB$mCPUE
+BreamC$Species<- "Bream"
+AllCatch<- rbind(CrappieCatch, BreamC)
+ggplot(AllCatch, aes(fill=Species, y=Catch, x=Month)) + 
+    geom_bar(position="dodge", stat="identity")+theme_classic()
 
-
-# 
-# #April
-# sumApril<-sum(subset(dat$X..Kept, subset = dat$Month=="April")+subset(dat$X..Released, subset = dat$Month=="April"))
-# EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="April"))
-# meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="April")))
-# AH<-meangrp*EF
-# AprilAH<-(EF/7)*30
-# CPUE<- sumApril/AH
-# HarvestApril<-AprilAH*CPUE
-datApril<-subset(dat, Month== "April")
-MeanofRatiosApr<-sum(datApril$CPUE)/7
-MeanofRatiosApr*30
-# #May
-# sumMay<-sum(subset(dat$X..Kept, subset = dat$Month=="May")+subset(dat$X..Released, subset = dat$Month=="May"))
-# EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="May"))
-# meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="May")))
-# AH<-meangrp*EF
-# MayAH<-(EF/7)*31
-# CPUE<- sumMay/AH
-# HarvestMay<-MayAH*CPUE
-datMay<-subset(dat, Month== "May")
-MeanofRatiosMay<-sum(datMay$CPUE)/7
-MeanofRatiosMay*31
-# #June
-# sumJune<-sum(subset(dat$X..Kept, subset = dat$Month=="June")+subset(dat$X..Released, subset = dat$Month=="June"))
-# EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="June"))
-# meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="June")))
-# AH<-meangrp*EF
-# JuneAH<-(EF/7)*30
-# CPUE<- sumJune/AH
-# HarvestJune<-JuneAH*CPUE
-datJune<-subset(dat, Month== "June")
-MeanofRatiosJune<-sum(datJune$CPUE)/7
-MeanofRatiosJune*30
-# #July
-# sumJuly<-sum(subset(dat$X..Kept, subset = dat$Month=="July")+subset(dat$X..Released, subset = dat$Month=="July"))
-# EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="July"))
-# meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="July")))
-# AH<-meangrp*EF
-# JulyAH<-(EF/7)*31
-# CPUE<- sumJuly/AH
-# HarvestJuly<-JulyAH*CPUE
-datJuly<-subset(dat, Month== "July")
-MeanofRatiosJuly<-sum(datJuly$CPUE)/7
-MeanofRatiosJuly*31
-# #August
-# sumAugust<-sum(subset(dat$X..Kept, subset = dat$Month=="August")+subset(dat$X..Released, subset = dat$Month=="August"))
-# EF<-sum(subset(dat$Total.Effort, subset = dat$Month=="August"))
-# meangrp<-mean(na.omit(subset(dat$Num..in.Party, subset = dat$Month=="August")))
-# AH<-meangrp*EF
-# AugustAH<-(EF/7)*31
-# CPUE<- sumAugust/AH
-# HarvestAugust<-AugustAH*CPUE
-datAugust<-subset(dat, Month== "August")
-MeanofRatiosAug<-sum(datAugust$CPUE)/7
-MeanofRatiosAug*31
-
+Boat<-subset(dat2, Group.Type=="Boat")
+Boat$Number.of.individuals<-as.numeric(Boat$Number.of.individuals)
+Boat$Group.Count<-as.numeric(Boat$Group.Count)
+mean<-mean(Bank$Number.of.individuals/Bank$Group.Count, na.rm = T)
+Boat$Total.Trailer.Count<-as.numeric(Boat$Total.Trailer.Count)
+Boat$PredAngler<-mean*Boat$Total.Trailer.Count*4
+ExpandedHours2<-Boat%>%dplyr::group_by(Month,Time)%>%
+  dplyr::summarise(PredAngler2=mean(PredAngler, na.rm=T), ndays= n())
+ExpandedHours2<-ExpandedHours2%>%dplyr::group_by(Month)%>%
+  dplyr::summarise(x=sum(PredAngler2),  var=var(PredAngler2))
+ExpandedHours2$Group<-c("Boat")
+ExpandedHours2$Days<-c(31,30,31,30,31,31,30,31)
+ExpandedHours2$Total<-ExpandedHours2$x*ExpandedHours2$Days
+ExpandedHours2$var<-ExpandedHours2$var*ExpandedHours2$Days^2
+ExpandedHours2$CIhigh<-ExpandedHours2$Total+1.96*sqrt(ExpandedHours2$var)
+ExpandedHours2$CIlow<-ExpandedHours2$Total-1.96*sqrt(ExpandedHours2$var)
+ExpandedHours2$CIlow<-ifelse(ExpandedHours2$CIlow<0,0,ExpandedHours2$CIlow)
+ggplot(ExpandedHours2, aes(x = Month, y=Total)) + geom_bar(stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+AllAnglers<-rbind(ExpandedHours, ExpandedHours2)
+ggplot(AllAnglers, aes(fill=Group, x = Month, y=Total), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(ymin=CIlow, ymax=CIhigh),
+                position=position_dodge(.9), color="black", width=0.05) 
+AllAnglers<-AllAnglers%>%dplyr::group_by(Month)%>%dplyr::summarise(var=sum(var), Total=sum(Total))
+AllAnglers$CIhigh<-AllAnglers$Total+1.96*sqrt(AllAnglers$var)
+AllAnglers$CIlow<-AllAnglers$Total-1.96*sqrt(AllAnglers$var)
+ggplot(AllAnglers, aes(x = Month, y=Total), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
 ```
-**March (Roving)**
-* Angler hours - `r round(HarvestMarch,2)`
-* Fish Caught per Hour Fished - 1.12
-* Esimated Harvest for March - 376
-
-**April (Roving)**
-* Angler hours - `r round(HarvestApril,2)`
-* Fish Caught per Hour Fished - 0.28
-* Esimated Harvest for March - 23
-
-**May (Roving)**
-* Angler hours - `r round(HarvestMay,2)`
-* Fish Caught per Hour Fished - 3.97
-* Esimated Harvest for March - 77.5
-
-**June (Roving Design)**
-
-* Angler hours - `r round(HarvestJune,2)`  
-* Fish Caught per Hour Fished - 3.39  
-* Esimated Harvest for March - 275 
-
-**July (Roving Design)**
-
-* Angler hours - `r round(HarvestJuly,2)`  
-* Fish Caught per Hour Fished - 3.39  
-* Esimated Harvest for March - 27
-
-**August (Roving Design)**
-
-* Angler hours - `r round(HarvestAugust,2)`  
-* Fish Caught per Hour Fished - 3.39  
-* Esimated Harvest for March - 27
-
-
 
 
 #Fish Targeted By Anglers
@@ -150,7 +138,12 @@ During interviews anglers were asked what kind of fish they were hoping to catch
 
 
 ```{r echo=FALSE}
-barplot(table(dat4$Spp..Sought)/nrow(dat4), main="Fish Targeted by Anglers", xlab="Categories",ylab="Relative Frequency")
+Fish<-table(dat4$Spp..Sought)/length(dat4$Spp..Sought[!is.na(dat4$Spp..Sought)])
+Fish<-as.data.frame(Fish)
+ggplot(Fish, aes(x = Var1, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month")
 ```
 
 ```{r echo=FALSE}
@@ -159,14 +152,19 @@ barplot(table(dat4$Spp..Sought)/nrow(dat4), main="Fish Targeted by Anglers", xla
 #barplot(counts1, main="Fish Sought by Month",
 #   xlab="Month", ylab="Relative Frequency",
 #  legend = rownames(counts1),beside=TRUE)
-
-#counts1 <- table(dat4$Spp..Sought, dat4$Month)
-mydata <- data.frame(March=c(0.2068,0.2068,0.345,0.067, 0.483), April=c(0.455,0.099,0.188,0.099, 0.188), May=c(0,0,0.8,0, 0.2), 
-                     June=c(0.077,0.154,0.769,0, 0), July=c(1,0,0,0, 0), August=c(1,0,0,0, 0))
-
-barplot(as.matrix(mydata), main="Fish Sought by Month",
-   xlab="Month", ylab="Relative Frequency", beside=TRUE, col = c("gray8","gray28", "gray48", "gray68", "gray88"))
-legend("topleft", inset=.02, c("Any","Bass","Bream","Catfish","Crappie"), cex=0.8, fill = c("gray8","gray28", "gray48", "gray68", "gray88"))
+dat4$Month<- lubridate::month(as.POSIXct(dat4$ï..Date, format="%m/%d/%Y"), label = T)
+counts1 <-table(dat4$Spp..Sought, dat4$Month)
+counts1<- as.matrix(counts1)
+counts1<-counts1[,-1:-2]
+counts1<-counts1[,-9:-10]
+counts1 <- apply(counts1,2,function(x){x/sum(x)})
+counts1<-as.table(counts1)
+counts1<-as.data.frame(counts1)
+counts1$Group<-counts1$Var1
+ggplot(counts1, aes(fill=Group, x = Var2, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month") 
 ```
 
 # Species Caught By Anglers
@@ -175,22 +173,28 @@ During interviews the type of fish caught by anglers was recorded. The following
 
 
 ```{r echo=FALSE}
-barplot(table(dat6$Spp.Caught)/nrow(dat6), main="Fish Caught by Anglers", xlab="Categories",ylab="Relative Frequency")
-
+Fish<-table(dat4$Spp..Caught)/length(dat4$Spp..Caught[!is.na(dat4$Spp..Caught)])
+Fish<-as.data.frame(Fish)
+ggplot(Fish, aes(x = Var1, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month")
 ```
 
 ```{r echo=FALSE}
-#dat6$ï..Month<-factor(dat6$ï..Month, levels=c("March", "April", "May", "June", "July", "August"))
-dat11<- table(dat6$Spp.Caught, dat6$ï..Month)
-#barplot(dat11, main="Fish Caught By Month",
- #  xlab="Categories", ylab="Relative Frequency",
-  #legend = rownames(dat11))
-
-mydata2 <- data.frame(March=c(0.133,0.108,0.759), April=c(0,0.833,0.166), May=c(0,1,0), 
-                     June=c(0,1,0), July=c(0,1,0), August=c(0,1,0))
-barplot(as.matrix(mydata2), main="Fish Caught by Month",
-   xlab="Month", ylab="Relative Frequency", beside=TRUE, col = c("gray8", "gray48", "gray88"))
-legend("topleft", inset=.02, c("Bass","Bream","Crappie"), cex=0.8, fill = c("gray8", "gray48", "gray88"))
+dat4$Month<- lubridate::month(as.POSIXct(dat4$ï..Date, format="%m/%d/%Y"), label = T)
+counts1 <-table(dat4$Spp..Caught, dat4$Month)
+counts1<- as.matrix(counts1)
+counts1<-counts1[,-1:-2]
+counts1<-counts1[,-9:-10]
+counts1 <- apply(counts1,2,function(x){x/sum(x)})
+counts1<-as.table(counts1)
+counts1<-as.data.frame(counts1)
+counts1$Group<-counts1$Var1
+ggplot(counts1, aes(fill=Group, x = Var2, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month") 
 ```
 
 # Time Fished 
@@ -199,37 +203,21 @@ The following two graphs depict the time fished by month, time fished by tempera
 
 
 ```{r echo=FALSE}
-dat$Month<-factor(dat$Month, levels=c("March", "April", "May", "June", "July", "August"))
-boxplot(DecimalTime~Month, data=dat,  main="Time Fished by Month",xlab="Month", ylab="Time Fished (hours)")
-.
+dat<-read.csv("_dat/CompleteCreel_gr30_spp.csv")
+dat$Month<- lubridate::month(as.POSIXct(dat$ï..Date, format="%m/%d/%Y"), label = T)
+mean(dat$Total.Effort)
+ggplot(dat, aes(x = Month, y=DecimalTime), las=2)+
+  geom_boxplot() + theme_classic() + scale_fill_grey()+
+    labs(y= "Time Fished (hours)", x = "Month") 
 ```
 
 ```{r echo=FALSE}
-plot(Total.Effort~Air.Temperature,data=dat, main="Time Fished vs Temperature",
-     ylab="Time Fished",
-     xlab="Temperature (F)", type="n", ylim=c(0,15))
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="March",
-       col="red")
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="April",
-       col="blue")
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="May",
-       col="green")
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="June",
-       col="purple")
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="July",
-       col="orange")
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="August",
-       col="yellow")
-points(Total.Effort~Air.Temperature,data=dat,
-       subset=Month=="September",
-       col="black")
-legend("topright",title="Sampling Times", legend=c("March", "April", "May", "June", "July", "August", "September"), col=c("red", "blue", "green", "purple", "orange", "yellow", "black") , pch=1, cex=0.8, text.font=4)
+ggplot(dat, aes(Total.Effort, Air.Temperature, color = Month)) + 
+  geom_point( )+
+  labs(title="Time Fished vs Temperature", 
+       x="Time Fished (hours)",
+       y="Temperature (F)"
+       ) + theme_classic()
 ```
 
 ```{r echo=FALSE}
@@ -247,9 +235,9 @@ boxplot(Total.Effort~Weather, data=dat, main="Time Fished Durring Generalized We
 ```
 
 ```{r echo=FALSE}
-counts4 <- table(dat2$Weather, dat2$Number.of.individuals)
+dat2$Number.of.individuals<-as.numeric(dat2$Number.of.individuals)
 boxplot(dat2$Number.of.individuals~dat2$Weather, main="Angler Turnout Durring Generalized Weather Conditions", 
-   xlab="Weather", ylab="Number of Groups Fishing")
+   xlab="Weather", ylab="Number of Anglers")
 ```
 
 ```{r echo=FALSE}
@@ -263,7 +251,11 @@ During interviews anglers reported their resident county. All counties reported 
 
 ```{r echo=FALSE}
 counts5 <- table(na.omit(dat$County.State))/nrow(dat)
-barplot(na.omit(counts5), main="Angler Origin", xlab="Counties",ylab="Interview Counts",ylim=c(0,0.5))
+counts5<- as.data.frame(counts5)
+counts5$County<-counts5$Var1
+ggplot(counts5, aes(x = County, y=Freq), las=2)+
+  geom_bar(stat="identity") + theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month") 
 ```
 
 # Activities on the Refuge
@@ -273,11 +265,9 @@ During the bus route creel survey creel clerks waited at three different sites w
 
 ```{r echo=FALSE}
 par(mar=c(6, 4.1, 4.1, 2.1))
-labs <- paste(c("Bank Fishing","Bird Watching","Boat Fishing", "Kayaking","Other","Photography", "Walking"))
-boxplot(dat3$DecimalTime~dat3$Description.of.Activity, main="Parking Time by Activity",ylab="Wait Time at Access", col = c("red", "blue", "green", "purple", "orange", "gray", "lightgreen"), xaxt="n", xlab="")
-axis(1, labels = FALSE)
-text(x =  seq_along(labs), y = par("usr")[3]-.2, srt = 45, adj = 1,
-     labels = labs, xpd = TRUE)
+ggplot(dat3, aes(x = Description.of.Activity, y=DecimalTime), las=2)+
+  geom_boxplot() + theme_classic() + scale_fill_grey()+
+    labs(y= "Wait Time at Access (hours)", x = "Activity") 
 ```
 
 
