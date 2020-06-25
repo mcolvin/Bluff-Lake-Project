@@ -1,0 +1,275 @@
+---
+title: "Analysis of 2019 Creel Survey Data"
+author: "V. Starnes"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+---
+
+```{r,echo=FALSE,eval=FALSE}
+#rmarkdown::render("Creel_analysis.Rmd",
+ #   output_format="html_document")
+library(ggplot2)
+library(dplyr)
+library(lubridate)
+```
+```{r echo=FALSE}
+dat<-read.csv("_dat/CompleteCreel_gr30_spp.csv")
+dat2<-read.csv("_dat/CompleteInstedt.csv")
+dat3<-read.csv("_dat/CompleteVehicle.csv")
+dat4<-read.csv("_dat/SPP2.csv")
+```
+
+#Objective
+
+A roving creel survey was competed from March 1st-May 31st 2019, and a 
+modified bus route creel survey was completed from June 1st-July 1st 
+2019. Data from these surveys can be used to estimate the average 
+effort, CPUE, and harvest of anglers. Additional estimates of refuge 
+usage patterns can be made from vehicle counts and observations taken 
+during the bus route design. 
+
+
+```{r echo=FALSE}
+dat$Month<- lubridate::month(as.POSIXct(dat$ï..Date, format="%m/%d/%Y"), label = T)
+datC<-subset(dat, SoughtCrappie>0)
+datC2<-subset(dat, CaughtCrappie>0)
+datC<-rbind(datC, datC2)
+datC$CPUE<-datC$Crappie.Caught/datC$Total.Effort
+datC<-datC %>% dplyr::group_by(Month) %>%
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+missing<- data.frame(Month=c("Jun","Jul","Aug", "Sep"), mCPUE=c(NA,NA,NA,NA), var=c(NA,NA,NA,NA))
+datC<-rbind(datC,missing)
+datC$Group<-c("Crappie")
+datB<-subset(dat, SoughtBream>0)
+datB2<-subset(dat, CaughtBream>0)
+datB<-rbind(datB, datB2)
+datB$CPUE<-datB$Bream.Caught/datB$Total.Effort
+datB$CPUE<- datB$Bream.Caught/datB$Total.Effort
+datB<-datB %>% dplyr::group_by(Month) %>%
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+missing<- data.frame(Month=c("Sep"), mCPUE=c(NA), var=c(NA))
+datB<-rbind(datB,missing)
+datB$Group<-c("Bream")
+datA<-rbind(datC, datB)
+datA$CIhigh<-datA$mCPUE+1.96*sqrt(datA$var)
+datA$CIlow<-datA$mCPUE-1.96*sqrt(datA$var)
+datA$CIlow<-ifelse(datA$CIlow<0,0,datA$CIlow)
+#title = "Average Monthly CPUE by Group"
+ggplot(datA, aes(fill=Group, x = Month, y=mCPUE)) + geom_bar(position=position_dodge(), stat="identity") + theme_classic() +  scale_fill_grey()+labs(y= "Catch per Unit Effort (hours)", x = "Month") 
+
+dat$CPUE<- dat$Total.Caught/dat$Total.Effort
+dat<-dat %>% dplyr::group_by(Month) %>%
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+dat$CIhigh<-dat$mCPUE+1.96*sqrt(dat$var)
+dat$CIlow<-dat$mCPUE-1.96*sqrt(dat$var)
+dat$CIlow<-ifelse(dat$CIlow<0,0,dat$CIlow)
+#title = "Average Monthly CPUE for All Fish",
+ggplot(dat, aes(x = Month, y=mCPUE)) + geom_bar(stat="identity") + theme_classic() +labs( 
+                      y= "Catch per Unit Effort (hours)", x = "Month")
+```
+
+```{r echo=FALSE}
+dat2$ï..Date<-as.POSIXct(dat2$ï..Date, format="%m/%d/%Y")
+dat2$Month<- lubridate::month(as.POSIXct(dat2$ï..Date, format="%m/%d/%Y"), label = T)
+dat$Month <- factor(dat$Month, levels=c("Mar", "Apr", "May", "Jun", "Jul","Aug", "Sept", "Oct"))
+Bank<-subset(dat2, Group.Type=="Bank")
+ExpandedHours<-Bank%>%dplyr::group_by(Month,Time)%>%
+  dplyr::summarise(mAngler.Hours=mean(Angler.Hours, na.rm=T), ndays= n())
+ExpandedHours<-ExpandedHours%>%dplyr::group_by(Month)%>%
+  dplyr::summarise(x=sum(mAngler.Hours), var=var(mAngler.Hours))
+ExpandedHours$Days<-c(31,30,31,30,31,31,30,31)
+ExpandedHours$Group<-c("Bank")
+ExpandedHours$Total<-ExpandedHours$x*ExpandedHours$Days
+ExpandedHours$var<-ExpandedHours$var*ExpandedHours$Days^2
+ExpandedHours$CIhigh<-ExpandedHours$Total+1.96*sqrt(ExpandedHours$var)
+ExpandedHours$CIlow<-ExpandedHours$Total-1.96*sqrt(ExpandedHours$var)
+ExpandedHours$CIlow<-ifelse(ExpandedHours$CIlow<0,0,ExpandedHours$CIlow)
+ggplot(ExpandedHours, aes(x = Month, y=Total)) + geom_bar(stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month")+
+    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+CrappieCatch<-ExpandedHours
+CrappieCatch$Catch<-ExpandedHours$Total*datC$mCPUE
+CrappieCatch$Species<- "Crappie"
+BreamC<-ExpandedHours
+BreamC$Catch<-ExpandedHours$Total*datB$mCPUE
+BreamC$Species<- "Bream"
+AllCatch<- rbind(CrappieCatch, BreamC)
+ggplot(AllCatch, aes(fill=Species, y=Catch, x=Month)) + 
+    geom_bar(position="dodge", stat="identity")+theme_classic()
+
+Boat<-subset(dat2, Group.Type=="Boat")
+Boat$Number.of.individuals<-as.numeric(Boat$Number.of.individuals)
+Boat$Group.Count<-as.numeric(Boat$Group.Count)
+mean<-mean(Bank$Number.of.individuals/Bank$Group.Count, na.rm = T)
+Boat$Total.Trailer.Count<-as.numeric(Boat$Total.Trailer.Count)
+Boat$PredAngler<-mean*Boat$Total.Trailer.Count*4
+ExpandedHours2<-Boat%>%dplyr::group_by(Month,Time)%>%
+  dplyr::summarise(PredAngler2=mean(PredAngler, na.rm=T), ndays= n())
+ExpandedHours2<-ExpandedHours2%>%dplyr::group_by(Month)%>%
+  dplyr::summarise(x=sum(PredAngler2),  var=var(PredAngler2))
+ExpandedHours2$Group<-c("Boat")
+ExpandedHours2$Days<-c(31,30,31,30,31,31,30,31)
+ExpandedHours2$Total<-ExpandedHours2$x*ExpandedHours2$Days
+ExpandedHours2$var<-ExpandedHours2$var*ExpandedHours2$Days^2
+ExpandedHours2$CIhigh<-ExpandedHours2$Total+1.96*sqrt(ExpandedHours2$var)
+ExpandedHours2$CIlow<-ExpandedHours2$Total-1.96*sqrt(ExpandedHours2$var)
+ExpandedHours2$CIlow<-ifelse(ExpandedHours2$CIlow<0,0,ExpandedHours2$CIlow)
+ggplot(ExpandedHours2, aes(x = Month, y=Total)) + geom_bar(stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+AllAnglers<-rbind(ExpandedHours, ExpandedHours2)
+ggplot(AllAnglers, aes(fill=Group, x = Month, y=Total), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(ymin=CIlow, ymax=CIhigh),
+                position=position_dodge(.9), color="black", width=0.05) 
+AllAnglers<-AllAnglers%>%dplyr::group_by(Month)%>%dplyr::summarise(var=sum(var), Total=sum(Total))
+AllAnglers$CIhigh<-AllAnglers$Total+1.96*sqrt(AllAnglers$var)
+AllAnglers$CIlow<-AllAnglers$Total-1.96*sqrt(AllAnglers$var)
+ggplot(AllAnglers, aes(x = Month, y=Total), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+```
+
+
+#Fish Targeted By Anglers
+
+During interviews anglers were asked what kind of fish they were hoping to catch. The following graphs illustrate the frequency each generalized group of fish that were reported. The first graph shows that anglers mostly targeted bream and crappie. However, the second graph, which is separated by month, shows that crappie fishing declined in late spring as fishing for bream increases going into the summer. This graph also shows a decrease in bass fishing from spring to summer. Anglers often target species like crappie and bass in the spring during spawning. The shift from more desirable game species to bream could be a response to the decreased catchability of crappie and bass.
+
+
+```{r echo=FALSE}
+Fish<-table(dat4$Spp..Sought)/length(dat4$Spp..Sought[!is.na(dat4$Spp..Sought)])
+Fish<-as.data.frame(Fish)
+ggplot(Fish, aes(x = Var1, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month")
+```
+
+```{r echo=FALSE}
+#dat4$Month<-factor(dat4$Month, levels=c("March", "April", "May", "June", "July", "August", "September"))
+#counts1 <- table(dat4$Spp..Sought, dat4$Month)/nrow(dat4)
+#barplot(counts1, main="Fish Sought by Month",
+#   xlab="Month", ylab="Relative Frequency",
+#  legend = rownames(counts1),beside=TRUE)
+dat4$Month<- lubridate::month(as.POSIXct(dat4$ï..Date, format="%m/%d/%Y"), label = T)
+counts1 <-table(dat4$Spp..Sought, dat4$Month)
+counts1<- as.matrix(counts1)
+counts1<-counts1[,-1:-2]
+counts1<-counts1[,-9:-10]
+counts1 <- apply(counts1,2,function(x){x/sum(x)})
+counts1<-as.table(counts1)
+counts1<-as.data.frame(counts1)
+counts1$Group<-counts1$Var1
+ggplot(counts1, aes(fill=Group, x = Var2, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month") 
+```
+
+# Species Caught By Anglers
+
+During interviews the type of fish caught by anglers was recorded. The following graphs illustrate the frequency each generalized group of fish that were reported. The first graph clearly shows that bream was the most commonly reported category, followed by crappie and bass. The second graph shows a decline in the number of interviews where crappie and bass were reported from the spring to the summer. However, the number of interviews where anglers reported successfully harvesting bream remains constant with a sharp increase in June. This could be a result of the increase in the number of anglers targeting bream specifically.
+
+
+```{r echo=FALSE}
+Fish<-table(dat4$Spp..Caught)/length(dat4$Spp..Caught[!is.na(dat4$Spp..Caught)])
+Fish<-as.data.frame(Fish)
+ggplot(Fish, aes(x = Var1, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month")
+```
+
+```{r echo=FALSE}
+dat4$Month<- lubridate::month(as.POSIXct(dat4$ï..Date, format="%m/%d/%Y"), label = T)
+counts1 <-table(dat4$Spp..Caught, dat4$Month)
+counts1<- as.matrix(counts1)
+counts1<-counts1[,-1:-2]
+counts1<-counts1[,-9:-10]
+counts1 <- apply(counts1,2,function(x){x/sum(x)})
+counts1<-as.table(counts1)
+counts1<-as.data.frame(counts1)
+counts1$Group<-counts1$Var1
+ggplot(counts1, aes(fill=Group, x = Var2, y=Freq), las=2)+
+  geom_bar(position=position_dodge(),stat="identity") + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month") 
+```
+
+# Time Fished 
+
+The following two graphs depict the time fished by month, time fished by temperature, and the number of fish caught given the length of the fishing trip. In the cooler months of March and April fishing trips tended to be longer on average. However, there seems to be no trend between temperature and the length of fishing trips. This could be due to the change in the target species from March-May. Anglers might be willing to commit to longer trips when fishing for species like crappie or bass but make shorter trips when targeting bream. The length of time fished seems positively correlated with the number of fish caught, which makes sense. However, the length of a fishing trip is not a good predictor of the number of fish caught per trip. This could be a result of angler skill, fishing location, or target species.
+
+
+```{r echo=FALSE}
+dat<-read.csv("_dat/CompleteCreel_gr30_spp.csv")
+dat$Month<- lubridate::month(as.POSIXct(dat$ï..Date, format="%m/%d/%Y"), label = T)
+mean(dat$Total.Effort)
+ggplot(dat, aes(x = Month, y=DecimalTime), las=2)+
+  geom_boxplot() + theme_classic() + scale_fill_grey()+
+    labs(y= "Time Fished (hours)", x = "Month") 
+```
+
+```{r echo=FALSE}
+ggplot(dat, aes(Total.Effort, Air.Temperature, color = Month)) + 
+  geom_point( )+
+  labs(title="Time Fished vs Temperature", 
+       x="Time Fished (hours)",
+       y="Temperature (F)"
+       ) + theme_classic()
+```
+
+```{r echo=FALSE}
+sum<-dat$X..Kept+dat$X..Released
+plot(sum~Total.Effort, data=dat, main="Number of Fish Hooked vs Time Fished",xlab="Time Fished", ylab="Number of Fish Hooked", xlim=c(0,15))
+```
+
+#Environmental Covariates
+
+During survey dates general weather conditions were described as cloudy, raining, or sunny. The following graphs show the distributions of time fished, the number of groups observed fishing, and the number of fish caught. The length of fishing trips was the most variable on cloudy days, followed by sunny days. However, the mean fishing trip length was less than two hours for each weather category.  The number of groups observed fishing was also the most variable on cloudy days followed by sunny days. The number of fish caught was also the most variable on cloudy days, but on average, anglers caught few fish in all weather categories. 
+
+
+```{r echo=FALSE}
+boxplot(Total.Effort~Weather, data=dat, main="Time Fished Durring Generalized Weather Conditions",xlab="Weather", ylab="Time Fished")
+```
+
+```{r echo=FALSE}
+dat2$Number.of.individuals<-as.numeric(dat2$Number.of.individuals)
+boxplot(dat2$Number.of.individuals~dat2$Weather, main="Angler Turnout Durring Generalized Weather Conditions", 
+   xlab="Weather", ylab="Number of Anglers")
+```
+
+```{r echo=FALSE}
+boxplot(X..Kept~Weather, data=dat, main="Fish Caught Durring Generalized Weather Conditions", xlab="Weather", ylab="Catch")
+```
+
+# Angler Origin
+
+During interviews anglers reported their resident county. All counties reported by angers connect to Oktibbeha County. The three most frequently reported counties are Oktibbeha, Noxubee, and Winston counties which are the same three counties covered by the Sam D. Hamilton Noxubee National Wildlife Refuge. The population size of each county and their proximity to Buff Lake could be responsible for higher angler turnouts from these counties.
+
+
+```{r echo=FALSE}
+counts5 <- table(na.omit(dat$County.State))/nrow(dat)
+counts5<- as.data.frame(counts5)
+counts5$County<-counts5$Var1
+ggplot(counts5, aes(x = County, y=Freq), las=2)+
+  geom_bar(stat="identity") + theme_classic() + scale_fill_grey()+
+    labs(y= "Relative Frequency", x = "Month") 
+```
+
+# Activities on the Refuge
+
+During the bus route creel survey creel clerks waited at three different sites within the refuge for two hours each. At each site the clerk recorded the arrival and departure time of vehicles. The clerk also recorded any activities that the individuals from each vehicle participated in. If no activity was observed, it was marked as "other". The most frequently recorded activities were walking, bank fishing, and boat fishing. Excluding the "other" category, boat fishing had the longest wait times on average. Although the "walking" category was the most frequent reported, it had the shortest wait times at each access point, averaging around 15 minutes. 
+
+
+```{r echo=FALSE}
+par(mar=c(6, 4.1, 4.1, 2.1))
+ggplot(dat3, aes(x = Description.of.Activity, y=DecimalTime), las=2)+
+  geom_boxplot() + theme_classic() + scale_fill_grey()+
+    labs(y= "Wait Time at Access (hours)", x = "Activity") 
+```
+
+
+
+``

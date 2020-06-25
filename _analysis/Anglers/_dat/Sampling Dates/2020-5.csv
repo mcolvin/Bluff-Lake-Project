@@ -1,0 +1,17 @@
+TIME,DAY,START_SITE,START_DIR
+11,10,S2,Counter Clockwise
+7,11,S2,Counter Clockwise
+3,12,S3,Counter Clockwise
+7,16,S2,Clockwise
+11,18,S1,Counter Clockwise
+11,19,S3,Clockwise
+7,20,S3,Counter Clockwise
+11,23,S1,Clockwise
+3,24,S3,Counter Clockwise
+11,25,S3,Counter Clockwise
+7,26,S2,Counter Clockwise
+7,27,S2,Counter Clockwise
+11,28,S2,Counter Clockwise
+7,29,S3,Counter Clockwise
+7,30,S1,Counter Clockwise
+3,31,S3,Counter Clockwise
