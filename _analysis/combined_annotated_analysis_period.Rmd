@@ -153,10 +153,10 @@ summary(gam_4)
 summary(gam_4)$s.table
 
 data$FitG4<- gam_4$fitted.values
-plot(FitG4~Date.Time, data, type="l", col="red", ylim=c(68.6,69.8), 
+plot(FitG4~Date.Time, data, type="l", col="red", ylim=c(68.2,69.3), 
      main="GAM Model 4", xlab="Date", ylab="Water Surface Elevation")
 par(new=T)
-plot(WSE~Date.Time, data, type="l", col="blue", ylim=c(68.6,69.8),ylab=NA, xlab=NA)
+plot(WSE~Date.Time, data, type="l", col="blue", ylim=c(68.2,69.3),ylab=NA, xlab=NA)
 legend("topleft", c("Predicted", "Lake Elevation"),
        col = c("red", "black"), lty = c(1, 1))
 ```
@@ -325,9 +325,10 @@ for (i in 1:length(combos))
     indx<-which(fish3$yr_period==combos[i]) # ROW INDICES FOR THE YEAR MONTH COMBINATION SHOULD BE A VECTOR OF ~ 30 VALUES
     ## FIRST DAY
     first_day_row_indx<- indx[1]
-    fish3$volume[first_day_row_indx]<-101976480
+    fish3$volume[first_day_row_indx]<-257558197
     ## INITIAL VOLUME AT THE FIRST OF THE period-
-    # 4-101257957 5-101294378 6-101377521 7-101514389 8-101703873 9-101976480
+    #  0-257558197 1-258323648 2-259113476 3-259651880 4-259786359 
+    #  5-259909631 6-260121798 7-260439030 8-260989054 9-261496613
     ## LOOP OVER REMAINING DAYS IN THE MONTH
     print(i)
     for(j in 2:length(indx))
@@ -338,7 +339,7 @@ for (i in 1:length(combos))
         }
     }
 
-#write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/9Boards.csv")
+write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/9Boards.csv")
 
 theme_set(theme_classic())
 
