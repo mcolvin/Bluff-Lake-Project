@@ -1,20 +1,25 @@
-#Water Respiration----
-dat<-read.csv("DO-Sampling/_dat/Data/WC_Respiration_June15_16_2020.csv")
-Dark<-subset(dat, ï..SampleType=="Dark")
 library(dplyr)
 library(lubridate)
 library(raster)
 library(rgdal)
 library(rgeos)
 library(ggplot2)
-Dark%>%dplyr::group_by(as.factor(Samplelocation))%>%dplyr::summarize(mean(EndDO))
+
+#Water Respiration----
+dat<-read.csv("DO-Sampling/_dat/Data/WC_Respiration_June15_16_2020.csv")
+Dark<-subset(dat, ï..SampleType=="Dark")
 Dark$StartTime<-as.POSIXct(Dark$StartTime, format="%m/%d/%Y %H:%M")
 Dark$EndTime<-as.POSIXct(Dark$EndTime, format="%m/%d/%Y %H:%M")
-Dark$EndTime-Dark$StartTime
-S1<-(9.66-7.56)/22.5
-S2<-(7.90-6.37)/22.75
-WCresp<-(S1+S2)/2
-tempC<-31
+Dark$DiffTime<-Dark$EndTime-Dark$StartTime
+Dark$DiffTime<-as.numeric(Dark$DiffTime)
+Dark$WCresp<-(Dark$InitialDO-Dark$EndDO)/Dark$DiffTime
+EndDO<-Dark%>%dplyr::group_by(as.factor(Samplelocation), DepthofCollection)%>%dplyr::summarize(EndDO=mean(EndDO), StartDO=mean(InitialDO),DiffTime=mean(DiffTime))
+EndDO$DiffTime<-as.numeric(EndDO$DiffTime)
+EndDO$WCresp<-(EndDO$StartDO-EndDO$EndDO)/EndDO$DiffTime
+
+
+WCresp<-0.07203515 #lake average
+tempC<-25
 #Sediment Respiration----
 SOU<-(((0.287*tempC-2.5)*44.661)*.7)*0.001
 dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
@@ -22,17 +27,29 @@ dat2$depth<- 66.52752-dat2$POINT_Z
 dat2$depth<-ifelse(dat2$depth<=0, 0, dat2$depth)
 DOdusk<-10
 Lengthnight<-10
-dat2$Longitude<-dat2$ï..POINT_X
-dat2$Latitude<-dat2$POINT_Y
-
 #DO Model----
-dat2$DOdawn<-DOdusk-(Lengthnight*((SOU/dat2$depth)+WCresp))
+#dat2$DOdawn<-DOdusk-(Lengthnight*((SOU/dat2$depth)+WCresp))
+#dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
+
+#DO Model 2----
+dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+WCresp<-0.07203515/60 #lake average
+tempC<-25
+SOU<-((((0.287*tempC-2.5)*44.661)*.7)*0.001)/60
+DOdusk<-10
+Lengthnight<-10*60
+DOsat<-4.09+(10.5*exp(-0.0371*25))
+DE<-(DOdusk*DOsat)*(2.2*10^-5)*(0.03^-1)*60*10^-2
+dat2$Dawn<-DOdusk-(((SOU*dat2$depth^-1)+WCresp+(DE*dat2$depth^-1))*Lengthnight)
 dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
+
 
 library(gstat)
 library(sp)
 ## ASSIGN LONGITUED AND LATITUDE AS X AND Y
 ## COORINDATES
+dat2$Longitude<-dat2$ï..POINT_X
+dat2$Latitude<-dat2$POINT_Y
 coordinates(dat2) = ~Longitude+Latitude
 proj4string(dat2) <- CRS("+proj=utm +zone=16 ellps=WGS84")
 
