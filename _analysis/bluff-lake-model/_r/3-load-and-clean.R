@@ -46,7 +46,7 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     names(discharge_hourly)[4]<-"gage"
     names(discharge_hourly)[6]<-"discharge"
     discharge_hourly<-as.data.table(discharge_hourly)
-    discharge_hourly[,date:=as.Date(datetime)]
+    discharge_hourly[,date:=as.Date(dateTime)]
     discharge_hourly[,year:=as.numeric(format(date,"%Y"))]
     discharge_hourly[,doy:=as.numeric(format(date,"%j"))]
     write.csv(discharge_hourly,"_dat/discharge_hourly.csv")
@@ -58,7 +58,11 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
 #
 #----------------------------------------------------------------------
 
+# Cypress boardwalk
+cypress<- read.xlsx("_dat/Cypress_loggerMay19-June20.xlsx",sheet="Level_loggers")
+cypress<- read.xlsx("_dat/WCS2_Intake_loggerMay19-June20.xlsx",sheet="Reg_Intake_20566057_2020_0124")
 
+WCS2_Intake_loggerMay19-June20
 
 #----------------------------------------------------------------------
 # 
