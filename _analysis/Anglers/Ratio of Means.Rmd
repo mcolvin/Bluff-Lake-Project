@@ -63,28 +63,28 @@ dat$CIhigh<-dat$mCPUE+1.96*sqrt(dat$var)
 dat$CIlow<-dat$mCPUE-1.96*sqrt(dat$var)
 dat$CIlow<-ifelse(dat$CIlow<0,0,dat$CIlow)
 #title = "Average Monthly CPUE for All Fish",
-ggplot(dat, aes(x = Month, y=mCPUE)) + geom_bar(stat="identity") + theme_classic() +labs( 
-                      y= "Catch per Unit Effort (hours)", x = "Month")
+ggplot(dat, aes(x = Month, y=mCPUE)) + geom_bar(stat="identity") + theme_classic() +labs( y= "Catch per Unit Effort (hours)", x = "Month")
 ```
 
 ```{r echo=FALSE}
 dat2$ï..Date<-as.POSIXct(dat2$ï..Date, format="%m/%d/%Y")
 dat2$Month<- lubridate::month(as.POSIXct(dat2$ï..Date, format="%m/%d/%Y"), label = T)
-dat$Month <- factor(dat$Month, levels=c("Mar", "Apr", "May", "Jun", "Jul","Aug", "Sept", "Oct"))
+dat2$Year<-lubridate::year(dat2$ï..Date)
+dat2$Year<- as.factor(dat2$Year)
 Bank<-subset(dat2, Group.Type=="Bank")
-ExpandedHours<-Bank%>%dplyr::group_by(Month,Time)%>%
+ExpandedHours<-Bank%>%dplyr::group_by(Year,Month,Time)%>%
   dplyr::summarise(mAngler.Hours=mean(Angler.Hours, na.rm=T), ndays= n())
-ExpandedHours<-ExpandedHours%>%dplyr::group_by(Month)%>%
+ExpandedHours<-ExpandedHours%>%dplyr::group_by(Year,Month)%>%
   dplyr::summarise(x=sum(mAngler.Hours), var=var(mAngler.Hours))
-ExpandedHours$Days<-c(31,30,31,30,31,31,30,31)
+ExpandedHours$Days<-c(31,30,31,30,31,31,30,31,31,31,30)
 ExpandedHours$Group<-c("Bank")
 ExpandedHours$Total<-ExpandedHours$x*ExpandedHours$Days
 ExpandedHours$var<-ExpandedHours$var*ExpandedHours$Days^2
 ExpandedHours$CIhigh<-ExpandedHours$Total+1.96*sqrt(ExpandedHours$var)
 ExpandedHours$CIlow<-ExpandedHours$Total-1.96*sqrt(ExpandedHours$var)
 ExpandedHours$CIlow<-ifelse(ExpandedHours$CIlow<0,0,ExpandedHours$CIlow)
-ggplot(ExpandedHours, aes(x = Month, y=Total)) + geom_bar(stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month")+
-    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+ggplot(ExpandedHours, aes(x = Month, y=Total, fill=Year)) + geom_bar(position=position_dodge(), stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month")+
+    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05, position=position_dodge(.9)) +scale_fill_grey()
 CrappieCatch<-ExpandedHours
 CrappieCatch$Catch<-ExpandedHours$Total*datC$mCPUE
 CrappieCatch$Species<- "Crappie"
@@ -92,43 +92,47 @@ BreamC<-ExpandedHours
 BreamC$Catch<-ExpandedHours$Total*datB$mCPUE
 BreamC$Species<- "Bream"
 AllCatch<- rbind(CrappieCatch, BreamC)
-ggplot(AllCatch, aes(fill=Species, y=Catch, x=Month)) + 
-    geom_bar(position="dodge", stat="identity")+theme_classic()
-
+AllCatch$Group2<-paste(AllCatch$Year,AllCatch$Species,sep="-")
+ggplot(AllCatch, aes(fill=Group2, y=Catch, x=Month)) + 
+    geom_bar(position="dodge", stat="identity")+theme_classic()+scale_fill_grey()
 Boat<-subset(dat2, Group.Type=="Boat")
 Boat$Number.of.individuals<-as.numeric(Boat$Number.of.individuals)
 Boat$Group.Count<-as.numeric(Boat$Group.Count)
 mean<-mean(Bank$Number.of.individuals/Bank$Group.Count, na.rm = T)
 Boat$Total.Trailer.Count<-as.numeric(Boat$Total.Trailer.Count)
 Boat$PredAngler<-mean*Boat$Total.Trailer.Count*4
-ExpandedHours2<-Boat%>%dplyr::group_by(Month,Time)%>%
+ExpandedHours2<-Boat%>%dplyr::group_by(Year, Month,Time)%>%
   dplyr::summarise(PredAngler2=mean(PredAngler, na.rm=T), ndays= n())
-ExpandedHours2<-ExpandedHours2%>%dplyr::group_by(Month)%>%
+ExpandedHours2<-ExpandedHours2%>%dplyr::group_by(Year,Month)%>%
   dplyr::summarise(x=sum(PredAngler2),  var=var(PredAngler2))
 ExpandedHours2$Group<-c("Boat")
-ExpandedHours2$Days<-c(31,30,31,30,31,31,30,31)
+ExpandedHours2$Days<-c(31,30,31,30,31,31,30,31,31,31,30)
 ExpandedHours2$Total<-ExpandedHours2$x*ExpandedHours2$Days
 ExpandedHours2$var<-ExpandedHours2$var*ExpandedHours2$Days^2
 ExpandedHours2$CIhigh<-ExpandedHours2$Total+1.96*sqrt(ExpandedHours2$var)
 ExpandedHours2$CIlow<-ExpandedHours2$Total-1.96*sqrt(ExpandedHours2$var)
 ExpandedHours2$CIlow<-ifelse(ExpandedHours2$CIlow<0,0,ExpandedHours2$CIlow)
-ggplot(ExpandedHours2, aes(x = Month, y=Total)) + geom_bar(stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month") +
-    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+ggplot(ExpandedHours2, aes(x = Month, y=Total, fill=Year)) + geom_bar(position=position_dodge(), stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month") +
+    geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05,  position=position_dodge(.9)) +scale_fill_grey()
 AllAnglers<-rbind(ExpandedHours, ExpandedHours2)
-ggplot(AllAnglers, aes(fill=Group, x = Month, y=Total), las=2)+
+AllAnglers$Group2<-paste(AllAnglers$Year,AllAnglers$Group,sep="-")
+ggplot(AllAnglers, aes(fill=Group2, x = Month, y=Total), las=2)+
   geom_bar(position=position_dodge(),stat="identity") + 
     theme_classic() + scale_fill_grey()+
     labs(y= "Effort (hours)", x = "Month") +
     geom_errorbar(aes(ymin=CIlow, ymax=CIhigh),
-                position=position_dodge(.9), color="black", width=0.05) 
-AllAnglers<-AllAnglers%>%dplyr::group_by(Month)%>%dplyr::summarise(var=sum(var), Total=sum(Total))
+                position=position_dodge(.9), color="black", width=0.05)+
+  theme(legend.title = element_blank())
+AllAnglers<-AllAnglers%>%dplyr::group_by(Year, Month)%>%dplyr::summarise(var=sum(var), Total=sum(Total))
 AllAnglers$CIhigh<-AllAnglers$Total+1.96*sqrt(AllAnglers$var)
 AllAnglers$CIlow<-AllAnglers$Total-1.96*sqrt(AllAnglers$var)
-ggplot(AllAnglers, aes(x = Month, y=Total), las=2)+
+ggplot(AllAnglers, aes(x = Month, y=Total, fill=Year), las=2)+
   geom_bar(position=position_dodge(),stat="identity") + 
     theme_classic() + scale_fill_grey()+
     labs(y= "Effort (hours)", x = "Month") +
-    geom_errorbar(aes(ymin=CIlow, ymax=CIhigh), color="black", width=0.05) 
+    geom_errorbar(aes(ymin=CIlow, ymax=CIhigh), color="black", width=0.05,
+                  position=position_dodge(.9))+
+  theme(legend.title = element_blank())
 ```
 
 
