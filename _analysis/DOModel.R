@@ -28,8 +28,8 @@ dat2$depth<-ifelse(dat2$depth<=0, 0, dat2$depth)
 DOdusk<-10
 Lengthnight<-10
 #DO Model----
-#dat2$DOdawn<-DOdusk-(Lengthnight*((SOU/dat2$depth)+WCresp))
-#dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
+dat2$DOdawn<-DOdusk-(Lengthnight*((SOU/dat2$depth)+WCresp))
+dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
 
 #DO Model 2----
 dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
