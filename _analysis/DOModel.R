@@ -19,15 +19,15 @@ dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
 #DO Model 2----
 dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")\
 dat2$depth<- 68.39712-dat2$POINT_Z
+Z<-dat2$depth #depth
 WR<-0.07203515/60 #lake average water respiration in mg/L/min
 tempC<-25
 SR<-((((0.287*tempC-2.5)*44.661)*.7)*0.001)/60 #Same as SOU above just SOU/min
 DOdusk<-10 #mg/L
 DOsat<-4.09+(10.5*exp(-0.0371*tempC)) #DO Saturation at a given temperature
 DE<-(DOdusk*DOsat)*(2.2*10^-5)*(0.03^-1)*60*10^-2 #diffusive exchange
-Z<-dat2$depth #depth
 #Integration
-eq_2<-function(DO_t){DO_t-SR*Z^-1 + WR +DE*Z^-1
+eq_2<-function(DO_t){DO_t-SR*Z^-1 + WR +DE*Z^-1}
 #Or it might look like this depending on how integrate 
   #takes the state variable DO
 eq_2_2<-function(DO_t){-SR*Z^-1 + WR +DE*Z^-1}
