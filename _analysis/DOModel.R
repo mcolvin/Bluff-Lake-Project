@@ -40,6 +40,7 @@ DOdusk<-10
 Lengthnight<-10*60
 DOsat<-4.09+(10.5*exp(-0.0371*25))
 DE<-(DOdusk*DOsat)*(2.2*10^-5)*(0.03^-1)*60*10^-2
+# model of DO dynamics. Equation 1 in Miranda et al 2001
 dat2$Dawn<-DOdusk-(((SOU*dat2$depth^-1)+WCresp+(DE*dat2$depth^-1))*Lengthnight)
 dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
 
