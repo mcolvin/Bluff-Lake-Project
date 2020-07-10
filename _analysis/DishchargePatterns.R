@@ -79,7 +79,7 @@ ggplot(dat3, aes(WaterYr, CuDis90))+theme_classic()+geom_line()+
 data<-dat %>%
   dplyr::group_by(ID = data.table::rleid(Discharge_cms > high)) %>%
   dplyr::mutate(Consec_Days = if_else(Discharge_cms > high, row_number(), 0L))
-data2<-data%>%dplyr::group_by(WaterYr)%>%dplyr::summarise(Events=sum(Consec_Days>=1))
+data2<-data%>%dplyr::group_by(WaterYr)%>%dplyr::summarise(Events=sum(Consec_Days==1))
 data2$Events<-ifelse(data2$Events=="NA", 0, data2$Events)
 M1<-glm(Events ~ WaterYr,
     data = data2,
@@ -118,7 +118,7 @@ ggplot(Mduration, aes(WaterYr, mDur))+theme_classic()+geom_point()+
 data3<-dat %>%
   dplyr::group_by(ID = data.table::rleid(Discharge_cms < low)) %>%
   dplyr::mutate(Consec_Days = if_else(Discharge_cms < low, row_number(), 0L))
-data4<-data3%>%dplyr::group_by(WaterYr)%>%dplyr::summarise(Events=sum(Consec_Days>=1))
+data4<-data3%>%dplyr::group_by(WaterYr)%>%dplyr::summarise(Events=sum(Consec_Days==1))
 M3<-glm(Events ~ WaterYr,
         data = data4,
         family = poisson)
@@ -128,6 +128,18 @@ ggplot(data4, aes(WaterYr, Events))+theme_classic()+geom_point()+
   labs(x="Water Year (October-September)", y="Number of Low Flow Events")+
   geom_line(aes(WaterYr,Fit))
 
+#number of low flow days
+dat5<-data3
+dat5$tally<-ifelse(dat5$Consec_Days>=1,1,0)
+dat5<-data3%>%dplyr::group_by(WaterYr)%>%dplyr::summarise(Events=sum(Consec_Days>=1))
+M4<-glm(Events ~ WaterYr,
+        data = dat5,
+        family = poisson)
+summary(M4)
+dat5$Fit<-M4$fitted.values
+ggplot(dat5, aes(WaterYr, Events))+theme_classic()+geom_point()+
+  labs(x="Water Year (October-September)", y="Low Flow Days")+
+  geom_line(aes(WaterYr,Fit))
 
 #duration of low flow events
 duration2<-data3%>%group_by(WaterYr,ID)%>%summarise(Dur=max(Consec_Days))
