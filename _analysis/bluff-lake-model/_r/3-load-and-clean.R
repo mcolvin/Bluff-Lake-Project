@@ -60,9 +60,26 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
 
 # Cypress boardwalk
 cypress<- read.xlsx("_dat/Cypress_loggerMay19-June20.xlsx",sheet="Level_loggers")
-cypress<- read.xlsx("_dat/WCS2_Intake_loggerMay19-June20.xlsx",sheet="Reg_Intake_20566057_2020_0124")
+cypress$Date.Time<-convertToDateTime(cypress$Date.Time)
+cypress<- as.data.table(cypress)
 
-WCS2_Intake_loggerMay19-June20
+# WCS2_Intake_loggerMay19-June20
+WCS2<- read.xlsx("_dat/WCS2_Intake_loggerMay19-June20.xlsx",sheet="Reg_Intake_20566057_2020_0124")
+WCS2$Date.Time<-convertToDateTime(WCS2$Date.Time)
+WCS2<- as.data.table(WCS2)
+
+
+#----------------------------------------------------------------------
+# 
+#  Watershed sizes
+#
+#----------------------------------------------------------------------
+bluff_lake<- 220 # mi^2
+bluff_lake<- bluff_lake*2.58999 # mi^2
+macon<- 768 # mi^2
+macon<- macon*2.58999 # mi^2
+
+
 
 #----------------------------------------------------------------------
 # 
