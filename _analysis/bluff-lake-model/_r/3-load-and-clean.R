@@ -58,6 +58,12 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
 #
 #----------------------------------------------------------------------
 
+com<-odbcConnectAccess("../Bluff Lake.accdb")# has all loggers, levee, cypress, intake
+odbcDriverConnect("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=../Bluff Lake.accdb")
+require(RODBC)
+conn <- odbcConnectAccess2007("../Bluff Lake.accdb")
+
+odbcDriverConnect("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=D:/SampleDB1/sampleDB1.mdb")
 # Cypress boardwalk
 cypress<- read.xlsx("_dat/Cypress_loggerMay19-June20.xlsx",sheet="Level_loggers")
 cypress$Date.Time<-convertToDateTime(cypress$Date.Time)
