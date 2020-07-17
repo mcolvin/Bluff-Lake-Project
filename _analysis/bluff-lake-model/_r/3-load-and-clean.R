@@ -36,8 +36,7 @@ discharge_hourly<-fread("_dat/discharge_hourly.csv")
 discharge_hourly[,date:=as.Date(date)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_hourly$date)))
 if(tmp>15)# pull data again if more than 15 days have passed since last pull
-    {
-    
+    {    
     discharge_hourly <- dataRetrieval::readNWISuv(siteNumbers = "02448000",
         parameterCd = c("00060","00065"),
         startDate = as.Date("1986-10-10"),
@@ -54,25 +53,16 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
 
 #----------------------------------------------------------------------
 # 
-#  WATER LEVEL LOGER DATA
+#  WATER LEVEL LOGGER DATA
 #
 #----------------------------------------------------------------------
+loggers<-read.xlsx("_dat/Level_logger.xlsx")
+names(loggers)<-c("id","location","date_time","pressure","temp_c","barom",
+    "water_level","elevation")
+# open xlsx convertToDateTime fails on big datasets...
+loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
+loggers<-as.data.table(loggers)
 
-com<-odbcConnectAccess("../Bluff Lake.accdb")# has all loggers, levee, cypress, intake
-odbcDriverConnect("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=../Bluff Lake.accdb")
-require(RODBC)
-conn <- odbcConnectAccess2007("../Bluff Lake.accdb")
-
-odbcDriverConnect("Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=D:/SampleDB1/sampleDB1.mdb")
-# Cypress boardwalk
-cypress<- read.xlsx("_dat/Cypress_loggerMay19-June20.xlsx",sheet="Level_loggers")
-cypress$Date.Time<-convertToDateTime(cypress$Date.Time)
-cypress<- as.data.table(cypress)
-
-# WCS2_Intake_loggerMay19-June20
-WCS2<- read.xlsx("_dat/WCS2_Intake_loggerMay19-June20.xlsx",sheet="Reg_Intake_20566057_2020_0124")
-WCS2$Date.Time<-convertToDateTime(WCS2$Date.Time)
-WCS2<- as.data.table(WCS2)
 
 
 #----------------------------------------------------------------------
