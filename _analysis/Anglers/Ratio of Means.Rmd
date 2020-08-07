@@ -10,6 +10,7 @@ date: "`r format(Sys.time(), '%d %B, %Y')`"
 library(ggplot2)
 library(dplyr)
 library(lubridate)
+library(gridExtra)
 ```
 ```{r echo=FALSE}
 dat<-read.csv("_dat/CompleteCreel_gr30_spp.csv")
@@ -35,7 +36,8 @@ datC2<-subset(dat, CaughtCrappie>0)
 datC<-rbind(datC, datC2)
 datC$CPUE<-datC$Crappie.Caught/datC$Total.Effort
 datC<-datC %>% dplyr::group_by(Month) %>%
-  dplyr::summarise(mCPUE=(sum(CPUE)/n()),var=var(CPUE, na.rm=T))
+  dplyr::summarise(mCPUE=(sum(CPUE)/n()), sumRate2=sum(mCPUE^2), sumRate=sum(mCPUE), k=n())%>%mutate(varRate=(sumRate2-((sumRate^2)/k))/(k*(k-1)),
+                                    varRate=ifelse(is.nan(varRate),0, varRate))
 missing<- data.frame(Month=c("Jun","Jul","Aug", "Sep"), mCPUE=c(NA,NA,NA,NA), var=c(NA,NA,NA,NA))
 datC<-rbind(datC,missing)
 datC$Group<-c("Crappie")
@@ -68,7 +70,7 @@ ggplot(dat, aes(x = Month, y=mCPUE)) + geom_bar(stat="identity") + theme_classic
 
 ```{r echo=FALSE}
 dat2$ï..Date<-as.POSIXct(dat2$ï..Date, format="%m/%d/%Y")
-dat2$Month<- lubridate::month(as.POSIXct(dat2$ï..Date, format="%m/%d/%Y"), label = T)
+dat2$Month<- lubridate::month(as.POSIXct(dat2$ï..Date, format="%m/%d/%Y"), label = F)
 dat2$Year<-lubridate::year(dat2$ï..Date)
 dat2$Year<- as.factor(dat2$Year)
 Bank<-subset(dat2, Group.Type=="Bank")
@@ -115,24 +117,54 @@ ExpandedHours2$CIlow<-ifelse(ExpandedHours2$CIlow<0,0,ExpandedHours2$CIlow)
 ggplot(ExpandedHours2, aes(x = Month, y=Total, fill=Year)) + geom_bar(position=position_dodge(), stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month") +
     geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05,  position=position_dodge(.9)) +scale_fill_grey()
 AllAnglers<-rbind(ExpandedHours, ExpandedHours2)
+Apr2020<-data.frame(c(2020, 2020, 2020, 2020, 2020,2020, 2020, 2020, 2020, 2020),
+                    c(4, 7, 8, 9, 10, 4, 7, 8, 9, 10),
+                    c(0,0,0,0,0,0,0,0,0,0), c(0,0,0,0,0,0,0,0,0,0), 
+                    c(0,0,0,0,0,0,0,0,0,0),c("Bank","Boat","Bank","Boat","Bank",
+                   "Boat","Bank","Boat","Bank","Boat","Bank","Boat","Bank",
+                   "Boat","Bank","Boat","Bank","Boat","Bank","Boat"),
+                   c(0,0,0,0,0,0,0,0,0,0),c(0,0,0,0,0,0,0,0,0,0),
+                   c(0,0,0,0,0,0,0,0,0,0))
+names(Apr2020)<-c("Year", "Month","x", "var","Days","Group", "Total", "CIhigh", "CIlow")
+AllAnglers<-rbind(as.data.frame(AllAnglers), Apr2020)
 AllAnglers$Group2<-paste(AllAnglers$Year,AllAnglers$Group,sep="-")
-ggplot(AllAnglers, aes(fill=Group2, x = Month, y=Total), las=2)+
+label<-data.frame(Year= c("2020"), Total=c(4000), Month=c(4))
+ggplot(AllAnglers, aes(fill=Year, x = Month, y=Total), las=2)+
   geom_bar(position=position_dodge(),stat="identity") + 
     theme_classic() + scale_fill_grey()+
     labs(y= "Effort (hours)", x = "Month") +
     geom_errorbar(aes(ymin=CIlow, ymax=CIhigh),
                 position=position_dodge(.9), color="black", width=0.05)+
-  theme(legend.title = element_blank())
+  theme(legend.title = element_blank())+facet_wrap(~Group)+
+  geom_text(data = label, label = "*")
+ggplot(AllAnglers, aes(fill=Year, x = Month, y=Total), las=2)+
+  geom_line(aes(linetype=Year)) + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Effort (hours)", x = "Month")+
+  theme(legend.title = element_blank())+facet_wrap(~Group)+
+  geom_text(data = label, label = "*")
 AllAnglers<-AllAnglers%>%dplyr::group_by(Year, Month)%>%dplyr::summarise(var=sum(var), Total=sum(Total))
 AllAnglers$CIhigh<-AllAnglers$Total+1.96*sqrt(AllAnglers$var)
 AllAnglers$CIlow<-AllAnglers$Total-1.96*sqrt(AllAnglers$var)
+Apr2020<-data.frame(c(2020, 2020, 2020, 2020, 2020),
+                    c(4,7,8,9,10),
+                    c(0,0,0,0,0), c(0,0,0,0,0), c(0,0,0,0,0),
+                    c(0,0,0,0,0))
+names(Apr2020)<-c("Year", "Month", "var", "Total", "CIhigh", "CIlow")
+AllAnglers<-rbind(as.data.frame(AllAnglers), Apr2020)
+label<-data.frame(Year= c("2020"), Total=c(4000), Month=c(4))
 ggplot(AllAnglers, aes(x = Month, y=Total, fill=Year), las=2)+
   geom_bar(position=position_dodge(),stat="identity") + 
     theme_classic() + scale_fill_grey()+
     labs(y= "Effort (hours)", x = "Month") +
     geom_errorbar(aes(ymin=CIlow, ymax=CIhigh), color="black", width=0.05,
                   position=position_dodge(.9))+
-  theme(legend.title = element_blank())
+  theme(legend.title = element_blank())+geom_text(data = label, label = "*")
+ggplot(AllAnglers, aes(x = Month, y=Total, fill=Year), las=2)+
+  geom_line(aes(linetype=Year)) + 
+    theme_classic() + scale_fill_grey()+
+    labs(y= "Effort (hours)", x = "Month") +
+  theme(legend.title = element_blank())+geom_text(data = label, label = "*")
 ```
 
 
