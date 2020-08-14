@@ -1,14 +1,15 @@
 library(data.table)
 library(lubridate)
-data<-read.csv("_dat/Level_logger.csv")
+data<-read.csv("Level_logger.csv")
 data$logger<-data$ï..ï..Location
 data<-as.data.table(data)
 data$Date.Time<-as.POSIXct(data$Date.Time, format="%m/%d/%y %H:%M")
 data$year<-as.numeric(format(data$Date.Time, "%Y"))
 data$doy<-strftime(data$Date.Time, format = "%j")
 data$decimal.time <- hour(data$Date.Time) + minute(data$Date.Time)/60
-tmp<-dcast(data, year+doy+decimal.time~logger,
+tmp<-dcast(data, year+doy+decimal.time+Date.Time~logger,
            value.var="WSE", fun.aggregate =mean)
 n<-dim(tmp)[1]
 tmp<-tmp[1:(n-1),]
 
+write.csv(tmp,"Level_logger_wide.csv")
