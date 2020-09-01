@@ -1,5 +1,5 @@
 
-# dynamcially set working directory
+# dynamically set working directory
 this_dir <- function(directory)
 setwd(file.path(getwd(), directory) )
 # end

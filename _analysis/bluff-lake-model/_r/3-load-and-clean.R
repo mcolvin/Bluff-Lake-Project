@@ -1,3 +1,14 @@
+#----------------------------------------------------------------------
+# 
+#  Watershed sizes
+#
+#----------------------------------------------------------------------
+bluff_lake<- 220 # mi^2
+bluff_lake<- bluff_lake*2.58999 # km^2
+macon<- 768 # mi^2
+macon<- macon*2.58999 # km^2
+
+
 
 #----------------------------------------------------------------------
 # 
@@ -23,6 +34,10 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     discharge_daily[,doy:=as.numeric(format(date,"%j"))]
     write.csv(discharge_daily,"_dat/discharge_daily.csv")
     }
+# scale discharge to watershed area
+ discharge_daily[,Q_bl:=discharge/bluff_lake]
+
+
 
 #----------------------------------------------------------------------
 # 
@@ -65,15 +80,6 @@ loggers<-as.data.table(loggers)
 
 
 
-#----------------------------------------------------------------------
-# 
-#  Watershed sizes
-#
-#----------------------------------------------------------------------
-bluff_lake<- 220 # mi^2
-bluff_lake<- bluff_lake*2.58999 # mi^2
-macon<- 768 # mi^2
-macon<- macon*2.58999 # mi^2
 
 
 
