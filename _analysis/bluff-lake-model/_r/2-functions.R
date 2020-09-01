@@ -1,4 +1,4 @@
-
+#Function for turning water on/off
 In_out_el<-function(location, WSE, discharge)
     {
     if(location==Bridge_1 & WSE<67.39) {x<-0)# no water
@@ -22,3 +22,10 @@ In_out_el<-function(location, WSE, discharge)
     return(x)
     }
 
+#function for converting elevation to volume or volume to elevation
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+volume <- c(257558197, 258323648, 259113476, 259651880, 259786359,
+            259909631, 260121798, 260439030, 260989054, 261496613)
+EL_Vol<- approxfun(elevation, volume, rule=2)
+Vol_EL<- approxfun(volume, elevation, rule=2)

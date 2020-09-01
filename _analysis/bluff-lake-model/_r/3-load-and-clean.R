@@ -8,7 +8,19 @@ bluff_lake<- bluff_lake*2.58999 # km^2
 macon<- 768 # mi^2
 macon<- macon*2.58999 # km^2
 
-
+#----------------------------------------------------------------------
+# 
+#  Widths and elevations for structures
+#
+#----------------------------------------------------------------------
+#emergency overflow measurements (meters)
+EOFwidth<-23
+EOFheight<-68.597
+#Control Structure Measurements (meters)
+#Bays with Radial arm gates (5 total)
+GateBayWidth<-3.6576 #width for one bay
+#Bays with boards (4 total board sections/ 2 bays)
+BoardBayWidth<-1.6764 #width for one board section (2 board sections per bay)
 
 #----------------------------------------------------------------------
 # 
@@ -91,4 +103,7 @@ loggers<-as.data.table(loggers)
 
 bath<- fread("_dat/Bathymetry/CompleteMap.csv")
 names(bath)<-c("X","Y","elevation")
+
+
+
 
