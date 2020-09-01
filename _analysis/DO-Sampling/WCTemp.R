@@ -22,18 +22,29 @@ Day<-Dark%>%group_by(Group)%>%summarize(T1=mean(Temp1))
 
 #Water column DO
 WC<-read.csv("DO-Sampling/_dat/Data/June13_14_2020profile.csv")
-WC$Time.1<-as.POSIXct(WC$Time.1, format="%m/%d/%Y %H:%M")
+WC$Time1<-as.POSIXct(WC$Time1, format="%m/%d/%Y %H:%M")
+WC$Time2<-strftime(WC$Time1, "%m/%d/%Y")
 WC$ï..WP<-as.factor(WC$ï..WP)
 WC$Time<-as.factor(WC$Time)
 WC$Site<-as.factor(WC$Site)
 ggplot(WC, aes(x =Depth.measured, y=DO...mg.L., 
-               group=as.factor(ï..WP), color=Time))+
-  facet_wrap(~Site)+
+               group=as.factor(ï..WP), color=Site))+
+  facet_wrap(~Time2)+
   geom_line(size=1) + theme_classic()+ 
   labs(y= "Water Column DO (mg/L)", x = "Collection Depth")
 #Water column Temp
 ggplot(WC, aes(x =Depth.measured, y=Temp..C., 
                group=as.factor(ï..WP), color=Site))+
-  facet_wrap(~Time)+
+  facet_wrap(~Time2)+
+  geom_line(size=1) + theme_classic()+ 
+  labs(y= "Water Column Temp (C)", x = "Collection Depth")
+
+Profile<-read.csv("DO-Sampling/_dat/Data/RepeatedProfile.csv")
+ggplot(Profile, aes(x =Depth, y=DO, 
+               group=as.factor(ï..Trial)))+
+  geom_line(size=1) + theme_classic()+ 
+  labs(y= "Water Column DO (mg/L)", x = "Collection Depth")
+ggplot(Profile, aes(x =Depth, y=Temp, 
+                    group=as.factor(ï..Trial)))+
   geom_line(size=1) + theme_classic()+ 
   labs(y= "Water Column Temp (C)", x = "Collection Depth")

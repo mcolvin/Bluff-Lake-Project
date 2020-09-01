@@ -1,29 +1,24 @@
 
-#----------------------------------------------------------------------
-# 
-#  Bridges and Notches
-#
-#----------------------------------------------------------------------
+In_out_el<-function(location, WSE, discharge)
+{
+  if(location==Bridge_1 & WSE<67.39) {x<-0)# no water
+  if(location==Bridge_1 & WSE>67.39) {x<-1)# water moving in
 
-In_out<-function(location,wse)
-    {
-    if(location==1 & WSE<67.39) {x<-0}# no water
-    if(location==1 & WSE>67.39) {x<-1}# water moving in
+  if(location==Bridge_2 & WSE>68.11 & discharge<13.25) {x<--1}# water moving out
+  if(location==Bridge_2 & WSE<68.11 & discharge<13.25) {x<-0)# no water 
+  if(location==Bridge_2 & discharge>13.25) {x<-1}
+  # water moving in at B2 is a function of discharge not WSE
 
-    if(location==2 & WSE>68.11) {x<-1}# water moving out
-    if(location==2 & WSE<68.11) {x<-0}# no water
-    if(location==2 & WSE>???) {x<-1}# water moving in
+  if(location==Notch_1 & WSE<68.38 | discharge<6.56) {x<-0)# no water 
+  if(location==Notch_1 & WSE>68.38 | discharge>6.56) {x<-1)# water moving in
 
-    if(location==3 & WSE<68.04) {x<-0}# no water
-    if(location==3 & WSE>68.04) {x<-1}# water moving in
+  if(location==WCS2 & WSE<68.23) {x<-0)# no water
+  if(location==WCS2 & WSE>68.23) {x<-1)# water moving in
 
-    if(location==4 & WSE<68.23) {x<-0}# no water
-    if(location==4 & WSE>68.23) {x<-1}# water moving in
+  if(location==Notch_2 & WSE>68.75 & discharge<24.15) {x<--1}# water moving out
+  if(location==Notch_2 & WSE<68.75 & discharge<24.15) {x<-0)# no water
+  if(location==Notch_2 & WSE<69.20 &discharge>24.15) {x<-1)# water moving in
 
-    if(location==5 & WSE>???) {x<-1}# water moving out
-    if(location==5 & WSE<68.82) {x<-0}# no water
-    if(location==5 & WSE>68.82) {x<-1}# water moving in
-
-    return(x)
-    }
+return(x)
+}
 
