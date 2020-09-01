@@ -19,7 +19,7 @@ macon<- macon*2.58999 # km^2
 # PULL DISCHARGE AND GAUGE DATA FROM USGS PORTAL
 ## PARAMETER CODE 00065 Gage height, feet 00060; Discharge, cubic feet per second
 discharge_daily<-fread("_dat/discharge_daily.csv")
-discharge_daily[,date:=as.Date(date)]
+discharge_daily[,date:=as.Date(datetime)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_daily$date)))
 if(tmp>15)# pull data again if more than 15 days have passed since last pull
     {
@@ -34,8 +34,8 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     discharge_daily[,doy:=as.numeric(format(date,"%j"))]
     write.csv(discharge_daily,"_dat/discharge_daily.csv")
     }
-# scale discharge to watershed area
- discharge_daily[,Q_bl:=discharge/bluff_lake]
+# scale discharge to watershed area m^3/second
+discharge_daily[,Q_bl:=(discharge/bluff_lake)*0.0283168]
 
 
 
@@ -65,6 +65,9 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     discharge_hourly[,doy:=as.numeric(format(date,"%j"))]
     write.csv(discharge_hourly,"_dat/discharge_hourly.csv")
     }
+# scale discharge to watershed area m^3/second
+discharge_hourly[,Q_bl:=(discharge/bluff_lake)*0.0283168]
+
 
 #----------------------------------------------------------------------
 # 
