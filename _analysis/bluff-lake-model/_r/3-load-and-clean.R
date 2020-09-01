@@ -46,9 +46,10 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     discharge_daily[,doy:=as.numeric(format(date,"%j"))]
     write.csv(discharge_daily,"_dat/discharge_daily.csv")
     }
+    
+    
 # scale discharge to watershed area m^3/second
 discharge_daily[,Q_bl:=(discharge/bluff_lake)*0.0283168]
-
 
 
 #----------------------------------------------------------------------
@@ -69,16 +70,21 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
         startDate = as.Date("1986-10-10"),
         endDate = Sys.Date(),
         tz="America/Chicago")
-    names(discharge_hourly)[4]<-"gage"
-    names(discharge_hourly)[6]<-"discharge"
-    discharge_hourly<-as.data.table(discharge_hourly)
+    discharge_hourly<-as.data.table(discharge_hourly)        
+    names(discharge_hourly)[4]<-"discharge"
+    names(discharge_hourly)[6]<-"gage"
     discharge_hourly[,date:=as.Date(dateTime)]
     discharge_hourly[,year:=as.numeric(format(date,"%Y"))]
     discharge_hourly[,doy:=as.numeric(format(date,"%j"))]
-    write.csv(discharge_hourly,"_dat/discharge_hourly.csv")
+    fwrite(discharge_hourly,"_dat/discharge_hourly.csv")
     }
 # scale discharge to watershed area m^3/second
 discharge_hourly[,Q_bl:=(discharge/bluff_lake)*0.0283168]
+discharge_hourly[,hour:=as.numeric(format(dateTime,"%H"))]
+
+# get the mean discharge
+discharge_hourly<- discharge_hourly[,.(n=.N,Q_bl=mean(Q_bl),discharge=mean(discharge)),
+    by=.(year,doy,hour)]
 
 
 #----------------------------------------------------------------------
@@ -92,6 +98,8 @@ names(loggers)<-c("id","location","date_time","pressure","temp_c","barom",
 # open xlsx convertToDateTime fails on big datasets...
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 loggers<-as.data.table(loggers)
+
+
 
 
 

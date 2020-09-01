@@ -15,7 +15,7 @@ figures<- function(n)
         legend("topleft",c("Intake","Cypress"),lwd=c(2,2),
             col=c("black","grey"),bty='n')
         }   
-    if(n=="bluff-lake-q-input")
+    if(n=="bluff-lake-daily-q-input")
         {
         # plot of discharge scaled to watershed size
         # for bluff lake
@@ -23,9 +23,21 @@ figures<- function(n)
             ylab="Discharge, scaled to watershed size (m^3/s)",
             xlab="Date")
         }
+    if(n=="bluff-lake-hourly-q-input")
+        {
+        # plot of discharge scaled to watershed size
+        # for bluff lake
+        plot(Q_bl~date,discharge_hourly,type="l",
+            ylab="Discharge, scaled to watershed size (m^3/s)",
+            xlab="Date")
+            
+         points(Q_bl~date, discharge_daily,type="p",col="red")
+        }        
+        
+        
     }
     
-    
+    discharge_hourly
     
     
     

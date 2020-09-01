@@ -1,9 +1,25 @@
 
 
+# model will be hourly
+
 
 wse_dyn<-function(t,x,parms)
-    {    
-    V_inn_1<-1
+    {
+    wse<- 0# f(V)
+    lake_area<- 0# f(V)
+    acc_due_to_gravivity<- (2*32)^0.5
+    
+    # water coming into the lake from the Noxubee
+    
+    V_inn_1<- 1    
+    
+    
+    
+    # water releasing over the WCS
+    board<-height
+    wcs_head<- 
+    
+
     V_inn_2<-1
     V_inn_3<-1
     em_spill<-1
