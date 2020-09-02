@@ -1,5 +1,7 @@
 # Bluff Lake WSE data begins 05/07/2019
 
+start_date<-as.Date("2019-05-07")
+
 #----------------------------------------------------------------------
 # 
 #  Watershed sizes
@@ -18,11 +20,22 @@ macon<- macon*2.58999 # km^2
 #emergency overflow measurements (meters)
 EOFwidth<-23
 EOFheight<-68.597
+
+
 #Control Structure Measurements (meters)
 #Bays with Radial arm gates (5 total)
-GateBayWidth<-3.6576 #width for one bay
+gate_bay_width<-3.6576 #width for one bay
 #Bays with boards (4 total board sections/ 2 bays)
-BoardBayWidth<-1.6764 #width for one board section (2 board sections per bay)
+board_bay_width<-1.6764 #width for one board section (2 board sections per bay)
+
+# wdith of the water control structure in meters
+# for bay 1 (boarded), 2, 3, 4 (boarded)
+wcs_width[1]<- board_bay_width 
+wcs_width[2]<- gate_bay_width 
+wcs_width[3]<- gate_bay_width 
+wcs_width[4]<- gate_bay_width 
+wcs_width[5]<- board_bay_width 
+
 
 #----------------------------------------------------------------------
 # 

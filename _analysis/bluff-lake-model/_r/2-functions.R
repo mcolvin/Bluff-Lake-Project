@@ -48,21 +48,19 @@ surface <- c(56128, 98168, 206544, 520988, 1239356, 1968932,
 Vol_2_SA<-approxfun(volume,surface,  rule=2)
 EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
-x<- c(257558197:260989054)
-plot(x,SA_2_Vol(x))
 
 # Function for Board Elevation over Time
 Board_Time<-function(DOY, Rotation)
-{
-if(DOY>=1 & DOY<=14) {x<-68.19392}
-if(DOY>=15 & DOY<=181) {x<-68.39712}
-if(DOY>=182 & DOY<=195) {x<-68.19392}
-if(DOY>=196 & DOY<=212) {x<-67.98562}
-if(DOY>=213 & DOY<=226) {x<-67.77732}
-if(DOY>=227 & DOY<=243) {x<-67.56902}
-if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
-if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
-if(DOY>=335 & DOY<=348) {x<-67.77732}
-if(DOY>=349 & DOY<=366) {x<-67.98562}
-return(x)
-}
+    {
+    if(DOY>=1 & DOY<=14) {x<-68.19392}
+    if(DOY>=15 & DOY<=181) {x<-68.39712}
+    if(DOY>=182 & DOY<=195) {x<-68.19392}
+    if(DOY>=196 & DOY<=212) {x<-67.98562}
+    if(DOY>=213 & DOY<=226) {x<-67.77732}
+    if(DOY>=227 & DOY<=243) {x<-67.56902}
+    if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
+    if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
+    if(DOY>=335 & DOY<=348) {x<-67.77732}
+    if(DOY>=349 & DOY<=366) {x<-67.98562}
+    return(x)
+    }
