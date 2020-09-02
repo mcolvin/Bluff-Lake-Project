@@ -28,8 +28,8 @@ gate_bay_width<-3.6576 #width for one bay
 #Bays with boards (4 total board sections/ 2 bays)
 board_bay_width<-1.6764 #width for one board section (2 board sections per bay)
 
-# wdith of the water control structure in meters
-# for bay 1 (boarded), 2, 3, 4 (boarded)
+# width of the water control structure in meters
+# for bay 1 (boarded), 2, 3, 4, 5 (boarded)
 wcs_width[1]<- board_bay_width 
 wcs_width[2]<- gate_bay_width 
 wcs_width[3]<- gate_bay_width 
