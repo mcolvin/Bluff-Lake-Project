@@ -27,19 +27,22 @@ elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 volume <- c(257558197, 258323648, 259113476, 259651880, 259786359,
             259909631, 260121798, 260439030, 260989054, 261496613)
-EL_Vol<- approxfun(elevation, volume, rule=2)
-Vol_EL<- approxfun(volume, elevation, rule=2)
+EL_2_Vol<- approxfun(elevation, volume, rule=2)
+Vol_2_EL<- approxfun(volume, elevation, rule=2)
 
 # Function for converting volume to elevation ----
-dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
-dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+#dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+#dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 
 # Function for converting elevation or volume to surface area ----
 surface <- c(56128, 98168, 206544, 520988, 1239356, 1968932, 
             2609612, 3145228, 3448052, 3793340)
 
-SA_Vol<-approxfun(surface, volume, rule=2)
-SA_EL<-approxfun(surface, elevation, rule=2)
+Vol_2_SA<-approxfun(volume,surface,  rule=2)
+EL_2_SA<-approxfun(elevation,surface,  rule=2)
+
+x<- c(257558197:260989054)
+plot(x,SA_2_Vol(x))
 
 # Function for Board Elevation over Time
 Board_Time<-function(DOY, Rotation)

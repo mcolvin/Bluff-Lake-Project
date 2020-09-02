@@ -1,65 +1,45 @@
-
+library(deSolve)
 
 # model will be hourly
 
 
 wse_dyn<-function(t,x,parms)
     {
-    wse<- 0# f(V)
+    # lake volume in m^3
+    V<-x[1]
+    # convert lake volume to water surfac elevation
+    wse<- Vol_2_EL(V)
+    # surface area
+    sa<- Vol_2_SA(V)
+    
+    
+    
+    
     lake_area<- 0# f(V)
     acc_due_to_gravivity<- (2*32)^0.5
-    
     # water coming into the lake from the Noxubee
-    
     V_inn_1<- 1    
-    
-    
-    
     # water releasing over the WCS
-    board<-height
-    wcs_head<- 
-    
-
+    board<-0
+    wcs_head<-0 
     V_inn_2<-1
     V_inn_3<-1
     em_spill<-1
     wcs<-1
     
-    dV<- inn_1 + inn_2 + inn_3 - em_spill - wcs
-    return(list(dV))
+    dV<- 1#inn_1 + inn_2 + inn_3 - em_spill - wcs
+    return(list(V=dV,wse=wse))
     }
-
-
-
-
-DO_dusk<-10
-parameters <- c(
-    tempC = 25, #Same as SOU above just SOU/min 
-    Z = 2) # depth
-DO_fun<-function(t,x,parms)
-    {
-    DO<-x
-    tempC<-parms["tempC"]
-    Z<-parms["Z"]
-    WR<-0.07203515/60 #lake average water respiration in mg/L/min
-    # DO Saturation at a given temperature        
-    DOsat<-4.09+(10.5*exp(-0.0371*tempC)) 
-    SR<- ((((0.287*tempC-2.5)*44.661)*0.7)*0.001)/60
-    # diffusive exchange
-    DE<-(DO*DOsat)*(2.2*10^-5)*(0.03^-1)*
-        60*10^-2 
-    # below is eq 2. but i am not sure the do term should be ther
-    #dDO<- DO - SR*Z^-1 + WR +DE*Z^-1
-    # I think this is the right ode
-    dDO<- -1*(SR*Z^-1+WR+DE*Z^-1)
-    return(list(dDO))
-    }
+ini_values<-c(258323640)
+parameters<-NULL
 solution<- deSolve::ode(
-    y=DO_dusk, 
+    y=ini_values, 
     times=c(0:(10*60)), 
-    func=DO_fun, 
+    func=wse_dyn, 
     parms=parameters, 
     method="rk4")
+colnames(solution) <- c("time", "V", "wse")
+solution<-as.data.table(solution)
 plot(solution,ylab="DO mg/L",las=1,main="")
 
 
