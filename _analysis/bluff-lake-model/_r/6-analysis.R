@@ -19,19 +19,16 @@ wse_dyn<-function(t,x,parms)
     
     # water control structure head
     # set head to zero when wse<=board
-    wcs_head<- min(0,wse-board)
-    # wdith of the water control structure in meters
-    # for bay 1 (boarded), 2, 3, 4 (boarded)
-    wcs_width[1]<- board_bay_width 
-    wcs_width[2]<- gate_bay_width 
-    wcs_width[3]<- gate_bay_width 
-    wcs_width[4]<- gate_bay_width 
-    wcs_width[5]<- board_bay_width 
+    wcs_head<- min(0,wse-wcs_width)
+    # amount of water flowing out of each bay of the wcs
+    wcs_out<- wcs_head^(3/2)*wcs_width*0.66*0.6*acc_due_to_gravivity
+
+
     
     # water coming into the lake from the Noxubee
     V_inn_1<- 1   
     # this adds 1 m^3/hr 
-    dV<- V_inn_1
+    dV<- V_inn_1-wcs_out
     return(list(V=dV,wse=wse, sa=sa))
     }
 # initialize lake volume in m^3
