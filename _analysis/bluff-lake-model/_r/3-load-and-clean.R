@@ -1,3 +1,5 @@
+# Bluff Lake WSE data begins 05/07/2019
+
 #----------------------------------------------------------------------
 # 
 #  Watershed sizes
@@ -92,18 +94,13 @@ discharge_hourly<- discharge_hourly[,.(n=.N,Q_bl=mean(Q_bl),discharge=mean(disch
 #  WATER LEVEL LOGGER DATA
 #
 #----------------------------------------------------------------------
+# Bluff Lake WSE data begins 05/07/2019
 loggers<-read.xlsx("_dat/Level_logger.xlsx")
 names(loggers)<-c("id","location","date_time","pressure","temp_c","barom",
     "water_level","elevation")
 # open xlsx convertToDateTime fails on big datasets...
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 loggers<-as.data.table(loggers)
-
-
-
-
-
-
 
 
 #----------------------------------------------------------------------

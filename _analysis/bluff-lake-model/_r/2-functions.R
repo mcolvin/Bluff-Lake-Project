@@ -1,4 +1,6 @@
 # Function for turning water on/off ----
+# WSE in meters above sea level
+# discharge in cubic meters per second
 In_out_el<-function(location, WSE, discharge)
     {
     if(location==Bridge_1 & WSE<67.39) {x<-0}# no water
@@ -23,6 +25,8 @@ In_out_el<-function(location, WSE, discharge)
     }
 
 # Function for converting elevation to volume or volume to elevation ----
+#elevation in meters above sea level
+#volume in cubic meters
 elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 volume <- c(257558197, 258323648, 259113476, 259651880, 259786359,
@@ -35,6 +39,9 @@ Vol_2_EL<- approxfun(volume, elevation, rule=2)
 #dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 
 # Function for converting elevation or volume to surface area ----
+# suface area in meters squared
+# volume in cubic meters
+# elevation in meters above sea level
 surface <- c(56128, 98168, 206544, 520988, 1239356, 1968932, 
             2609612, 3145228, 3448052, 3793340)
 
