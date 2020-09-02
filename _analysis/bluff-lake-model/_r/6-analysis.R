@@ -33,9 +33,9 @@ solution<- deSolve::ode(
     method="rk4")
 colnames(solution) <- c("time", "V", "wse","sa")
 solution<-as.data.table(solution)
-plot(V~t,solution,ylab="Lake volume",las=1,main="")
-plot(sa~t,solution,ylab="Lake surface area",las=1,main="")
-plot(wse~t,solution,ylab="Lake water surface elevation",las=1,main="")
+plot(V~time,solution,ylab="Lake volume",las=1,main="")
+plot(sa~time,solution,ylab="Lake surface area",las=1,main="")
+plot(wse~time,solution,ylab="Lake water surface elevation",las=1,main="")
 
 
 
