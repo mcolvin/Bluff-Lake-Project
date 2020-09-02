@@ -102,6 +102,9 @@ discharge_hourly[,hour:=as.numeric(format(dateTime,"%H"))]
 discharge_hourly<- discharge_hourly[,.(n=.N,Q_bl=mean(Q_bl),discharge=mean(discharge)),
     by=.(year,doy,hour)]
 
+# subset hourly discharge data to the dates that wse logger has data
+discharge_hourly<- discharge_hourly[date>=start_date,]
+
 
 #----------------------------------------------------------------------
 # 
