@@ -38,9 +38,11 @@ solution[601,2]
 
 
 #Creating a function for DO from dawn to dusk
-DO_fun<-function(t,x,tempC, Z)
+DO_fun<-function(t,x,parms)
     {
     DO<-x
+    tempC<-parms["tempC"]
+    Z<-parms["Z"]
     WR<-0.07203515/60 #lake average water respiration in mg/L/min
     # DO Saturation at a given temperature        
     DOsat<-4.09+(10.5*exp(-0.0371*tempC)) 
@@ -67,15 +69,15 @@ dat$DO_dusk<-dat$DO
 dat$DawnDO<-NA 
 for (i in 1:length(dat))
 {
-  parameters<-c(tempc = dat$tempC[i], Z = dat$Z[i])
   DO_dusk<-dat$DO_dusk[i]
+  parms=c(tempC = dat$tempC[i], Z = dat$Z[i])
   solution<- deSolve::ode(
     y=DO_dusk, 
     times=c(0:(10*60)), 
-    func=DO_fun, 
-    parms=parameters, 
+    func=DO_fun,
+    parms= parms,
     method="euler")
-  dat$DawnDO<-solution[601,2]
+  dat$DawnDO[i]<-solution[601,2]
 }
 
 
@@ -84,9 +86,7 @@ for (i in 1:length(dat))
 dat$Longitude<-dat$POINT_X
 dat$Latitude<-dat$POINT_Y
 coordinates(dat) = ~Longitude+Latitude
-proj4string(dat) <- CRS("+proj=longlat +datum=WGS84")
-## PROJECT TO UTM
-dat4<-spTransform(dat, CRS("+proj=utm +zone=16 ellps=WGS84"))
+proj4string(dat) <- CRS("+proj=utm +zone=16 ellps=WGS84")
 
 # Grid
 dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
@@ -137,5 +137,9 @@ BluffCrop = as.data.frame(BluffCrop)
 write.csv(BluffCrop, "DO-Sampling/_dat/ModeledDawn9B.csv")
 ## PLOT THE INTERPOLATED GRID
 ggplot(aes(x = long, y = lat), data = BluffCrop) + geom_tile(aes(fill = DO))+
-  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c())+
+  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,11))+
+  xlab("Longitude")+ylab("Latitude")+theme(legend.title=element_blank())
+
+ggplot(aes(x = POINT_X, y = POINT_Y), data = dat) + geom_tile(aes(fill = dat$DO))+
+  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,11))+
   xlab("Longitude")+ylab("Latitude")+theme(legend.title=element_blank())
