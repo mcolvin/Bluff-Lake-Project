@@ -30,7 +30,7 @@ figures<- function(n)
         plot(Q_bl~date,discharge_hourly,type="l",
             ylab="Discharge, scaled to watershed size (m^3/s)",
             xlab="Date")
-            
+            loggers
          points(Q_bl~date, discharge_daily,type="p",col="red")
         }        
         

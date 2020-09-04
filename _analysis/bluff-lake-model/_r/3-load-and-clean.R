@@ -113,11 +113,12 @@ discharge_hourly<- discharge_hourly[date>=start_date,]
 #----------------------------------------------------------------------
 # Bluff Lake WSE data begins 05/07/2019
 loggers<-read.xlsx("_dat/Level_logger.xlsx")
-names(loggers)<-c("id","location","date_time","pressure","temp_c","barom",
-    "water_level","elevation")
+names(loggers)<-c("location","date_time","temp_c","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 loggers<-as.data.table(loggers)
+
+
 
 
 #----------------------------------------------------------------------
@@ -128,6 +129,21 @@ loggers<-as.data.table(loggers)
 
 bath<- fread("_dat/Bathymetry/CompleteMap.csv")
 names(bath)<-c("X","Y","elevation")
+
+
+
+#----------------------------------------------------------------------
+# 
+#  MAKE INPUTS ON COMMON SCALE AND TIME
+#
+#----------------------------------------------------------------------
+
+#discharge_hourly
+#dat<- data.table(
+#dat<- data.table(
+
+
+
 
 
 
