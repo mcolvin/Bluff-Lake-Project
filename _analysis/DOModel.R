@@ -17,7 +17,7 @@ dat2$DOdawn<-DOdusk-(Lengthnight*((SOU/dat2$depth)+WCresp))
 dat2$DOdawn<-ifelse(dat2$DOdawn<=0, 0, dat2$DOdawn)
 
 #DO Model 2----
-dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")\
+dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 dat2$depth<- 68.39712-dat2$POINT_Z
 Z<-dat2$depth #depth
 WR<-0.07203515/60 #lake average water respiration in mg/L/min
@@ -101,48 +101,52 @@ ggplot(aes(x = long, y = lat), data = BluffCrop) + geom_tile(aes(fill = DO))+
 #plot(BluffCrop["DO"])
 
 
-# #Actual DO----
-# dat3<-read.csv("DO-Sampling/_dat/Data/June13_14_2020profile.csv")
-# S1<-dat3%>%group_by(Site, ï..WP)%>%summarise(mean(DO.2..mg.L.))
-# S2<-dat3%>%group_by(Site, ï..WP)%>%summarise(mean(na.omit(DO.2..mg.L..1)))
-# S1-S2
-# dat4<-read.csv("DO-Sampling/_dat/Data/DO_Map_June13_14_2020.csv")
-# dat4$Longitude<-dat4$x
-# dat4$Latitude<-dat4$y
-# coordinates(dat4) = ~Longitude+Latitude
-# proj4string(dat4) <- CRS("+proj=longlat +datum=WGS84") 
-# ## PROJECT TO UTM
-# dat4<-spTransform(dat4, CRS("+proj=utm +zone=16 ellps=WGS84"))
-# ## INTERPOLATE THE SURFACE BY INVERSE DISTANCE WEIGHTING
-# xx<-idw(formula= DO.2..mg.L..1 ~ 1, 
-#         locations=dat4, newdata=grd)
-# 
-# ## SAVE THE OUTPUT OF THE INTERPOLATION AS A DATA.FRAME
-# xxoutput=as.data.frame(xx)[,-4]# DROP VARIANCE COLUMN
-# names(xxoutput)[1:3]<-c("long","lat","DO")
-# 
-# ## ASSIGN COORDINATES TO THE INTERPOLOATIONS AND SPATIAL GRID
-# coordinates(xxoutput) = ~long+lat
-# gridded(xxoutput)<-TRUE
-# 
-# ## import the vector boundary
-# Polygons <- readOGR(dsn=path.expand("DO-Sampling/_dat/BluffLakeOutline/Polygons.shp"),layer="Polygons")
-# ## PROJECT TO UTM
-# Polygons<-spTransform(Polygons, CRS("+proj=utm +zone=16 ellps=WGS84"))
-# 
-# #plot imported shapefile
-# plot(Polygons,
-#      main = "Shapefile imported into R - crop extent",
-#      axes = TRUE,
-#      border = "blue")
-# BluffCrop<-crop(xxoutput, Polygons)
-# 
-# BluffCrop = as.data.frame(BluffCrop)
-#write.csv(BluffCrop, "DO-Sampling/_dat/9BDOmap.csv")
+#Actual DO----
+dat3<-read.csv("DO-Sampling/_dat/Data/June13_14_2020profile.csv")
+S1<-dat3%>%group_by(Site, ï..WP)%>%summarise(mean(Temp..C.))
+S2<-dat3%>%group_by(Site, ï..WP)%>%summarise(mean(na.omit(Temp..C.)))
+S1-S2
+dat4<-read.csv("DO-Sampling/_dat/Data/DO_Map_June13_14_2020.csv")
+dat4$Longitude<-dat4$x
+dat4$Latitude<-dat4$y
+coordinates(dat4) = ~Longitude+Latitude
+proj4string(dat4) <- CRS("+proj=longlat +datum=WGS84")
+## PROJECT TO UTM
+dat4<-spTransform(dat4, CRS("+proj=utm +zone=16 ellps=WGS84"))
+## INTERPOLATE THE SURFACE BY INVERSE DISTANCE WEIGHTING
+xx<-idw(formula= Temp1..C. ~ 1,
+        locations=dat4, newdata=grd)
+
+## SAVE THE OUTPUT OF THE INTERPOLATION AS A DATA.FRAME
+xxoutput=as.data.frame(xx)[,-4]# DROP VARIANCE COLUMN
+names(xxoutput)[1:3]<-c("long","lat","Temp")
+
+## ASSIGN COORDINATES TO THE INTERPOLOATIONS AND SPATIAL GRID
+coordinates(xxoutput) = ~long+lat
+gridded(xxoutput)<-TRUE
+
+## import the vector boundary
+Polygons <- readOGR(dsn=path.expand("DO-Sampling/_dat/BluffLakeOutline/Polygons.shp"),layer="Polygons")
+## PROJECT TO UTM
+Polygons<-spTransform(Polygons, CRS("+proj=utm +zone=16 ellps=WGS84"))
+
+#plot imported shapefile
+plot(Polygons,
+     main = "Shapefile imported into R - crop extent",
+     axes = TRUE,
+     border = "blue")
+BluffCrop<-crop(xxoutput, Polygons)
+
+BluffCrop = as.data.frame(BluffCrop)
+write.csv(BluffCrop, "DO-Sampling/_dat/9BTempmap.csv")
 ## PLOT THE INTERPOLATED GRID
-BluffCrop2<-read.csv("DO-Sampling/_dat/9BDOmap.csv")
-ggplot(aes(x = long, y = lat), data = BluffCrop) + geom_tile(aes(fill = DO))+
-  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,9))+
+BluffCrop2<-read.csv("DO-Sampling/_dat/9BTempmap.csv")
+BluffCrop<-read.csv("DO-Sampling/_dat/9BDOmap.csv")
+BluffCrop$Temp<-BluffCrop2$Temp
+write.csv(BluffCrop, "DO-Sampling/_dat/9BTemp_DO.csv")
+
+ggplot(aes(x = long, y = lat), data = BluffCrop) + geom_tile(aes(fill = Temp))+
+  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c())+
   xlab("Longitude")+ylab("Latitude")+theme(legend.title=element_blank())
 
 
