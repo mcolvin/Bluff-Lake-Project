@@ -15,11 +15,12 @@ wse_dyn<-function(t,x,parms)
     acc_due_to_gravivity<- (2*32)^0.5
  
     # water releasing over the WCS
-    board<-0  # Board_Time(ttt) need to link hour to doy
-    
+    WCS1_wse<-68.39712
     # water control structure head
     # set head to zero when wse<=board
-    wcs_head<- min(0,wse-wcs_width)
+    wcs_head<- min(0,wse-WCS1_wse)
+    
+    
     # amount of water flowing out of each bay of the wcs
     wcs_out<- wcs_head^(3/2)*wcs_width*0.66*0.6*acc_due_to_gravivity
 

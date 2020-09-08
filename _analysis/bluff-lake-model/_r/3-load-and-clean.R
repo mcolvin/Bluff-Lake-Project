@@ -134,15 +134,13 @@ names(bath)<-c("X","Y","elevation")
 
 #----------------------------------------------------------------------
 # 
-#  MAKE INPUTS ON COMMON SCALE AND TIME
+#  merge discharge and wse
 #
 #----------------------------------------------------------------------
 
-#discharge_hourly
-#dat<- data.table(
-#dat<- data.table(
 
-
+# discharge_hourly 
+# loggers
 
 
 
