@@ -30,12 +30,14 @@ board_bay_width<-1.6764 #width for one board section (2 board sections per bay)
 
 
 # width of the water control structure in meters
-# for bay 1 (boarded), 2, 3, 4, 5 (boarded)
+# for bay 1 (boarded), 2, 3, 4, 5, 6, 7 (boarded)
 wcs_width[1]<- board_bay_width*2 
 wcs_width[2]<- gate_bay_width 
 wcs_width[3]<- gate_bay_width 
 wcs_width[4]<- gate_bay_width 
-wcs_width[5]<- board_bay_width*2 
+wcs_width[5]<- gate_bay_width 
+wcs_width[6]<- gate_bay_width 
+wcs_width[7]<- board_bay_width*2 
 
 
 #----------------------------------------------------------------------
@@ -96,14 +98,17 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     }
 # scale discharge to watershed area m^3/second
 discharge_hourly[,Q_bl:=(discharge/bluff_lake)*0.0283168]
-discharge_hourly[,hour:=as.numeric(format(dateTime,"%H"))]
+discharge_hourly$dateTime<-as_datetime(discharge_hourly$dateTime)
+discharge_hourly$hour<-hour(discharge_hourly$dateTime)
+
+# subset hourly discharge data to the dates that wse logger has data
+discharge_hourly<- discharge_hourly[date>=start_date,]
 
 # get the mean discharge
 discharge_hourly<- discharge_hourly[,.(n=.N,Q_bl=mean(Q_bl),discharge=mean(discharge)),
     by=.(year,doy,hour)]
 
-# subset hourly discharge data to the dates that wse logger has data
-discharge_hourly<- discharge_hourly[date>=start_date,]
+
 
 
 #----------------------------------------------------------------------
@@ -117,6 +122,7 @@ names(loggers)<-c("location","date_time","temp_c","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 loggers<-as.data.table(loggers)
+loggers$dt<-round_date(loggers$dt, "30 mins")
 
 
 
@@ -137,10 +143,13 @@ names(bath)<-c("X","Y","elevation")
 #  merge discharge and wse
 #
 #----------------------------------------------------------------------
+# several fields to include: year, doy, hour, minute, wse, discharge (@macon, adjusted to watershed, in cms as units)
+loggers
+discharge_hourly   
 
+# subset the data so it starts when we can start calibrating, should be the date you coded in.
+# make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
 
-# discharge_hourly 
-# loggers
 
 
 
