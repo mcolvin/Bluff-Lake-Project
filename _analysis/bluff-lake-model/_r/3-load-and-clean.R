@@ -123,6 +123,7 @@ loggers<-read.xlsx("_dat/Level_logger.xlsx")
 names(loggers)<-c("location","date_time","temp_c","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
+loggers<-loggers[,-c(2)]
 loggers<-as.data.table(loggers)
 loggers$dt<-round_date(loggers$dt, "30 mins")
 loggers$hour<-hour(loggers$dt)
