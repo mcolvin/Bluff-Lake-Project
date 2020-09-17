@@ -99,14 +99,16 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
 # scale discharge to watershed area m^3/second
 discharge_hourly[,Q_bl:=(discharge/bluff_lake)*0.0283168]
 discharge_hourly$dateTime<-as_datetime(discharge_hourly$dateTime)
+discharge_hourly$dateTime<-round_date(discharge_hourly$dateTime, "30 mins")
 discharge_hourly$hour<-hour(discharge_hourly$dateTime)
+discharge_hourly$minute<-minute(discharge_hourly$dateTime)
 
 # subset hourly discharge data to the dates that wse logger has data
 discharge_hourly<- discharge_hourly[date>=start_date,]
 
 # get the mean discharge
-discharge_hourly<- discharge_hourly[,.(n=.N,Q_bl=mean(Q_bl),discharge=mean(discharge)),
-    by=.(year,doy,hour)]
+discharge_hourly<- discharge_hourly[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)),
+    by=.(year,doy,hour, minute)]
 
 
 
@@ -123,7 +125,12 @@ names(loggers)<-c("location","date_time","temp_c","water_level","wse")
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 loggers<-as.data.table(loggers)
 loggers$dt<-round_date(loggers$dt, "30 mins")
-
+loggers$hour<-hour(loggers$dt)
+loggers$year<-year(loggers$dt)
+loggers$doy<-strftime(loggers$dt, format = "%j")
+loggers$minute<-minute(loggers$dt)
+#loggers<- loggers[,.(water_level=mean(water_level),wse=mean(wse), temp_c=mean(temp_c)),
+#                                    by=.(location, year,doy,hour)]
 
 
 
@@ -143,12 +150,15 @@ names(bath)<-c("X","Y","elevation")
 #  merge discharge and wse
 #
 #----------------------------------------------------------------------
-# several fields to include: year, doy, hour, minute, wse, discharge (@macon, adjusted to watershed, in cms as units)
-loggers
-discharge_hourly   
+# several fields to include: year, doy, hour, wse, discharge (@macon, adjusted to watershed, in cms as units)
+discharge_hourly$discharge_cms<-discharge_hourly$discharge*0.0283168
+discharge_hourly$doy<-as.numeric(discharge_hourly$doy)
+loggers$doy<-as.numeric(loggers$doy)
 
-# subset the data so it starts when we can start calibrating, should be the date you coded in.
+lake_info <- merge(loggers, discharge_hourly, by=c("year", "doy", "hour", "minute"), all.x = TRUE)
 # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
+lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_info$hour*60)+
+                      (lake_info$minute)-185760 
 
 
 
