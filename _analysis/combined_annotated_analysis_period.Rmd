@@ -80,7 +80,7 @@ elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
                67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 volume <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
 data<-data.frame(volume, elevation)
-ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^2)), x = "Water Surface Elevation (m)")+ theme_classic()
+ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
 
 EL_Vol<-approxfun(elevation, volume, rule=2)
 Vol_EL<-approxfun(volume, elevation, rule=2)
