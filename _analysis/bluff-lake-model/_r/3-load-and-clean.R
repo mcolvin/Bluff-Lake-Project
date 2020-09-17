@@ -120,7 +120,7 @@ discharge_hourly<- discharge_hourly[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)
 #----------------------------------------------------------------------
 # Bluff Lake WSE data begins 05/07/2019
 loggers<-read.xlsx("_dat/Level_logger.xlsx")
-names(loggers)<-c("location","date_time","temp_c","water_level","wse")
+names(loggers)<-c("location","date_time","pressure", "temp_c","baro","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
 loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 loggers<-loggers[,-c(2)]
