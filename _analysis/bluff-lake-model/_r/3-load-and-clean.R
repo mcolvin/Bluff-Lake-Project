@@ -120,17 +120,19 @@ discharge_hourly<- discharge_hourly[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)
 #
 #----------------------------------------------------------------------
 # Bluff Lake WSE data begins 05/07/2019
-loggers<-read.xlsx("_dat/Level_logger.xlsx")
-names(loggers)<-c("location","date_time","pressure", "temp_c","baro","water_level","wse")
+data<-read.xlsx("_dat/Level_logger.xlsx")
+names(data)<-c("location","date_time","pressure", "temp_c","baro","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
-loggers$dt <- as.POSIXct(loggers$date_time*3600*24, tz="GMT", origin = "1900-01-01")
-loggers<-loggers[,-c(2)]
-loggers<-as.data.table(loggers)
-loggers$dt<-round_date(loggers$dt, "30 mins")
-loggers$hour<-hour(loggers$dt)
-loggers$year<-year(loggers$dt)
-loggers$doy<-strftime(loggers$dt, format = "%j")
-loggers$minute<-minute(loggers$dt)
+data$dt <- as.POSIXct(data$date_time*3600*24, tz="GMT", origin = "1900-01-01")
+data$dt<- as.POSIXct(strftime(data$dt, format = "%Y/%m/%d %H:%M"))
+data$dt<-round_date(data$dt, "30 mins")
+data<-as.data.table(data)
+data$year<-as.numeric(format(data$dt, "%Y"))
+data$doy<-strftime(data$dt, format = "%j")
+data$hour <- hour(data$dt)
+data$minute<-minute(data$dt)
+loggers<-dcast(data, dt+year+doy+hour+minute~location,
+           value.var="wse", fun.aggregate =mean)
 #loggers<- loggers[,.(water_level=mean(water_level),wse=mean(wse), temp_c=mean(temp_c)),
 #                                    by=.(location, year,doy,hour)]
 
@@ -157,9 +159,8 @@ discharge_hourly$discharge_cms<-discharge_hourly$discharge*0.0283168
 discharge_hourly$doy<-as.numeric(discharge_hourly$doy)
 loggers$doy<-as.numeric(loggers$doy)
 
-dat<-dcast(loggers,year+doy+hour+minute~location,value.var="wse",
-    mean)
-dat <- merge(dat, 
+
+lake_info <- merge(loggers, 
     discharge_hourly[,.SD,
         .SDcols=c("year", "doy", "hour", "minute","discharge_cms")],
     by=c("year", "doy", "hour", "minute"), all.x = TRUE)
@@ -170,7 +171,5 @@ lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_i
 
 
 
-dat<-dcast(lake_info,
-    year
 
 
