@@ -31,6 +31,7 @@ board_bay_width<-1.6764 #width for one board section (2 board sections per bay)
 
 # width of the water control structure in meters
 # for bay 1 (boarded), 2, 3, 4, 5, 6, 7 (boarded)
+wcs_width<-rep(0,7)
 wcs_width[1]<- board_bay_width*2 
 wcs_width[2]<- gate_bay_width 
 wcs_width[3]<- gate_bay_width 
@@ -156,13 +157,20 @@ discharge_hourly$discharge_cms<-discharge_hourly$discharge*0.0283168
 discharge_hourly$doy<-as.numeric(discharge_hourly$doy)
 loggers$doy<-as.numeric(loggers$doy)
 
-lake_info <- merge(loggers, discharge_hourly, by=c("year", "doy", "hour", "minute"), all.x = TRUE)
+dat<-dcast(loggers,year+doy+hour+minute~location,value.var="wse",
+    mean)
+dat <- merge(dat, 
+    discharge_hourly[,.SD,
+        .SDcols=c("year", "doy", "hour", "minute","discharge_cms")],
+    by=c("year", "doy", "hour", "minute"), all.x = TRUE)
+
 # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
 lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_info$hour*60)+
                       (lake_info$minute)-185760 
 
 
 
-
+dat<-dcast(lake_info,
+    year
 
 
