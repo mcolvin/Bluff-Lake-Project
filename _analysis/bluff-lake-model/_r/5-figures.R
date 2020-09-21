@@ -2,19 +2,38 @@ figures<- function(n)
     {
     if(n==1)
         {
-        cypress[,location:="Cypress"]
-        WCS2[,location:="Intake"]
-        dat<-rbind(WCS2[,.SD,.SDcols=c("location","Date.Time","elevation")],
-            cypress[,.SD,.SDcols=c("location","Date.Time","elevation")])
-        plot(elevation~Date.Time,dat,type='n',ylim=c(67.5,70.0),
-            ylab="Elevation (m)",xlab="Date",las=1)
-        points(elevation~Date.Time,dat,type='l',col="black",lwd=2,
-            subset=location=="Intake")
-        points(elevation~Date.Time,dat,type='l',col="grey",lwd=2,
-            subset=location=="Cypress")
-        legend("topleft",c("Intake","Cypress"),lwd=c(2,2),
-            col=c("black","grey"),bty='n')
-        }   
+        plot(Cypress~cont_time,lake_info,type='l',ylab="Water surface elevation",
+            ylim=c(67.5,70.5))
+        points(Gauge~cont_time,lake_info,type='l',col="red")
+        points(Intake~cont_time,lake_info,type='l',col="green")
+        par(new=TRUE)
+        plot(discharge_cms~cont_time,lake_info,type='l',yaxt="n",ylab='',
+            col="lightgrey")
+        axis(side=4, at=axTicks(2),labels=TRUE)
+        mtext(side=4,"Discharge")
+             abline(v=125000)       
+        legend("topleft",legend=c("Cypress","Gauge","Intake","Macon gauge"),
+            col=c("black","red","green","lightgrey"),lwd=3,bg="white")
+
+        } 
+
+    if(n==2)
+        {
+        plot(Intake~discharge_cms,lake_info,type='p',ylab="Water surface elevation")
+        plot(Cypress~cont_time,lake_info,type='l',ylab="Water surface elevation",
+            ylim=c(67.5,70.5))
+        points(Gauge~cont_time,lake_info,type='l',col="red")
+        points(Intake~cont_time,lake_info,type='l',col="green")
+        par(new=TRUE)
+        plot(discharge_cms~cont_time,lake_info,type='l',yaxt="n",ylab='',
+            col="lightgrey")
+        axis(side=4, at=axTicks(2),labels=TRUE)
+        mtext(side=4,"Discharge")
+             abline(v=125000)       
+        legend("topleft",legend=c("Cypress","Gauge","Intake","Macon gauge"),
+            col=c("black","red","green","lightgrey"),lwd=3,bg="white")
+        } 
+        
     if(n=="bluff-lake-daily-q-input")
         {
         # plot of discharge scaled to watershed size
