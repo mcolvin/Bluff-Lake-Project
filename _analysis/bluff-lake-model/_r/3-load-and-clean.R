@@ -121,7 +121,7 @@ discharge_hourly<- discharge_hourly[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)
 #----------------------------------------------------------------------
 # Bluff Lake WSE data begins 05/07/2019
 data<-read.xlsx("_dat/Level_logger.xlsx")
-names(data)<-c("location","date_time","pressure", "temp_c","baro","water_level","wse")
+names(data)<-c("ID","location","date_time","pressure", "temp_c","baro","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
 data$dt <- as.POSIXct(data$date_time*3600*24, tz="GMT", origin = "1900-01-01")
 data$dt<- as.POSIXct(strftime(data$dt, format = "%Y/%m/%d %H:%M"))
@@ -168,8 +168,6 @@ lake_info <- merge(loggers,
 # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
 lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_info$hour*60)+
                       (lake_info$minute)-185760 
-
-
 
 
 
