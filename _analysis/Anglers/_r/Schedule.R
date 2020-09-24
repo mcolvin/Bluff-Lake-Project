@@ -9,23 +9,22 @@ h <- new("gantt")
 
 # Add tasks; the first can be used as a title.
 h <- ganttAddTask(h,  # named gantt object
-                  "Bluff Lake Drawdown")  # title of task (title for first line)
+                  "Bluff Lake 2020")  # title of task (title for first line)
 h <- ganttAddTask(h, "2019 Bathymetric Mapping", "2019-01-01", "2019-03-01", done = 100)
-h <- ganttAddTask(h, "2019 Creel", "2019-03-01", "2019-10-31", done = 42)
-h <- ganttAddTask(h, "2019 Spring Logger Deployment", "2019-05-01", "2019-05-07", done = 100)
-h <- ganttAddTask(h, "2019 Drawdown", "2019-07-01", "2019-08-15",done=0)
-h <- ganttAddTask(h, "2019 Fish Sampling", "2019-06-01", "2019-10-31", done = 0)
-h <- ganttAddTask(h, "2019 Water Quality Sampling", "2019-06-01", "2019-10-31", done = 0)
-h <- ganttAddTask(h, "2019 Fall Logger Deployment", "2019-11-01", "2019-11-07", done = 0)
-h <- ganttAddTask(h, "2019 Refill", "2019-12-01", "2020-01-15", done = 0)
-h <- ganttAddTask(h, "2020 Bathymetric Mapping", "2020-01-01", "2020-03-01", done = 0)
+h <- ganttAddTask(h, "2019 Creel", "2019-03-01", "2019-10-31", done = 100)
+h <- ganttAddTask(h, "2019 Logger Deployment", "2019-05-01", "2019-05-07", done = 100)
+h <- ganttAddTask(h, "2019 Logger Deployment", "2019-7-01", "2019-7-07", done = 100)
+h <- ganttAddTask(h, "2019 Logger Deployment", "2019-9-01", "2019-9-07", done = 100)
+h <- ganttAddTask(h, "2019 Logger Deployment", "2019-11-01", "2019-11-07", done = 0)
+h <- ganttAddTask(h, "2020 Logger Deployment", "2020-01-07", "2020-01-14", done = 0)
+h <- ganttAddTask(h, "2020 Logger Deployment", "2020-03-01", "2020-03-07", done = 0)
+h <- ganttAddTask(h, "2020 Logger Deployment", "2020-05-01", "2020-05-07", done = 0)
+h <- ganttAddTask(h, "2020 Logger Deployment", "2020-07-01", "2020-07-07", done = 0)
+h <- ganttAddTask(h, "2020 Logger Deployment", "2020-09-01", "2020-09-07", done = 0)
+h <- ganttAddTask(h, "2020 Bathymetric Mapping", "2020-01-10", "2020-03-01", done = 0)
 h <- ganttAddTask(h, "2020 Creel", "2020-03-01", "2020-10-31", done = 0)
-h <- ganttAddTask(h, "2020 Spring Logger Deployment", "2020-05-01", "2020-05-07", done = 0)
-h <- ganttAddTask(h, "2020 Drawdown", "2020-07-01", "2020-09-01", done = 0)
-h <- ganttAddTask(h, "2020 Fish Sampling", "2020-06-01", "2020-10-31", done = 0)
-h <- ganttAddTask(h, "2020 Water Quality Sampling", "2020-06-01", "2020-10-31", done = 0)
-h <- ganttAddTask(h, "2020 Fall Logger Deployment", "2020-11-01", "2020-11-07", done = 0)
-h <- ganttAddTask(h, "2020 Refill", "2020-12-01", "2021-01-15", done = 0)
+h <- ganttAddTask(h, "2019 Fish Sampling", "2019-11-01", "2020-03-30", done = 0)
+h <- ganttAddTask(h, "2020 Water Quality Sampling", "2019-11-01", "2020-10-31", done = 0)
 
 
 # Use tiff function to write plot to file.
@@ -60,7 +59,3 @@ legend(
 # https://cran.r-project.org/web/packages/plan/plan.pdf
 # https://cran.r-project.org/web/packages/plan/vignettes/plan.html
 # http://dankelley.github.io/plan/examples.html
-
-Hooks1<-c(1,2,3)
-Hooks2<-c(1,2,3)
-sample(Hooks1, replace = F)

@@ -2,10 +2,10 @@ library(gstat)
 library(sp)
 setwd("C:/Users/Victoria Starnes/Documents/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping")
 ## READ IN COORINDATES AND DEPTHS
-vals <- read.csv("_dat/Bathymetry/CombinedCorrected.csv")
+vals <- read.csv("_dat/Bathymetry/CombinedCorrected_ELE4_2020.csv")
 
 ## LOOK AT ELEVATION TRACK
-plot(vals$ElevationBottom,ylim=c(-4,0));abline(h=0)
+plot(vals$ElevationBottom,ylim=c(80,65));abline(h=0)
 
 
 ## ASSIGN LONGITUED AND LATITUDE AS X AND Y 
@@ -14,18 +14,18 @@ coordinates(vals) = ~Longitude+Latitude
 proj4string(vals) <- CRS("+proj=longlat +datum=WGS84") 
 
 ## PROJECT TO UTM
-vals_utm<- spTransform(vals, CRS("+proj=utm +zone=16 ellps=WGS84"))
+vals_utm<-spTransform(vals, CRS("+proj=utm +zone=16 ellps=WGS84"))
 
-write.csv(vals_utm, "depth_vals_utm.csv")
+write.csv(vals_utm, "depth_vals_utm_0220.csv")
 
 ## PLOT THE COORDINATES
 plot(vals_utm,axes=TRUE)
 
 ## GET THE RANGE FOR X AND Y 
 xrange <- range(vals_utm@coords[,1])
-xrange <- c(xrange[1]-70, xrange[2]+60)
+xrange <- c(xrange[1]-200, xrange[2]+0)
 yrange <- range(vals_utm@coords[,2])
-yrange <- c(yrange[1]-60, yrange[2]+500)
+yrange <- c(yrange[1]-0, yrange[2]+200)
 
 ## MAKE A GRID TO INTERPOLATE 15X15 METER GRID
 grd <- expand.grid(x=seq(from=xrange[1], 
@@ -39,7 +39,7 @@ proj4string(grd) <-CRS("+proj=utm +zone=16 ellps=WGS84")
 
 ## PLOT THE GRID AND THE DEPTH COORDINATES
 plot(grd, cex=1.5)
-points(vals_utm, pch=1, col='red', cex=1)
+points(vals_utm, pch=1, col='red', cex=.1)
 
 ## INTERPOLATE THE SURFACE BY INVERSE DISTANCE WEIGHTING
 xx<-idw(formula=ElevationBottom ~ 1, 
@@ -52,9 +52,9 @@ names(xxoutput)[1:3]<-c("long","lat","depth")
 ## ASSIGN COORDINATES TO THE INTERPOLOATIONS AND SPATIAL GRID
 coordinates(xxoutput) = ~long+lat
 gridded(xxoutput)<-TRUE
-write.csv(xxoutput, "_dat/Bathymetry/InterpolatedDepths.csv")
+write.csv(xxoutput, "_dat/Bathymetry/InterpolatedDepths_0220.csv")
 ## PLOT THE INTERPOLATED GRID
-plot(xxoutput["depth"],zlim=c(-3,0))
+plot(xxoutput["depth"])
 points(vals_utm, col='white', type='l') # PUT DOWN TRACK
 
 

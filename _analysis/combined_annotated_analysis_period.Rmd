@@ -1,0 +1,810 @@
+---
+title: "Combined Analysis"
+author: "V. Starnes"
+date: "April 23, 2020"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(scales)
+library(mgcv)
+library(lubridate)
+library(dplyr)
+library(tidyverse)
+library(zoo)
+library(data.table)
+library(tidyverse)
+library(plyr)
+library(car)
+library(ggplot2)
+library(grid)
+# library("devtools")
+# devtools::install_github("adletaw/captioner")
+```
+
+##Linking Water Surface Elevation and Lake Volume
+
+Bathymetric data for Bluff Lake was collected in the winter of 2019 and 2020. Transect data was extrapolated to the whole reservoir and converted to a point layer of elevations in Arc GIS. In this section we link different WCS board heights and corresponding water surface elevation to water volume. Board elevations were supplied by the USFWS.First, all the points in the bathymetric data less than a given board height are selected. Then those elevations are subtracted from the water surface elevation to give depths. Lastly, the depths are multiplied by the area surrounding each point to yield volume. Then lake volume can be plotted against lake elevation and predictive models can be fit.
+
+```{r Linking WSE to Volume, echo=FALSE, fig.cap=c("Figure 1. Relationship between water surface elevation and volume of Bluff Lake.")}
+dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+
+# ---- Lake Volume
+# one point=6.25m^2
+Z <- c(dat$POINT_Z < (66.45402+0))
+Z <- c((66.45402+0-Z))
+Z <- Z*4
+Z <- sum(Z)
+B <- c(dat$POINT_Z < (66.45402+.2083))
+B <- c((66.45402+.2083-B))
+B <- B*4
+B <- sum(B) #convert to volume
+BB <- c(dat$POINT_Z < (66.45402+.4166)) #add board hight and required depth
+BB <- c((66.45402+.44-BB))
+BB <- BB*4
+BB <- sum(BB)
+BBB <- c(dat$POINT_Z < (66.45402+.6249)) #add board hight and required depth
+BBB <- c((66.45402+.66-BBB))
+BBB <- BBB*4
+BBB <- sum(BBB)
+BBBB <- c(dat$POINT_Z < (66.45402+.8332)) #add board hight and required depth
+BBBB <- c((66.45402+.88-BBBB))
+BBBB <- BBBB*4
+BBBB <- sum(BBBB)
+BBBBB <- c(dat$POINT_Z < (66.45402+1.0415)) #add board hight and required depth
+BBBBB <- c((66.45402+1.1-BBBBB))
+BBBBB <- BBBBB*4
+BBBBB <- sum(BBBBB)
+BBBBBB <- c(dat$POINT_Z < (66.45402+1.2498)) #add board hight and required depth
+BBBBBB <- c((66.45402+1.32-BBBBBB))
+BBBBBB <- BBBBBB*4
+BBBBBB <- sum(BBBBBB)
+BBBBBBB <- c(dat$POINT_Z < (66.45402+1.4581)) #add board hight and required depth
+BBBBBBB <- c((66.45402+1.54-BBBBBBB))
+BBBBBBB <- BBBBBBB*4
+BBBBBBB <- sum(BBBBBBB)
+BBBBBBBB <- c(dat$POINT_Z < (66.45402+1.6664)) #add board hight and required depth
+BBBBBBBB <- c((66.45402+1.76-BBBBBBBB))
+BBBBBBBB <- BBBBBBBB*4
+BBBBBBBB <- sum(BBBBBBBB)
+BBBBBBBBB <- c(dat$POINT_Z < (66.45402+1.8747)) #add board hight and required depth
+BBBBBBBBB <- c((66.45402+1.98-BBBBBBBBB))
+BBBBBBBBB <- BBBBBBBBB*4
+BBBBBBBBB <- sum(BBBBBBBBB)
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+volume <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
+data<-data.frame(volume, elevation)
+ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
+
+EL_Vol<-approxfun(elevation, volume, rule=2)
+Vol_EL<-approxfun(volume, elevation, rule=2)
+```
+
+##Lake Level Dynamics
+
+Two water level loggers set to record every 15 minutes were deployed within Bluff Lake.The logger located at the Cypress Boardwalk contained the most consistent an uninterrupted data, so this logger was selected for use in analysis. In this section logger data is plotted with upstream discharge data collected from the Macon USGS gauge (#02448000).
+
+```{r lake, echo=FALSE, fig.cap=c("Figure 2. Discharge data (cms) from USGS gauge #02448000 and elevation data from the Cypress level logger within Bluff Lake are overlaid for the month of December. High river discharges seem to correspond to peaks in lake elevation. Similar treds can be seen across months.")}
+par(mfrow=c(1,1))
+dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+dat2<- read.csv("Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
+dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
+Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
+Elevation <- read.csv("Depth-Mapping/_dat/Level_loggersEL.csv")
+Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
+Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%Y %H:%M"))
+Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
+Elevation$WSElevation<-rescale(Elevation$WSE, to=c(0,1))
+dat2$ï..CFS<-rescale(dat2$ï..CFS, to=c(0,1))
+
+#DECEMBER
+dat2Dec<-subset(dat2, dat2$month=="Dec")
+plot(dat2Dec$ï..CFS~dat2Dec$Date.Time, main="December 2019",type='l',col="red", ylab="", xlab="", yaxt = "n")
+ElevationDec<-subset(Elevation, Elevation$month=="Dec")
+par(new=TRUE)
+ElevationDec<-ElevationDec[order(ElevationDec$Date.Time),]
+plot(WSElevation~Date.Time,ElevationDec, type="l", 
+     xaxt = "n", yaxt = "n", ylab = "", xlab = "Date")
+legend("topleft", c("Discharge", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+```
+
+##Predict WSE given Discharge
+
+Macon gauge data was collected every 30 minutes. Water level data within Bluff Lake was recorded t 15 minute intervals. To match time recordings, Lake level logger readings were averaged every 30 minutes. A generalized addative model was then used to predict lake elevation given discharge. The actual and predicted values were then plotted together.
+
+```{r Pred-WSE, echo=FALSE, fig.cap=c("Figure 3. A generalized addative model was used to predict lake level elevation given month and Noxubee River discharge at the Macon gauge (R-sq.(adj) =  0.942). Fitted values were then plotted against lake level recordings from the Cypress level logger.")}
+#Links between water surface elevation and Macon gauge discharge
+par(mfrow=c(1,1))
+
+dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+dat2<- read.csv("Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
+dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = F)
+dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
+CMS<-ddply(dat2, c("Date.Time","month"), summarize,
+           meanCMS=mean(ï..CFS))
+
+Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
+Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
+Elevation$Date.Time <- as.POSIXct.default(Elevation$Date.Time, format="%m/%d/%y %H:%M")
+Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= F)
+data<-merge(Elevation, CMS)
+#try GAM
+
+
+matrix_gam <- data.table(Ele = data$WSE,
+                         CMS = data$meanCMS,
+                         Month = data$month)
+
+gam_4 <- gam(Ele ~ te(CMS, Month,
+                       k = c(48, 8),
+                       bs = c("cr", "ps")),
+             data = matrix_gam,
+             family = gaussian)
+summary(gam_4)
+summary(gam_4)$s.table
+
+data$FitG4<- gam_4$fitted.values
+plot(FitG4~Date.Time, data, type="l", col="red", ylim=c(68.2,69.3), 
+     main="GAM Model 4", xlab="Date", ylab="Water Surface Elevation")
+par(new=T)
+plot(WSE~Date.Time, data, type="l", col="blue", ylim=c(68.2,69.3),ylab=NA, xlab=NA)
+legend("topleft", c("Predicted", "Lake Elevation"),
+       col = c("red", "black"), lty = c(1, 1))
+```
+
+##Predict Change in Volume given Discharge 
+
+In this section we take the above fit a step further by attempting to predict change in lake volume given changes in discharge. Discharge and Elevation data were averaged for each day. Then, differences between days for both Discharge and Elevation were obtained. Lake elevations were converted to volumes using the gam_1 model from section one. The data was then split based on positive or negative discharge. Separate GAM models were fit to alternate discharges. The actual and predicted lake volumes were then plotted against discharge for both models. Then, using the new models, lake volume was predicted for all available gauge data spanning 1945-2020.
+
+```{r Pred-Volume, echo=FALSE, fig.cap=c("Figure 4. A generalized addative model was used to predict Positive change in lake volume given mean daily discharge at the Noxubee River Macon Gauge.", "Figure 5. A generalized addative model was used to predict Negative change in lake volume given mean daily discharge at the Noxubee River Macon Gauge.")}
+
+ dat<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
+ dat<- read.csv("Depth-Mapping/_dat/DailyMacon01011945_01012020.csv")
+dat$ï..datetime <- as.POSIXct(dat$ï..datetime, format="%m/%d/%Y")
+names(dat)[1]<-"Date"
+#add in missing dates
+dat$DOY<-strftime(dat$Date, format = "%j")
+DoY<-approxfun(dat$Discharge_cfs, dat$DOY)
+
+Date<-seq(as.Date("1945/1/1"), as.Date("2019/12/31"), "days")
+Date<-as.data.frame(Date)
+Date$Date<-as.POSIXct(Date$Date, format="%Y/%m/%d")
+Date$Date<-round_date(Date$Date, "day")
+dat<-left_join(Date, dat, by = "Date")
+dat$Discharge_cms<- ifelse(dat$Discharge_cfs==NA, 
+                              DoY(dat$Discharge_cfs), dat$Discharge_cfs)
+dat$Discharge_cms<-dat$Discharge_cfs/35.3147
+dat$Discharge_cms<-na.approx(dat$Discharge_cms)
+dat$year<-lubridate::year(dat$Date)
+
+ #  dat<- dat %>% 
+ # group_by(year) %>% 
+ #    filter(!is.na(Discharge_cfs))
+ #dat$Discharge_cfs<-na.approx(dat$Discharge_cfs)
+ # dat$Discharge_cms<-dat$Discharge_cfs*0.028316847
+
+ dat$month<- lubridate::month(as.POSIXct(dat$Date, format="%Y/%m/%d"), label = T)
+ dat$year<-lubridate::year(dat$Date)
+ dat$day<-lubridate::day(dat$Date)
+ dat$DeltaCMS<-c(NA,diff(dat$Discharge_cms))
+ dat$meanCMS<-dat$Discharge_cms
+
+ dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+ dat2<- read.csv("Depth-Mapping/_dat/DischargeDataMacon15min.csv")
+ dat2$Date.Time <- as.POSIXct(dat2$Date.Time, format="%m/%d/%Y %H:%M")
+ dat2$month<- lubridate::month(as.POSIXct(dat2$Date.Time, format="%Y/%m/%d %H:%M"), label = T)
+ dat2$Date.Time<-round_date(dat2$Date.Time, "30 mins")
+ CMS<-ddply(dat2, c("Date.Time","month"), summarize,
+            meanCMS=mean(ï..CFS))
+ Elevation <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Level_loggersEL.csv")
+ Elevation <- subset(Elevation, Elevation$ï..Location == "Cypress")
+ Elevation$Date.Time <- (as.POSIXct(Elevation$Date.Time, format="%m/%d/%y %H:%M"))
+ Elevation$month<- lubridate::month(as.POSIXct(Elevation$Date.Time, format="%Y/%m/%d %H:%M"), label= T)
+ data<-merge(Elevation, CMS)
+
+# #try GAM
+ #group data by day
+ data$Date.Time<-round_date(data$Date.Time, "day")
+ data<-data %>% dplyr::group_by(data$Date.Time) %>%
+   dplyr::summarize(meanCMS=mean(meanCMS),
+                    WSElevation=mean(WSE))
+ data2<-data
+
+ #differce between days elevation
+ data2$DeltaEle<-c(NA, diff(data2$WSElevation))
+ 
+ #convert Elevation to volume
+ data2$elevation<-data2$WSElevation
+ data2$Vol<- EL_Vol(data2$elevation)
+  #change in volume
+ data2$DeltaVol<-c(NA,diff(data2$Vol))
+ #difference between days CMS
+ data2$DeltaCMS<-c(NA,diff(data2$meanCMS))
+ #add month back
+ data2$Date.Time<-data2$`data$Date.Time`
+ data2$month<- lubridate::month(as.POSIXct(data2$Date.Time, format="%m/%d/%Y"), label= T)
+# #Get rid of Negatives
+ data4<-data2
+ data4 <- filter(data4, DeltaVol>0)
+ data4 <- filter(data4, DeltaCMS>0)
+ Posgam <- gam(DeltaVol ~ s(meanCMS),
+               data = data4,
+               family = gaussian)
+ summary(Posgam)
+ data5<-data2
+ data5 <- filter(data5, DeltaVol<0)
+ data5 <- filter(data5, DeltaCMS<0)
+ Neggam <- gam(DeltaVol ~ s(meanCMS),
+               data = data5,
+               family = gaussian)
+summary(Neggam)
+#Plots
+ggplot(data4) + geom_point(aes(meanCMS, (DeltaVol/1000000))) + 
+  geom_line(aes(meanCMS, (Posgam$fitted.values/1000000))) + 
+  labs(y = bquote('Change in Lake Volume'~('million'~m^2)), x = bquote('Noxubee Discharge'~(m^3*s^-1))) + theme_classic()
+ggplot(data5) + geom_point(aes(meanCMS, (DeltaVol/1000000))) + 
+  geom_line(aes(meanCMS, (Neggam$fitted.values/1000000))) + 
+  labs(y = bquote('Change in Lake Volume'~('million'~m^2)), x = bquote('Noxubee Discharge'~(m^3*s^-1))) + theme_classic()
+
+
+####Now use GAM to predict change in volume given discharge
+datP <- filter(dat, DeltaCMS>=0)
+datP$DeltaVol<-predict(Posgam, datP)
+datN <- filter(dat, DeltaCMS<0)
+datN$DeltaVol<-predict(Neggam, datN)
+data<-rbind(datN, datP)
+data<-data[order(data$Date),]
+plot(data$meanCMS~data$Date, type="l")
+#write.csv(data, "~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
+
+```
+
+##Simulate Lake Level
+
+We then combined predictions of daily lake volume change with different board elevations and discharge strategies to simulate monthly water level variations. A starting water volume was assigned at the beginning of every month. The starting volume corresponds to the number of boards in the water control structure at the beginning of each drawdown period according to the conservation plan. Then paddlefish discharges were subtracted every seven days starting from day one of each drawdown period. Variable starting lake level elevation as well as differing combinations of paddlefish discharges can be used to look at different management scenarios.
+
+
+
+```{r Paddlefish, echo=FALSE, fig.cap=c("Figure 6. Simulated daily change in lake volume given a weekly 11.3 cms discharge are plotted for drawdown period 2 (1/1-6/30). Blue lines represent simulations for individual years. Horizontal lines represent boards in the control structure. The red line deliniates zero boards in the control structure.")}
+#This section should be re-run for variable starting elevation and discharge combinations.
+fish=read.csv("Depth-Mapping/_dat/PADDLE_DISCHARGE22.csv")
+fish$Date<-as.Date(fish$Date)
+Date<-seq(as.Date("1945/1/1"), as.Date("2019/12/31"), "days")
+Date<-as.data.frame(Date)
+Date$Date<-as.Date(Date$Date)
+Date$Date<-round_date(Date$Date, "day")
+fish<-left_join(Date, fish, by = "Date")
+fish$Date<-as.POSIXct(strptime(as.character(fish$Date),"%Y-%m-%d"))
+fish$month<-as.numeric(format(fish$Date, "%m"))
+fish$year<-as.numeric(format(fish$Date, "%Y"))
+fish$day<-as.numeric(format(fish$Date, "%d"))
+fish$month_day<-format(fish$Date, "%m/%d")
+#str(fish)
+fish<-fish %>% mutate(Date=ymd(Date)) #make this the proper format
+#str(fish)
+
+#make drawdown periods
+#fish <- fish %>% dplyr::group_by(year) %>%
+ #              dplyr::mutate(day2 = seq_along(Date))
+fish$day2<-strftime(fish$Date, format = "%j")
+fish$day2<-as.numeric(unlist(fish$day2))
+fish$period<-ifelse(test = fish$day2>=1 & fish$day2<=14, yes= "1", no=ifelse(fish$day2>=15 & fish$day2<=181, yes="2", no=ifelse(fish$day2>=182 & fish$day2<=195, yes="3", no=ifelse(fish$day2>=196 & fish$day2<=212, yes="4", no=ifelse(fish$day2>=213 & fish$day2<=226, yes="5", no=ifelse(fish$day2>=227 & fish$day2<=243, yes="6", no=ifelse(fish$day2>=244 & fish$day2<=334, yes="7", no=ifelse(fish$day2>=335 & fish$day2<=348, yes="8", no="9"))))))))
+
+
+fish3<-fish
+#interpolate missing values
+fish3$DeltaVol<-na.spline(fish3$DeltaVol)
+fish3 <- fish3 %>% dplyr::group_by(year,period) %>%
+               dplyr::mutate(DOP = seq_along(period))
+fish3$Date2<-as.POSIXct(strptime(as.character(fish3$Date),"%Y-%m-%d"))
+
+fish3=mutate(fish3, fishD=ifelse(DOP==1|DOP==7|DOP==14|DOP==21|DOP==28|DOP==35|DOP==42|DOP==49|DOP==56|DOP==63|DOP==70|DOP==77|DOP==84|DOP==91|DOP==98|DOP==105|DOP==112|DOP==119|DOP==126|DOP==133|DOP==104|DOP==147|DOP==154|DOP==161, 325440, 0)) #create weekly discharges
+#Run different discharges: 0, 81360, 162720, 244080, 325440, 406800, 488160
+
+
+## COMBINE YEAR AND Period TO LOOP OVER 
+fish3$yr_period<-paste(fish3$year,fish3$period,sep="-")
+fish3<-fish3[order(fish3$Date),]
+## YEAR MONTH COMBINATIONS TO LOOP OVER
+combos<-unique(fish3$yr_period)
+#combos<- combos[-length(combos)]## DROP 2020-01 ONLY 1 DAY THERE
+
+
+fish3$volume<-NA  ## KEEP TRACK OF VOLUME THAT CHANGES DAILY AS VOL[PREV DAY] + IN - OUT
+for (i in 1:length(combos))
+    {
+    indx<-which(fish3$yr_period==combos[i]) # ROW INDICES FOR THE YEAR MONTH COMBINATION SHOULD BE A VECTOR OF ~ 30 VALUES
+    ## FIRST DAY
+    first_day_row_indx<- indx[1]
+    fish3$volume[first_day_row_indx]<-257558197
+    ## INITIAL VOLUME AT THE FIRST OF THE period-
+    #  0-257558197 1-258323648 2-259113476 3-259651880 4-259786359 
+    #  5-259909631 6-260121798 7-260439030 8-260989054 9-261496613
+    ## LOOP OVER REMAINING DAYS IN THE MONTH
+    print(i)
+    for(j in 2:length(indx))
+        {
+        current_day<- indx[j]
+        day_before<- indx[j-1]
+        fish3$volume[current_day]<- fish3$volume[day_before]+fish3$DeltaVol[current_day]-fish3$fishD[current_day]
+        }
+    }
+
+write.csv(fish3, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/9Boards.csv")
+
+theme_set(theme_classic())
+
+P2<-subset(fish3, period==1)
+ggplot(P2, aes(day2, (volume/1000000), group = year)) + 
+  geom_line( )+
+  labs(y=bquote('Lake Volume'~('million'~m^2)),
+       x="Day of Year"
+       ) +
+  ylim(99.000000, 103.500000)+
+  geom_hline(yintercept=101.976479)+
+  geom_hline(yintercept=101.703873)+
+  geom_hline(yintercept=101.514389)+
+  geom_hline(yintercept=101.377521)+
+  geom_hline(yintercept=101.294378)+
+  geom_hline(yintercept=101.257987)+
+  geom_hline(yintercept=101.227827)+
+  geom_hline(yintercept=101.047557)+
+  geom_hline(yintercept=100.762655)+
+  geom_hline(yintercept=100.447696, lty=2)
+  
+
+```
+## Linking Objectives to Lake Level Elevation
+
+In this section we link different WCS board heights and corresponding water surface elevation to metrics associated with refuge objectives. Board elevations were supplied by the USFWS. Bathymetric data for Bluff Lake was collected in the winter of 2019 and 2020. Transect data was extrapolated to the whole reservoir and converted to a point layer of elevations in Arc GIS. This point layer was then related to objective metrics.
+
+Waterfowl and Waterbirds
+Metrics for waterfowl and waterbirds assigned within the CCP describe optimal quantities of exposed shoreline and associated depths. For waterfowl, the CCP reccommeds producing 1.1 million duck energy days (DEDs) across the refuge. To calculate the number of DEDs by Bluff Lake the number of exposed hectares of lake bottom were multiplied buy the average yield of DEDs per hectare for sililar habitat. For waterbirds, areas less than 20 cms in depth were selected. 
+
+Fish and Anglers
+Metrics for fish and anglers were not directly assigned. In this section we used hectares >0 m to represent available fish habitat. We chose to break down the suitablity of angler habitat for two types of anglers: anglers that fish from the bank and those who fish from boats. For shoreline anglers a polyline was drawn around accesssible bank areas and boardwalks. A 75 m buffer was then applied to the shoreline and on both sides of the boardwaks. The points within these buffers >1 m in depth were considered as fishable habitat. For boating anglers, points were selected from a polygon covering the boat ramp. The ramp was considered usable with depth >.5 m.
+
+For each board elevation the number of points in the bathymetric data greater or less than the metric criteria are selected. The selected points are then multiplied by the area surrounding each point to yield the associated number of hectares. Fish habitat was converted to water volume, and exposed lake area was converted to duck energy days (DEDs). Lastly, metrics can be plotted against lake elevation and predictive models can be fit.
+
+
+
+
+```{r Objectives.VS.Elevation, echo=FALSE, fig.cap=c("Figure 7. The conservation plan describes waterbird habitat as areas with water depths <20 cm. The ammount of suitable habitat changes with lake elevation","Figure 8. According to the conservation plan, a portion of the refuges yearly 1.1 million DEDs should be produced by Bluff Lake. The lake's contribution to DEDs varies with lake elevation.","Figure 9. Increasing lake volume and subsequent lake elevation increase that ammount of habitat available for fish.","Figure 10. Shoreline waters >1 m in depth that are within casting to anglers change rapidly with lake elevation.", "Figure 11. Boating access to Bluff Lake is rapidly cut off between 67.2-67.5 m in lake elevation.")}
+dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+# ---- Waterbirds
+# areas must be less than 20 cm in depth
+Z <- length(which(dat$POINT_Z > (66.45402-.20))) #add board hight and required depth
+Z <- Z*4 #convert to area
+B <- length(which(dat$POINT_Z > (66.45402+.2083-.20))) #add board hight and required depth
+B <- B*4 #convert to area
+BB <- length(which(dat$POINT_Z > (66.45402+.4166-.20))) #add board hight and required depth
+BB <- BB*4 #convert to area
+BBB <- length(which(dat$POINT_Z > (66.45402+.6249-.20))) #add board hight and required depth
+BBB <- BBB*4 #convert to area
+BBBB <- length(which(dat$POINT_Z > (66.45402+.8332-.20))) #add board hight and required depth
+BBBB <- BBBB*4 #convert to area
+BBBBB <- length(which(dat$POINT_Z > (66.45402+1.0415-.20))) #add board hight and required depth
+BBBBB <- BBBBB*4 #convert to area
+BBBBBB <- length(which(dat$POINT_Z > (66.45402+1.2498-.20))) #add board hight and required depth
+BBBBBB <- BBBBBB*4 #convert to area
+BBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.4581-.20))) #add board hight and required depth
+BBBBBBB <- BBBBBBB*4 #convert to area
+BBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.6664-.20))) #add board hight and required depth
+BBBBBBBB <- BBBBBBBB*4 #convert to area
+BBBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.8747-.20))) #add board hight and required depth
+BBBBBBBBB <- BBBBBBBBB*4 #convert to area
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+WB <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+data<-data.frame(WB, elevation)
+ggplot(data, aes(elevation, WB)) + geom_line() + 
+  labs(y = "Hectares <0.20m in depth", x = "Water Surface Elevation (m)")+   
+  theme_classic()
+
+# ---- Waterfowl
+# DED/m^2=0.4374
+# Dry Areas
+Z <- sum(dat$POINT_Z > (66.45402)) #add board hight and required depth
+Z <- Z*4*0.4374 #convert to DED per area
+B <- sum(dat$POINT_Z > (66.45402+.2083)) #add board hight and required depth
+B <- B*4*0.4374
+BB <- sum(dat$POINT_Z > (66.45402+.4166)) #add board hight and required depth
+BB <- BB*4*0.4374
+BBB <- sum(dat$POINT_Z > (66.45402+.6249)) #add board hight and required depth
+BBB <- BBB*4*0.4374
+BBBB <- sum(dat$POINT_Z > (66.45402+.8332)) #add board hight and required depth
+BBBB <- BBBB*4*0.4374
+BBBBB <- sum(dat$POINT_Z > (66.45402+1.0415)) #add board hight and required depth
+BBBBB <- BBBBB*4*0.4374
+BBBBBB <- sum(dat$POINT_Z > (66.45402+1.2498)) #add board hight and required depth
+BBBBBB <- BBBBBB*4*0.4374
+BBBBBBB <- sum(dat$POINT_Z > (66.45402+1.4581)) #add board hight and required depth
+BBBBBBB <- BBBBBBB*4*0.4374
+BBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.6664)) #add board hight and required depth
+BBBBBBBB <- BBBBBBBB*4*0.4374
+BBBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.8747)) #add board hight and required depth
+BBBBBBBBB <- BBBBBBBBB*4*0.4374
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+WF <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1000000
+data<-data.frame(WF, elevation)
+ggplot(data, aes(elevation, WF)) + geom_line() + 
+  labs(y = "Duck Energy Days (million)", x = "Water Surface Elevation (m)")+   
+  theme_classic()
+
+# ---- Fish
+# Areas greater than 1 meter in depth
+Z <- sum(dat$POINT_Z < (66.45402)) #add board hight and required depth
+Z <- Z*4 #convert to area
+B <- sum(dat$POINT_Z < (66.45402+.2083)) #add board hight and required depth
+B <- B*4 #convert to area
+BB <- sum(dat$POINT_Z < (66.45402+.4166)) #add board hight and required depth
+BB <- BB*4 #convert to area
+BBB <- sum(dat$POINT_Z < (66.45402+.6249)) #add board hight and required depth
+BBB <- BBB*4 #convert to area
+BBBB <- sum(dat$POINT_Z < (66.45402+.8332)) #add board hight and required depth
+BBBB <- BBBB*4 #convert to area
+BBBBB <- sum(dat$POINT_Z < (66.45402+1.0415)) #add board hight and required depth
+BBBBB <- BBBBB*4 #convert to area
+BBBBBB <- sum(dat$POINT_Z < (66.45402+1.2498)) #add board hight and required depth
+BBBBBB <- BBBBBB*4 #convert to area
+BBBBBBB <- sum(dat$POINT_Z < (66.45402+1.4581)) #add board hight and required depth
+BBBBBBB <- BBBBBBB*4 #convert to area
+BBBBBBBB <- sum(dat$POINT_Z < (66.45402+1.6664)) #add board hight and required depth
+BBBBBBBB <- BBBBBBBB*4 #convert to area
+BBBBBBBBB <- sum(dat$POINT_Z < (66.45402+1.8747)) #add board hight and required depth
+BBBBBBBBB <- BBBBBBBBB*4 #convert to area
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+Fish <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+data<-data.frame(Fish, elevation)
+ggplot(data, aes(elevation, Fish)) + geom_line() + 
+  labs(y = "Hectares >0m in depth", x = "Water Surface Elevation (m)")+   
+  theme_classic()
+
+
+#### ---- Anglers
+# For now, following fish model, Areas greater than 1 meter in depth
+Adat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Anglers.csv")
+Z <- sum(Adat$POINT_Z < (66.45402-1)) #add board hight and required depth
+Z <- Z*4 #convert to area
+B <- sum(Adat$POINT_Z < (66.45402-1+.2083)) #add board hight and required depth
+B <- B*4 #convert to area
+BB <- sum(Adat$POINT_Z < (66.45402-1+.4166)) #add board hight and required depth
+BB <- BB*4 #convert to area
+BBB <- sum(Adat$POINT_Z < (66.45402-1+.6249)) #add board hight and required depth
+BBB <- BBB*4 #convert to area
+BBBB <- sum(Adat$POINT_Z < (66.45402-1+.8332)) #add board hight and required depth
+BBBB <- BBBB*4 #convert to area
+BBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.0415)) #add board hight and required depth
+BBBBB <- BBBBB*4 #convert to area
+BBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.2498)) #add board hight and required depth
+BBBBBB <- BBBBBB*4 #convert to area
+BBBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.4581)) #add board hight and required depth
+BBBBBBB <- BBBBBBB*4 #convert to area
+BBBBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.6664)) #add board hight and required depth
+BBBBBBBB <- BBBBBBBB*4 #convert to area
+BBBBBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.8747)) #add board hight and required depth
+BBBBBBBBB <- BBBBBBBBB*4 #convert to area
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+Anglers <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+data<-data.frame(Anglers, elevation)
+ggplot(data, aes(elevation, Anglers)) + geom_line() + 
+  labs(y = "Hectares >1m in depth", x = "Water Surface Elevation (m)")+   
+  theme_classic()
+# Need to deliniate shorelines and establish "end" of boat ramp
+#areas >.5m in depth
+Bdat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Boat.csv")
+Z <- sum(Bdat$POINT_Z < (66.45402)) #add board hight and required depth
+Z <- Z*4 #convert to area
+B <- sum(Bdat$POINT_Z < (66.45402+.2083-0.5)) #add board hight and required depth
+B <- B*4 #convert to area
+BB <- sum(Bdat$POINT_Z < (66.45402+.4166-0.5)) #add board hight and required depth
+BB <- BB*4 #convert to area
+BBB <- sum(Bdat$POINT_Z < (66.45402+.6249-0.5)) #add board hight and required depth
+BBB <- BBB*4 #convert to area
+BBBB <- sum(Bdat$POINT_Z < (66.45402+.8332-0.5)) #add board hight and required depth
+BBBB <- BBBB*4 #convert to area
+BBBBB <- sum(Bdat$POINT_Z < (66.45402+1.0415-0.5)) #add board hight and required depth
+BBBBB <- BBBBB*4 #convert to area
+BBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.2498-0.5)) #add board hight and required depth
+BBBBBB <- BBBBBB*4 #convert to area
+BBBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.4581-0.5)) #add board hight and required depth
+BBBBBBB <- BBBBBBB*4 #convert to area
+BBBBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.6664-0.5)) #add board hight and required depth
+BBBBBBBB <- BBBBBBBB*4 #convert to area
+BBBBBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.8747-0.5)) #add board hight and required depth
+BBBBBBBBB <- BBBBBBBBB*4 #convert to area
+elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
+               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+Ramp <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
+data<-data.frame(Ramp, elevation)
+ggplot(data, aes(elevation, Ramp)) + geom_line() + 
+  labs(y = "Square meters >0.5m in depth", x = "Water Surface Elevation (m)")+   
+  theme_classic()
+
+
+```
+## Scaling Metrics
+
+Objective metrics are then scaled 0-1.
+
+```{r Utilities, echo=FALSE, fig.cap=c("Figure 12. Objectives metrics, like those for waterfowl seen above, were scaled from 0-1.")}
+WB<- rescale(WB, to=c(0,1))
+WBM<-approxfun(elevation, WB, rule=2,yleft=0,yright=1)
+plot(elevation, WB, xlab="Water Surface Elevation", ylab="Hectares (<20cm)", main = "Waterbird Habitat", type="l", col="blue")
+WF<-rescale(WF, to=c(0,1))
+WFM <- approxfun(elevation, WF, rule=2,yleft=0,yright=1)
+Fish <-rescale(Fish, to=c(0,1))
+FishM <- approxfun(elevation, Fish, rule=2,yleft=0,yright=1)
+Anglers<-rescale(Anglers, to=c(0,1))
+AnglersM <- approxfun(elevation, Anglers, rule=2,yleft=0,yright=1)
+Ramp<-rescale(Ramp, to=c(0,1))
+RampM <- approxfun(elevation, Ramp, rule=2,yleft=0,yright=1)
+```
+
+
+```{r Combine Scenarios, echo=FALSE}
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Zero <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(Zero, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/AllBoards.csv")
+
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+One <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(One, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/AllBoards.csv")
+
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Two <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(Two, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/AllBoards.csv")
+
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Three <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(Three, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/AllBoards.csv")
+
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Four <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(Four, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/AllBoards.csv")
+
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Five <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(Five, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/AllBoards.csv")
+
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/4Boards.csv")
+Four$Board<- rep("4B",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/5Boards.csv")
+Five$Board<- rep("5B",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/6Boards.csv")
+Six$Board<- rep("6B",nrow(Six))
+Seven<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/7Boards.csv")
+Seven$Board<- rep("7B",nrow(Seven))
+Eight<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/8Boards.csv")
+Eight$Board<- rep("8B",nrow(Eight))
+Nine<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/9Boards.csv")
+Nine$Board<- rep("9B",nrow(Nine))
+Six <- rbind(Four, Five, Six, Seven, Eight, Nine)
+#write.csv(Six, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/AllBoards.csv")
+#change back to all boards
+Zero<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_0cms_discharge/9Boards.csv")
+Zero$Discharge<- rep("0 cms",nrow(Zero))
+One<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_2.825cms_discharge/9Boards.csv")
+One$Discharge<- rep("2.825 cms",nrow(One))
+Two<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_5.65cms_discharge/9Boards.csv")
+Two$Discharge<- rep("5.65 cms",nrow(Two))
+Three<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_8.475cms_discharge/9Boards.csv")
+Three$Discharge<- rep("8.475 cms",nrow(Three))
+Four<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_11.3cms_discharge/9Boards.csv")
+Four$Discharge<- rep("11.3 cms",nrow(Four))
+Five<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_14.125cms_discharge/9Boards.csv")
+Five$Discharge<- rep("14.125 cms",nrow(Five))
+Six<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/weekly_16.95cms_discharge/9Boards.csv")
+Six$Discharge<- rep("16.95 cms",nrow(Six))
+Six <- rbind(Zero, One, Two, Three, Four, Five, Six)
+write.csv(Six, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/AllBoardsAllDischarge.csv")
+```
+##Forming Utilities 
+
+Here we combine the output from the preceding three sections to form cumulative utilities for each drawdown period. First we take our simulated lake levels for our data range (1945-2020), and assign daily utilities for each objective given water surface elevation using predictive models. Values above 1 or below 0 were normaized to their respective extreme. We then added these utilities together to form the total daily utility using the equation
+
+(W x ((Bank x .5) + (Boat x .5))) + (W x Fish) + (W x Waterbird) + (W x Waterfowl)
+
+where W is equal to the variable weights assigned. Bank and boat angler objectives contribute equally to a single score for all anglers, so their scores received a weight of .5 and then summed. All objectives were then assigned equal weights of .25 making each daily score less than or equal to one. Conditions that result in an elevation below control structure boards were assigned a utility of zero.
+
+After daily utilities were calculated for all discharge scenarios cumulative utilities for each period must be calculated. For each combination of discharge and elevation daily utilities were summed along each drawdown period of each year to form a cumulative utility for that window.
+
+
+```{r Assigning Utilities, echo=FALSE, fig.cap=c("Figure 13. This figure illustates annual variablity in the utility of different paddlefish discharges in drawdown period 2. The daily cumulative utility is plotted for each year.")}
+#This code should be re-run for each elevation/discharge combo, and for variable weighting strategies.
+#Utilities
+dat2<- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/AllBoardsAllDischarge.csv")
+dat2$elevation<-Vol_EL(dat2$volume)
+dat2$WFUt<-WFM(dat2$elevation)
+dat2$WBUt<-WBM(dat2$elevation)
+dat2$FishUt<-FishM(dat2$elevation)
+dat2$AngUt<-AnglersM(dat2$elevation)
+dat2$RampUt<-RampM(dat2$elevation)
+
+W<- c(.25,.25,.25,.25)
+dat2$Utility<-(W[1]*((dat2$RampUt*.5) + (dat2$AngUt*.5))) + (W[2]*dat2$FishUt) + (W[3]*dat2$WBUt) + (W[4]*dat2$WFUt)
+
+#no utility for empty lake
+dat2$Utility<-ifelse(dat2$volume<=100447696, 0, dat2$Utility)
+
+dat2<-dat2 %>%
+  filter(!is.na(Utility))
+dat2$Date <- as.POSIXct(dat2$Date, format="%Y-%m-%d")
+
+dat2$value <- paste(dat2$Board, dat2$Discharge, dat2$year, sep="_")
+dat2 <-dat2 %>%  dplyr::group_by(year, period, value)  %>%  
+  dplyr::arrange(DOP) %>%
+  dplyr::mutate(CumUt = cumsum(Utility))
+write.csv(dat2, "~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/AllUtilities.csv")
+
+dat<-subset(dat2, period==2)
+
+ggplot(dat, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  labs(title="Utility of Paddlefish Discharges-Drawdown Period 2",
+       y="Utility",
+       x="Day of Period")+
+  scale_colour_discrete(
+            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms", 
+                     "14.125 cms", "16.95 cms"),
+            labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))+
+  facet_wrap(~Discharge)
+
+```
+
+
+## Monthly Plots
+
+Utilities for each combination of drawdown period and paddlefish discharge can then be plotted. The optimal management strategy can then be selected.
+
+```{r Monthly Plots, echo=FALSE,layout="l-body-outset", fig.width=8, fig.height=5, fig.cap=c("Figure 14. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 1. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 15. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 2. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 16. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 3. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 17. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 4. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 18. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 5. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 19. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 6. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 20. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 7. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 21. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 8. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.","Figure 22. The left hand plots depict the annual variablity in the utility of different paddlefish discharges in drawdown period 9. In these plots, individual lines represent the daily cumulative utility for each year. The right hand plot depicts the average utility of each discharge strategy across years.")}
+library(ggplot2)
+library(gridExtra)
+dat1<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/noxubee-discharge-states/paddlefish-discharges/period/AllUtilities.csv")
+# dat1<-subset(dat2, Board=="9B")
+dat1<-subset(dat1, period==2)
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+dat2<-subset(dat1, Discharge=="0 cms")
+P1<-ggplot(dat2, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+ scale_color_manual(values=c("grey0"))+
+  theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat3<-subset(dat1, Discharge=="2.825 cms")
+P2<-ggplot(dat3, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  scale_color_manual(values=c("grey10"))+ theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat4<-subset(dat1, Discharge=="5.65 cms")
+P3<-ggplot(dat4, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  scale_color_manual(values=c("grey20"))+theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat5<-subset(dat1, Discharge=="8.475 cms")
+P4<-ggplot(dat5, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  scale_color_manual(values=c("grey30"))+theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat6<-subset(dat1, Discharge=="11.3 cms")
+P5<-ggplot(dat6, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  scale_color_manual(values=c("grey40"))+theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat7<-subset(dat1, Discharge=="14.125 cms")
+P6<-ggplot(dat7, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  scale_color_manual(values=c("grey50"))+theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat8<-subset(dat1, Discharge=="16.95 cms")
+P7<-ggplot(dat8, aes(DOP, CumUt, group=value, color=Discharge)) +
+  geom_line()+
+  scale_color_manual(values=c("grey60"))+theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+dat1$Discharge<-as.factor(dat1$Discharge)
+dat1<-dat1 %>% dplyr::group_by(period, DOP, Discharge) %>%
+  dplyr::mutate(mCumUt=mean(CumUt))
+par(new=T)
+P8<-ggplot(dat1, aes(DOP, mCumUt, group=value, color=Discharge)) +
+  geom_line(size=1.2)+ labs(y = "Cumulative Utility", x = "Day of Period")+
+  scale_color_manual(values = c("grey0", "grey40","grey50", "grey60", "grey10", "grey20", "grey30"),
+            breaks=c("0 cms", "2.825 cms", "5.65 cms", "8.475 cms", "11.3 cms", 
+                     "14.125 cms", "16.95 cms"),
+            labels=c("0", "2.825", "5.65", "8.475", "11.3", "14.125", "16.95"))
+legend<-get_legend(P8)
+P8<-P8+theme(legend.position = "none", axis.title.y = element_blank(), axis.title.x = element_blank())
+grid.arrange(P8,P1,P2,P3,P4,P5,P6,P7,legend, ncol = 4, 
+             layout_matrix = cbind(c(1,1,2,6), c(1,1,3,7), c(1,1,4,8), c(1,1,5,9)),
+              top = textGrob("Utility of Paddlefish Discharges 1/14-6/30", 
+              vjust = 1, gp = gpar(fontface = "bold", cex = 1.5)), 
+              left = textGrob("Cumulative Utility", rot = 90, vjust = .5),
+              bottom=textGrob("Day of Period", vjust = .5))
+
+```
+
+```{r Frequency analysis, echo=FALSE}
+dat1<-subset(dat2, Board=="8B")
+dat1<-subset(dat1, period==1)
+dat1<-dat1 %>% dplyr::group_by(period, DOP, Discharge) %>%
+  dplyr::summarize(MeanUt=mean(CumUt))
+dat1<-dat1[order(dat1$DOP),]
+dat1<-dat1 %>% spread(Discharge, MeanUt)
+dat1<-dat1[, c(1, 2, 6, 5,4,9,8,7,3)]
+dat1$daywin<-colnames(dat1[3:9])[apply(dat1[3:9], 1,which.max)]
+dat1$period<-ifelse(test = dat1$DOP>=1 & dat1$DOP<=7, yes= "1", no=ifelse(dat1$DOP>=8 & dat1$DOP<=14, yes="2", no="3"))
+
+```

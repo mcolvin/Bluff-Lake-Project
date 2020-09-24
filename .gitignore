@@ -5,7 +5,7 @@ _archive/
 _analysis/Depth-Mapping/coverages/TAa07244
 # IGNORE CERTAIN FILETYPES
 /Humminbird-Blackjack/
-*.accdb
+#*.accdb
 
 *.Rdata
 *.las

@@ -1,0 +1,13 @@
+library(lubridate)
+library(dplyr)
+F19<-read.csv("_dat/Fish_2019.csv")
+F20<-read.csv("_dat/Fish_2020.csv")
+F19$Date<-as.POSIXct(F19$Pull.time, format="%m/%d/%Y %H:%M")
+F19$Date<-strptime(F19$Date,"%Y-%m-%d")
+F19$Date<-as.character(F19$Date)
+Fish19<- F19 %>% group_by(Date, Species) %>% tally()
+
+F20$Date<-as.POSIXct(F20$Pull.time, format="%m/%d/%Y %H:%M")
+F20$Date<-strptime(F20$Date,"%Y-%m-%d")
+F20$Date<-as.character(F20$Date)
+Fish20<- F20 %>% filter(!is.na(Species)) %>% group_by(Date, Species) %>% tally()

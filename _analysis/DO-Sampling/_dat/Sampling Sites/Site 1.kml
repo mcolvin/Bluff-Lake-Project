@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Site 1</name>
+    <Style id="poly-000000-2000-77-nodesc-normal">
+      <LineStyle>
+        <color>ff000000</color>
+        <width>2</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d000000</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="poly-000000-2000-77-nodesc-highlight">
+      <LineStyle>
+        <color>ff000000</color>
+        <width>3</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>4d000000</color>
+        <fill>1</fill>
+        <outline>1</outline>
+      </PolyStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="poly-000000-2000-77-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#poly-000000-2000-77-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#poly-000000-2000-77-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Placemark>
+      <name>Open Water</name>
+      <styleUrl>#poly-000000-2000-77-nodesc</styleUrl>
+      <Polygon>
+        <outerBoundaryIs>
+          <LinearRing>
+            <tessellate>1</tessellate>
+            <coordinates>
+              -88.77997,33.281198,0
+              -88.780691,33.281768,0
+              -88.782173,33.281621,0
+              -88.783675,33.281206,0
+              -88.784983,33.280796,0
+              -88.786258,33.28045,0
+              -88.786338,33.278736,0
+              -88.786708,33.277126,0
+              -88.786531,33.275996,0
+              -88.786493,33.275798,0
+              -88.78718,33.273986,0
+              -88.787867,33.272767,0
+              -88.787438,33.271618,0
+              -88.787051,33.27065,0
+              -88.786236,33.270434,0
+              -88.784777,33.271116,0
+              -88.782888,33.271798,0
+              -88.781429,33.271439,0
+              -88.780099,33.271726,0
+              -88.779241,33.272372,0
+              -88.778554,33.271618,0
+              -88.777653,33.271331,0
+              -88.776709,33.272946,0
+              -88.77834,33.28109,0
+              -88.77997,33.281198,0
+            </coordinates>
+          </LinearRing>
+        </outerBoundaryIs>
+      </Polygon>
+    </Placemark>
+  </Document>
+</kml>
