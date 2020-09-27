@@ -63,11 +63,12 @@ DO_fun<-function(t,x,parms)
 dat <- read.csv("DO-Sampling/Export_Output.csv")
 dat$Z<- 68.39712-dat$Elevation #9 boards in the WCS
 dat$Z<-ifelse(dat$Z<=0, 0, dat$Z) #remove dry areas
+dat<-subset(dat, dat$Z>0)
 dat$tempC<-dat$Temp
 dat$DO_dusk<-dat$DO
 
 dat$DawnDO<-NA 
-for (i in 1:length(dat))
+for (i in 1:NROW(dat))
 {
   DO_dusk<-dat$DO_dusk[i]
   parms=c(tempC = dat$tempC[i], Z = dat$Z[i])
@@ -80,7 +81,7 @@ for (i in 1:length(dat))
   dat$DawnDO[i]<-solution[601,2]
 }
 
-
+dat<-na.omit(dat)
 
 
 dat$Longitude<-dat$POINT_X
@@ -134,12 +135,14 @@ plot(Polygons,
 BluffCrop<-crop(xxoutput, Polygons)
 
 BluffCrop = as.data.frame(BluffCrop)
+BluffCrop$DO<-ifelse(BluffCrop$DO<=0, 0, dat$Z) #remove dry areas
+
 write.csv(BluffCrop, "DO-Sampling/_dat/ModeledDawn9B.csv")
 ## PLOT THE INTERPOLATED GRID
 ggplot(aes(x = long, y = lat), data = BluffCrop) + geom_tile(aes(fill = DO))+
-  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,11))+
+  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,10))+
   xlab("Longitude")+ylab("Latitude")+theme(legend.title=element_blank())
 
 ggplot(aes(x = POINT_X, y = POINT_Y), data = dat) + geom_tile(aes(fill = dat$DO))+
-  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,11))+
+  theme_classic()+  scale_fill_gradient(low = "black", high = "grey99", limits = c(0,10))+
   xlab("Longitude")+ylab("Latitude")+theme(legend.title=element_blank())

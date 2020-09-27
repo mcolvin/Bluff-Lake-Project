@@ -103,18 +103,16 @@ ggplot(aes(x = long, y = lat), data = BluffCrop) + geom_tile(aes(fill = DO))+
 
 #Actual DO----
 dat3<-read.csv("DO-Sampling/_dat/Data/June13_14_2020profile.csv")
-<<<<<<< Updated upstream
 S1<-dat3%>%group_by(Site, ï..WP)%>%summarise(mean(Temp..C.))
 S2<-dat3%>%group_by(Site, ï..WP)%>%summarise(mean(na.omit(Temp..C.)))
 S1-S2
 dat4<-read.csv("DO-Sampling/_dat/Data/DO_Map_June13_14_2020.csv")
-=======
+
 S1<-dat3%>%dplyr::group_by(Site, ï..WP)%>%dplyr::summarise(mean(DO...mg.L.))
 S2<-dat3%>%dplyr::group_by(Site, ï..WP)%>%dplyr::summarise(mean(na.omit(DO...mg.L.)))
 S1-S2
 dat4<-read.csv("DO-Sampling/_dat/Data/DO_Map_June13_14_2020.csv")
 dat4<-subset(dat4,Time==2)
->>>>>>> Stashed changes
 dat4$Longitude<-dat4$x
 dat4$Latitude<-dat4$y
 coordinates(dat4) = ~Longitude+Latitude
@@ -122,20 +120,14 @@ proj4string(dat4) <- CRS("+proj=longlat +datum=WGS84")
 ## PROJECT TO UTM
 dat4<-spTransform(dat4, CRS("+proj=utm +zone=16 ellps=WGS84"))
 ## INTERPOLATE THE SURFACE BY INVERSE DISTANCE WEIGHTING
-<<<<<<< Updated upstream
-xx<-idw(formula= Temp1..C. ~ 1,
-=======
+
 xx<-idw(formula= DO.2..mg.L. ~ 1,
->>>>>>> Stashed changes
         locations=dat4, newdata=grd)
 
 ## SAVE THE OUTPUT OF THE INTERPOLATION AS A DATA.FRAME
 xxoutput=as.data.frame(xx)[,-4]# DROP VARIANCE COLUMN
-<<<<<<< Updated upstream
-names(xxoutput)[1:3]<-c("long","lat","Temp")
-=======
+
 names(xxoutput)[1:3]<-c("long","lat","DO")
->>>>>>> Stashed changes
 
 ## ASSIGN COORDINATES TO THE INTERPOLOATIONS AND SPATIAL GRID
 coordinates(xxoutput) = ~long+lat
