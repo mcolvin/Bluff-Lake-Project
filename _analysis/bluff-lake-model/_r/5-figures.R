@@ -25,7 +25,7 @@ figures<- function(n)
             col="lightgrey",lwd=3)
         axis(side=4, at=axTicks(2),labels=TRUE)
         mtext(side=4,"Discharge")
-        legend("topleft",legend=c("Intake","Macon gauge"),
+        legend("topleft",legend=c("Intake","Macon gage"),
             col=c("black","lightgrey"),lwd=3,bg="white")
 
         } 

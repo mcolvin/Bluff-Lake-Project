@@ -170,4 +170,53 @@ lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_i
                       (lake_info$minute)-185760 
 
 
+#----------------------------------------------------------------------
+# 
+#  functions to feed the model
+#  wse_intake: watersurace elevation at intake
+#  wse_lake: lake water surface elevation
+#  macon: Noxubee River discharge at Macon
+#
+#----------------------------------------------------------------------
+## data from intake is the limiting value
+model_data<-as.data.table(lake_info[!is.na(Intake),])
+model_data[,cont_time:=cont_time-min(cont_time)]
+# wse_intake
+wse_intake<-approxfun(model_data$cont_time,
+    model_data$Intake,
+    rule=1) # return NAs outside of data
+
+# wse_lake: average logger data
+lake_info$wse_lake<-sapply(1:nrow(lake_info),
+    function(x){mean(na.omit(
+        lake_info[x]$Cypress,
+        lake_info[x]$Gauge))})
+wse_lake<-approxfun(model_data$cont_time,
+    model_data$wse_lake,
+    rule=1) # return NAs outside of data
+    
+# macon
+macon<-approxfun(model_data$cont_time,
+    model_data$wse_lake,
+    rule=1) # return NAs outside of data
+   
+
+if(2==3)
+    { # check data streams
+    plot(Cypress~cont_time,model_data,type='l',ylab="Water surface elevation",
+        ylim=c(67.5,70.5))
+    points(Gauge~cont_time,model_data,type='l',col="red")
+    points(Intake~cont_time,model_data,type='l',col="green")
+    points(wse_lake~cont_time,model_data,type='l',
+        col="blue")
+    par(new=TRUE)
+    plot(discharge_cms~cont_time,model_data,type='l',yaxt="n",ylab='',
+        col="lightgrey")
+    axis(side=4, at=axTicks(2),labels=TRUE)
+    mtext(side=4,"Discharge")
+         abline(v=125000)       
+    legend("topleft",legend=c("Cypress","Gauge","Intake","Macon gauge"),
+        col=c("black","red","green","lightgrey"),lwd=3,bg="white")
+    }
+        
 

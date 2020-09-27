@@ -1,3 +1,14 @@
+#----------------------------------------------------------------------
+# 
+#  Weir equation function 
+#  https://www.engineeringtoolbox.com/weirs-flow-rate-d_592.html
+#----------------------------------------------------------------------
+weir<-function(g=NULL,w=NULL,h=NULL)
+    {
+    Q<-(2/3)*0.66*(2*g)^(0.5)*w*h^(3/2)
+    return(Q)
+    }
+
 # Function for turning water on/off ----
 # WSE in meters above sea level
 # discharge in cubic meters per second
