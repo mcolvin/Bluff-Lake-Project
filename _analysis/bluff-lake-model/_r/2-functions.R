@@ -44,7 +44,7 @@ In_out_el<-function(location, WSE, discharge)
 # Function for converting elevation to volume or volume to elevation ----
 #elevation in meters above sea level
 #volume in cubic meters
-dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+dat <- read.csv("../Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 volume<-NA
 boards<-c(0:17)
 elevation<-66.45402+(0.2083*boards) #added additional elevation up to ~70m
