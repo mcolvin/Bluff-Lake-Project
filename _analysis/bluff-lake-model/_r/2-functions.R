@@ -44,14 +44,18 @@ In_out_el<-function(location, WSE, discharge)
 # Function for converting elevation to volume or volume to elevation ----
 #elevation in meters above sea level
 #volume in cubic meters
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-volume <- c(257558197, 258323648, 259113476, 259651880, 259786359,
-            259909631, 260121798, 260439030, 260989054, 261496613)
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+volume<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards) #added additional elevation up to ~70m
+for(i in 1:length(elevation)){
+  Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
+  Z <- c((elevation[i]-Z))
+  Z <- Z*4
+  volume[i]<-sum(Z)
+}
 EL_2_Vol<- approxfun(elevation, volume, rule=2)
 Vol_2_EL<- approxfun(volume, elevation, rule=2)
-
-
 
 # Function for converting volume to elevation ----
 #dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
@@ -61,9 +65,11 @@ Vol_2_EL<- approxfun(volume, elevation, rule=2)
 # suface area in meters squared
 # volume in cubic meters
 # elevation in meters above sea level
-surface <- c(56128, 98168, 206544, 520988, 1239356, 1968932, 
-            2609612, 3145228, 3448052, 3793340)
-
+surface <- NA
+for(i in 1:length(elevation)){
+  Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
+  surface[i]<-length(Z)*4
+}
 Vol_2_SA<-approxfun(volume,surface,  rule=2)
 EL_2_SA<-approxfun(elevation,surface,  rule=2)
 

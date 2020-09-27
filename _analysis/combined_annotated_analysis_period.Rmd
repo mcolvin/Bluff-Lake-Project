@@ -35,50 +35,17 @@ dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathym
 dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 
 # ---- Lake Volume
-# one point=6.25m^2
-Z <- c(dat$POINT_Z < (66.45402+0))
-Z <- c((66.45402+0-Z))
+# one point=4m^2
+volume<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards)
+for(i in 1:length(elevation)){
+  Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
+Z <- c((elevation[i]-Z))
 Z <- Z*4
-Z <- sum(Z)
-B <- c(dat$POINT_Z < (66.45402+.2083))
-B <- c((66.45402+.2083-B))
-B <- B*4
-B <- sum(B) #convert to volume
-BB <- c(dat$POINT_Z < (66.45402+.4166)) #add board hight and required depth
-BB <- c((66.45402+.44-BB))
-BB <- BB*4
-BB <- sum(BB)
-BBB <- c(dat$POINT_Z < (66.45402+.6249)) #add board hight and required depth
-BBB <- c((66.45402+.66-BBB))
-BBB <- BBB*4
-BBB <- sum(BBB)
-BBBB <- c(dat$POINT_Z < (66.45402+.8332)) #add board hight and required depth
-BBBB <- c((66.45402+.88-BBBB))
-BBBB <- BBBB*4
-BBBB <- sum(BBBB)
-BBBBB <- c(dat$POINT_Z < (66.45402+1.0415)) #add board hight and required depth
-BBBBB <- c((66.45402+1.1-BBBBB))
-BBBBB <- BBBBB*4
-BBBBB <- sum(BBBBB)
-BBBBBB <- c(dat$POINT_Z < (66.45402+1.2498)) #add board hight and required depth
-BBBBBB <- c((66.45402+1.32-BBBBBB))
-BBBBBB <- BBBBBB*4
-BBBBBB <- sum(BBBBBB)
-BBBBBBB <- c(dat$POINT_Z < (66.45402+1.4581)) #add board hight and required depth
-BBBBBBB <- c((66.45402+1.54-BBBBBBB))
-BBBBBBB <- BBBBBBB*4
-BBBBBBB <- sum(BBBBBBB)
-BBBBBBBB <- c(dat$POINT_Z < (66.45402+1.6664)) #add board hight and required depth
-BBBBBBBB <- c((66.45402+1.76-BBBBBBBB))
-BBBBBBBB <- BBBBBBBB*4
-BBBBBBBB <- sum(BBBBBBBB)
-BBBBBBBBB <- c(dat$POINT_Z < (66.45402+1.8747)) #add board hight and required depth
-BBBBBBBBB <- c((66.45402+1.98-BBBBBBBBB))
-BBBBBBBBB <- BBBBBBBBB*4
-BBBBBBBBB <- sum(BBBBBBBBB)
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-volume <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
+volume[i]<-sum(Z)
+}
+#actual board elevations <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 data<-data.frame(volume, elevation)
 ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
 
