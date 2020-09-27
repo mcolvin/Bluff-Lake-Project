@@ -51,6 +51,8 @@ volume <- c(257558197, 258323648, 259113476, 259651880, 259786359,
 EL_2_Vol<- approxfun(elevation, volume, rule=2)
 Vol_2_EL<- approxfun(volume, elevation, rule=2)
 
+
+
 # Function for converting volume to elevation ----
 #dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 #dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
