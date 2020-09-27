@@ -180,17 +180,18 @@ lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_i
 #----------------------------------------------------------------------
 ## data from intake is the limiting value
 model_data<-as.data.table(lake_info[!is.na(Intake),])
-model_data[,cont_time:=cont_time-min(cont_time)]
+model_data[,cont_time:=1:.N]
+
 # wse_intake
 wse_intake<-approxfun(model_data$cont_time,
     model_data$Intake,
     rule=1) # return NAs outside of data
 
 # wse_lake: average logger data
-lake_info$wse_lake<-sapply(1:nrow(lake_info),
+model_data$wse_lake<-sapply(1:nrow(model_data),
     function(x){mean(na.omit(
-        lake_info[x]$Cypress,
-        lake_info[x]$Gauge))})
+        model_data[x]$Cypress,
+        model_data[x]$Gauge))})
 wse_lake<-approxfun(model_data$cont_time,
     model_data$wse_lake,
     rule=1) # return NAs outside of data
