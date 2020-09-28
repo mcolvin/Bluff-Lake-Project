@@ -45,10 +45,10 @@ wse_dyn<-function(t,x,parms)
     # amount of water flowing out of each bay of the wcs
     wcs_out<- weir(g=9.81,w=wcs_width[1], h=wcs_head[1])+
         weir(g=9.81,w=wcs_width[2], h=wcs_head[2])+
-        weir(g=9.81,w=wcs_width[3], h=wcs_head[3])+
-        weir(g=9.81,w=wcs_width[4], h=wcs_head[4])+
-        weir(g=9.81,w=wcs_width[5], h=wcs_head[5])+
-        weir(g=9.81,w=wcs_width[6], h=wcs_head[6])+
+        0*weir(g=9.81,w=wcs_width[3], h=wcs_head[3])+
+        0*weir(g=9.81,w=wcs_width[4], h=wcs_head[4])+
+        0*weir(g=9.81,w=wcs_width[5], h=wcs_head[5])+
+        0*weir(g=9.81,w=wcs_width[6], h=wcs_head[6])+
         weir(g=9.81,w=wcs_width[7], h=wcs_head[7])+
         weir(g=9.81,w=wcs_width[8], h=wcs_head[8])
     wcs_out<-wcs_out*60*30
@@ -97,6 +97,7 @@ plot(wse~time,solution,
     las=1,main="",type='l',ylim=c(68.5,69.5))
 points(wse_lake~cont_time,model_data,type='l',
     col="blue")
+    
 plot(ele_lake~time,solution,ylab="Water Surface elevation, meters",las=1,main="")
 plot(intake_in~time,solution,ylab="Input from intake (m^3/minute)",las=1,main="")
 plot(wcs_out~time,solution,ylab="Output from WCS (m^3/minute)",las=1,main="")
