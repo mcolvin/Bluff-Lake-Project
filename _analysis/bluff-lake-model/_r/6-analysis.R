@@ -85,14 +85,18 @@ ini_values<-EL_2_Vol(wse_lake(1))
 parameters<-NULL # no parameters yet
 solution<- ode(
     y=ini_values, 
-    times=model_data$cont_time[1:1000], 
+    times=model_data$cont_time[1:10000], 
     func=wse_dyn, 
     parms=parameters, 
     method="iteration")
 colnames(solution)[2] <- "V"
 solution<-as.data.table(solution)
 plot(V~time,solution,ylab="Lake volume",las=1,main="")
-plot(wse~time,solution,ylab="Water Surface elevation, meters",las=1,main="")
+plot(wse~time,solution,
+    ylab="Water Surface elevation, meters",
+    las=1,main="",type='l',ylim=c(68.5,69.5))
+points(wse_lake~cont_time,model_data,type='l',
+    col="blue")
 plot(ele_lake~time,solution,ylab="Water Surface elevation, meters",las=1,main="")
 plot(intake_in~time,solution,ylab="Input from intake (m^3/minute)",las=1,main="")
 plot(wcs_out~time,solution,ylab="Output from WCS (m^3/minute)",las=1,main="")
