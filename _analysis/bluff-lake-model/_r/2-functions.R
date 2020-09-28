@@ -117,3 +117,4 @@ discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
 
 
 
+
