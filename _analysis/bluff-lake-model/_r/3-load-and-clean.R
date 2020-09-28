@@ -162,7 +162,7 @@ loggers$doy<-as.numeric(loggers$doy)
 
 lake_info <- merge(loggers, 
     discharge_hourly[,.SD,
-        .SDcols=c("year", "doy", "hour", "minute","discharge_cms")],
+        .SDcols=c("year", "doy", "hour", "minute","discharge_cms", "Q_bl")],
     by=c("year", "doy", "hour", "minute"), all.x = TRUE)
 
 # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
@@ -180,18 +180,17 @@ lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_i
 #----------------------------------------------------------------------
 ## data from intake is the limiting value
 model_data<-as.data.table(lake_info[!is.na(Intake),])
-model_data[,cont_time:=1:.N]
-
+model_data[,cont_time:=cont_time-min(cont_time)]
 # wse_intake
 wse_intake<-approxfun(model_data$cont_time,
     model_data$Intake,
     rule=1) # return NAs outside of data
 
 # wse_lake: average logger data
-model_data$wse_lake<-sapply(1:nrow(model_data),
+lake_info$wse_lake<-sapply(1:nrow(lake_info),
     function(x){mean(na.omit(
-        model_data[x]$Cypress,
-        model_data[x]$Gauge))})
+        lake_info[x]$Cypress,
+        lake_info[x]$Gauge))})
 wse_lake<-approxfun(model_data$cont_time,
     model_data$wse_lake,
     rule=1) # return NAs outside of data
@@ -218,6 +217,5 @@ if(2==3)
          abline(v=125000)       
     legend("topleft",legend=c("Cypress","Gauge","Intake","Macon gauge"),
         col=c("black","red","green","lightgrey"),lwd=3,bg="white")
-    }
-        
+}
 
