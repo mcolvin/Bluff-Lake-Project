@@ -85,7 +85,7 @@ legend("topleft", c("Discharge", "Lake Elevation"),
 
 ##Predict WSE given Discharge
 
-Macon gauge data was collected every 30 minutes. Water level data within Bluff Lake was recorded t 15 minute intervals. To match time recordings, Lake level logger readings were averaged every 30 minutes. A generalized addative model was then used to predict lake elevation given discharge. The actual and predicted values were then plotted together.
+Macon gauge data was collected every 30 minutes. Water level data within Bluff Lake was recorded at 15 minute intervals. To match time recordings, Lake level logger readings were averaged every 30 minutes. A generalized addative model was then used to predict lake elevation given discharge. The actual and predicted values were then plotted together.
 
 ```{r Pred-WSE, echo=FALSE, fig.cap=c("Figure 3. A generalized addative model was used to predict lake level elevation given month and Noxubee River discharge at the Macon gauge (R-sq.(adj) =  0.942). Fitted values were then plotted against lake level recordings from the Cypress level logger.")}
 #Links between water surface elevation and Macon gauge discharge
@@ -349,29 +349,14 @@ For each board elevation the number of points in the bathymetric data greater or
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 # ---- Waterbirds
 # areas must be less than 20 cm in depth
-Z <- length(which(dat$POINT_Z > (66.45402-.20))) #add board hight and required depth
-Z <- Z*4 #convert to area
-B <- length(which(dat$POINT_Z > (66.45402+.2083-.20))) #add board hight and required depth
-B <- B*4 #convert to area
-BB <- length(which(dat$POINT_Z > (66.45402+.4166-.20))) #add board hight and required depth
-BB <- BB*4 #convert to area
-BBB <- length(which(dat$POINT_Z > (66.45402+.6249-.20))) #add board hight and required depth
-BBB <- BBB*4 #convert to area
-BBBB <- length(which(dat$POINT_Z > (66.45402+.8332-.20))) #add board hight and required depth
-BBBB <- BBBB*4 #convert to area
-BBBBB <- length(which(dat$POINT_Z > (66.45402+1.0415-.20))) #add board hight and required depth
-BBBBB <- BBBBB*4 #convert to area
-BBBBBB <- length(which(dat$POINT_Z > (66.45402+1.2498-.20))) #add board hight and required depth
-BBBBBB <- BBBBBB*4 #convert to area
-BBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.4581-.20))) #add board hight and required depth
-BBBBBBB <- BBBBBBB*4 #convert to area
-BBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.6664-.20))) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*4 #convert to area
-BBBBBBBBB <- length(which(dat$POINT_Z > (66.45402+1.8747-.20))) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*4 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-WB <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+WB<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards)
+for(i in 1:length(elevation)){
+  Z <- length(which(dat$POINT_Z > (elevation[i]-.20)))
+Z <- Z*4
+WB[i]<-sum(Z)/10000
+}
 data<-data.frame(WB, elevation)
 ggplot(data, aes(elevation, WB)) + geom_line() + 
   labs(y = "Hectares <0.20m in depth", x = "Water Surface Elevation (m)")+   
@@ -380,29 +365,14 @@ ggplot(data, aes(elevation, WB)) + geom_line() +
 # ---- Waterfowl
 # DED/m^2=0.4374
 # Dry Areas
-Z <- sum(dat$POINT_Z > (66.45402)) #add board hight and required depth
-Z <- Z*4*0.4374 #convert to DED per area
-B <- sum(dat$POINT_Z > (66.45402+.2083)) #add board hight and required depth
-B <- B*4*0.4374
-BB <- sum(dat$POINT_Z > (66.45402+.4166)) #add board hight and required depth
-BB <- BB*4*0.4374
-BBB <- sum(dat$POINT_Z > (66.45402+.6249)) #add board hight and required depth
-BBB <- BBB*4*0.4374
-BBBB <- sum(dat$POINT_Z > (66.45402+.8332)) #add board hight and required depth
-BBBB <- BBBB*4*0.4374
-BBBBB <- sum(dat$POINT_Z > (66.45402+1.0415)) #add board hight and required depth
-BBBBB <- BBBBB*4*0.4374
-BBBBBB <- sum(dat$POINT_Z > (66.45402+1.2498)) #add board hight and required depth
-BBBBBB <- BBBBBB*4*0.4374
-BBBBBBB <- sum(dat$POINT_Z > (66.45402+1.4581)) #add board hight and required depth
-BBBBBBB <- BBBBBBB*4*0.4374
-BBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.6664)) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*4*0.4374
-BBBBBBBBB <- sum(dat$POINT_Z > (66.45402+1.8747)) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*4*0.4374
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-WF <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/1000000
+WF<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards)
+for(i in 1:length(elevation)){
+  Z <- length(which(dat$POINT_Z > (elevation[i])))
+  Z <- Z*4*0.4374 #convert to DED per area
+  WF[i]<-sum(Z)/1000000
+}
 data<-data.frame(WF, elevation)
 ggplot(data, aes(elevation, WF)) + geom_line() + 
   labs(y = "Duck Energy Days (million)", x = "Water Surface Elevation (m)")+   
@@ -410,91 +380,46 @@ ggplot(data, aes(elevation, WF)) + geom_line() +
 
 # ---- Fish
 # Areas greater than 1 meter in depth
-Z <- sum(dat$POINT_Z < (66.45402)) #add board hight and required depth
-Z <- Z*4 #convert to area
-B <- sum(dat$POINT_Z < (66.45402+.2083)) #add board hight and required depth
-B <- B*4 #convert to area
-BB <- sum(dat$POINT_Z < (66.45402+.4166)) #add board hight and required depth
-BB <- BB*4 #convert to area
-BBB <- sum(dat$POINT_Z < (66.45402+.6249)) #add board hight and required depth
-BBB <- BBB*4 #convert to area
-BBBB <- sum(dat$POINT_Z < (66.45402+.8332)) #add board hight and required depth
-BBBB <- BBBB*4 #convert to area
-BBBBB <- sum(dat$POINT_Z < (66.45402+1.0415)) #add board hight and required depth
-BBBBB <- BBBBB*4 #convert to area
-BBBBBB <- sum(dat$POINT_Z < (66.45402+1.2498)) #add board hight and required depth
-BBBBBB <- BBBBBB*4 #convert to area
-BBBBBBB <- sum(dat$POINT_Z < (66.45402+1.4581)) #add board hight and required depth
-BBBBBBB <- BBBBBBB*4 #convert to area
-BBBBBBBB <- sum(dat$POINT_Z < (66.45402+1.6664)) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*4 #convert to area
-BBBBBBBBB <- sum(dat$POINT_Z < (66.45402+1.8747)) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*4 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-Fish <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+Fish<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards)
+for(i in 1:length(elevation)){
+  Z <- length(which(dat$POINT_Z < (elevation[i])))
+  Z <- Z*4 #convert to DED per area
+  Fish[i]<-sum(Z)/10000
+}
 data<-data.frame(Fish, elevation)
 ggplot(data, aes(elevation, Fish)) + geom_line() + 
   labs(y = "Hectares >0m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()
 
-
 #### ---- Anglers
 # For now, following fish model, Areas greater than 1 meter in depth
 Adat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Anglers.csv")
-Z <- sum(Adat$POINT_Z < (66.45402-1)) #add board hight and required depth
-Z <- Z*4 #convert to area
-B <- sum(Adat$POINT_Z < (66.45402-1+.2083)) #add board hight and required depth
-B <- B*4 #convert to area
-BB <- sum(Adat$POINT_Z < (66.45402-1+.4166)) #add board hight and required depth
-BB <- BB*4 #convert to area
-BBB <- sum(Adat$POINT_Z < (66.45402-1+.6249)) #add board hight and required depth
-BBB <- BBB*4 #convert to area
-BBBB <- sum(Adat$POINT_Z < (66.45402-1+.8332)) #add board hight and required depth
-BBBB <- BBBB*4 #convert to area
-BBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.0415)) #add board hight and required depth
-BBBBB <- BBBBB*4 #convert to area
-BBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.2498)) #add board hight and required depth
-BBBBBB <- BBBBBB*4 #convert to area
-BBBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.4581)) #add board hight and required depth
-BBBBBBB <- BBBBBBB*4 #convert to area
-BBBBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.6664)) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*4 #convert to area
-BBBBBBBBB <- sum(Adat$POINT_Z < (66.45402-1+1.8747)) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*4 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-Anglers <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)/10000
+Anglers<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards)
+for(i in 1:length(elevation)){
+  Z <- length(which(Adat$POINT_Z < (elevation[i]-1)))
+  Z <- Z*4 #convert to DED per area
+  Anglers[i]<-sum(Z)/10000
+}
 data<-data.frame(Anglers, elevation)
 ggplot(data, aes(elevation, Anglers)) + geom_line() + 
   labs(y = "Hectares >1m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()
+
 # Need to deliniate shorelines and establish "end" of boat ramp
 #areas >.5m in depth
 Bdat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Boat.csv")
-Z <- sum(Bdat$POINT_Z < (66.45402)) #add board hight and required depth
-Z <- Z*4 #convert to area
-B <- sum(Bdat$POINT_Z < (66.45402+.2083-0.5)) #add board hight and required depth
-B <- B*4 #convert to area
-BB <- sum(Bdat$POINT_Z < (66.45402+.4166-0.5)) #add board hight and required depth
-BB <- BB*4 #convert to area
-BBB <- sum(Bdat$POINT_Z < (66.45402+.6249-0.5)) #add board hight and required depth
-BBB <- BBB*4 #convert to area
-BBBB <- sum(Bdat$POINT_Z < (66.45402+.8332-0.5)) #add board hight and required depth
-BBBB <- BBBB*4 #convert to area
-BBBBB <- sum(Bdat$POINT_Z < (66.45402+1.0415-0.5)) #add board hight and required depth
-BBBBB <- BBBBB*4 #convert to area
-BBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.2498-0.5)) #add board hight and required depth
-BBBBBB <- BBBBBB*4 #convert to area
-BBBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.4581-0.5)) #add board hight and required depth
-BBBBBBB <- BBBBBBB*4 #convert to area
-BBBBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.6664-0.5)) #add board hight and required depth
-BBBBBBBB <- BBBBBBBB*4 #convert to area
-BBBBBBBBB <- sum(Bdat$POINT_Z < (66.45402+1.8747-0.5)) #add board hight and required depth
-BBBBBBBBB <- BBBBBBBBB*4 #convert to area
-elevation <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402,
-               67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
-Ramp <- c(Z, B, BB, BBB, BBBB, BBBBB, BBBBBB, BBBBBBB, BBBBBBBB, BBBBBBBBB)
+Ramp<-NA
+boards<-c(0:17)
+elevation<-66.45402+(0.2083*boards)
+for(i in 1:length(elevation)){
+  Z <- length(which(Bdat$POINT_Z < (elevation[i]-0.5)))
+  Z <- Z*4 #convert to DED per area
+  Ramp[i]<-sum(Z)
+}
 data<-data.frame(Ramp, elevation)
 ggplot(data, aes(elevation, Ramp)) + geom_line() + 
   labs(y = "Square meters >0.5m in depth", x = "Water Surface Elevation (m)")+   

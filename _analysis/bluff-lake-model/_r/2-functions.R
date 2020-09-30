@@ -4,6 +4,7 @@
 #  https://www.engineeringtoolbox.com/weirs-flow-rate-d_592.html
 #----------------------------------------------------------------------
 weir<-function(g=NULL,w=NULL,h=NULL)
+
     {
     Q<-(2/3)*0.66*(2*g)^(0.5)*w*h^(3/2)
     return(Q)
@@ -20,12 +21,11 @@ broad_weir<-function(g=NULL,w=NULL,h=NULL)
     return(Q)
     }
 
-
-
 # Function for turning water on/off ----
 # WSE in meters above sea level
 # discharge in cubic meters per second
 In_out_el<-function(location, WSE, discharge)
+
     {
     # MAIN INFLOW TO BLUFF LAKE
     # outlet of griffin slough
@@ -52,6 +52,7 @@ In_out_el<-function(location, WSE, discharge)
 
     return(x)
     }
+
 
 # Function for converting elevation to volume or volume to elevation ----
 #elevation in meters above sea level
@@ -88,16 +89,45 @@ EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
 # Function for Board Elevation over Time
 Board_Time<-function(DOY, Rotation)
-    {
-    if(DOY>=1 & DOY<=14) {x<-68.19392}
-    if(DOY>=15 & DOY<=181) {x<-68.39712}
-    if(DOY>=182 & DOY<=195) {x<-68.19392}
-    if(DOY>=196 & DOY<=212) {x<-67.98562}
-    if(DOY>=213 & DOY<=226) {x<-67.77732}
-    if(DOY>=227 & DOY<=243) {x<-67.56902}
-    if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
-    if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
-    if(DOY>=335 & DOY<=348) {x<-67.77732}
-    if(DOY>=349 & DOY<=366) {x<-67.98562}
-    return(x)
-    }
+{
+  if(DOY>=1 & DOY<=14) {x<-68.19392}
+  if(DOY>=15 & DOY<=181) {x<-68.39712}
+  if(DOY>=182 & DOY<=195) {x<-68.19392}
+  if(DOY>=196 & DOY<=212) {x<-67.98562}
+  if(DOY>=213 & DOY<=226) {x<-67.77732}
+  if(DOY>=227 & DOY<=243) {x<-67.56902}
+  if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
+  if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
+  if(DOY>=335 & DOY<=348) {x<-67.77732}
+  if(DOY>=349 & DOY<=366) {x<-67.98562}
+  return(x)
+}
+
+#  elevation of water at intake versus Macon
+#  run lake_info and discharge_daily from load-and-clean
+newdat<- subset(lake_info, dt> as.Date("2019/11/12 18:00")) 
+matrix_gam <- data.table(newdat)
+
+gam_4 <- gam(Intake ~ te(Q_bl, doy),
+             data = matrix_gam,
+             family = gaussian)
+summary(gam_4)
+summary(gam_4)$s.table
+
+newdat$FitG4<- gam_4$fitted.values
+lake_info<-lake_info[order(doy)]
+newdat<-newdat[order(doy)]
+plot(Intake~doy, lake_info, type="l", col="blue", ylim=c(69,70.2), xlim=c(0,365), ylab=NA, xlab=NA)
+par(new=T)
+plot(FitG4~doy, newdat, type="l", col="red", ylim=c(69,70.2), xlim=c(0,365),
+     main="GAM Model Intake ~ Macon + DOY", xlab="Date", 
+     ylab="Water Surface Elevation")
+legend("topright", c("Predicted", "Lake Elevation"),
+       col = c("red", "blue"), lty = c(1, 1))        
+
+discharge_daily<-fread("_dat/discharge_daily.csv")
+discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
+
+
+
+
