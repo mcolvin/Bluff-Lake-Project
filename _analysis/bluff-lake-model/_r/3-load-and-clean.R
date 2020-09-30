@@ -187,10 +187,10 @@ wse_intake<-approxfun(model_data$cont_time,
     rule=1) # return NAs outside of data
 
 # wse_lake: average logger data
-lake_info$wse_lake<-sapply(1:nrow(lake_info),
+model_data$wse_lake<-sapply(1:nrow(model_data),
     function(x){mean(na.omit(
-        lake_info[x]$Cypress,
-        lake_info[x]$Gauge))})
+      model_data[x]$Cypress,
+      model_data[x]$Gauge))})
 wse_lake<-approxfun(model_data$cont_time,
     model_data$wse_lake,
     rule=1) # return NAs outside of data
