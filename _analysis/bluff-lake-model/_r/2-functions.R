@@ -103,30 +103,6 @@ Board_Time<-function(DOY, Rotation)
   return(x)
 }
 
-#  elevation of water at intake versus Macon
-#  run lake_info and discharge_daily from load-and-clean
-newdat<- subset(lake_info, dt> as.Date("2019/11/12 18:00")) 
-matrix_gam <- data.table(newdat)
-
-gam_4 <- gam(Intake ~ te(Q_bl, doy),
-             data = matrix_gam,
-             family = gaussian)
-summary(gam_4)
-summary(gam_4)$s.table
-
-newdat$FitG4<- gam_4$fitted.values
-lake_info<-lake_info[order(doy)]
-newdat<-newdat[order(doy)]
-plot(Intake~doy, lake_info, type="l", col="blue", ylim=c(69,70.2), xlim=c(0,365), ylab=NA, xlab=NA)
-par(new=T)
-plot(FitG4~doy, newdat, type="l", col="red", ylim=c(69,70.2), xlim=c(0,365),
-     main="GAM Model Intake ~ Macon + DOY", xlab="Date", 
-     ylab="Water Surface Elevation")
-legend("topright", c("Predicted", "Lake Elevation"),
-       col = c("red", "blue"), lty = c(1, 1))        
-
-discharge_daily<-fread("_dat/discharge_daily.csv")
-discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
 
 
 
