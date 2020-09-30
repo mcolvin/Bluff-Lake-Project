@@ -8,6 +8,19 @@ weir<-function(g=NULL,w=NULL,h=NULL)
     Q<-(2/3)*0.66*(2*g)^(0.5)*w*h^(3/2)
     return(Q)
     }
+#----------------------------------------------------------------------
+# 
+#  BROAD CRESTED WEIR
+#
+#----------------------------------------------------------------------
+broad_weir<-function(g=NULL,w=NULL,h=NULL)
+    {
+    C=2.7 #Tracy 195
+    Q<-C*w*h^(3/2)
+    return(Q)
+    }
+
+
 
 # Function for turning water on/off ----
 # WSE in meters above sea level
@@ -30,7 +43,6 @@ In_out_el<-function(location, WSE, discharge)
     if(location==Notch_1 & WSE>68.38 | discharge>6.56) {x<-1}# water moving in
 
     # SECONDARY INFLOW; WATER FROM NOXUBEE
-    # 
     if(location==WCS2 & WSE<68.23) {x<-0}# no water
     if(location==WCS2 & WSE>68.23) {x<-1}# water moving in
 
