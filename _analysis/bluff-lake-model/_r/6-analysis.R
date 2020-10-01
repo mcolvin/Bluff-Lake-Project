@@ -102,7 +102,7 @@ solution<-cbind(solution,model_data)
 plot(V~time,solution,ylab="Lake volume",las=1,main="")
 
 
-model_data[ year==2020&doy==68 &hour%in%c(0,1,2,3,4),]
+
 
 ## plot of predicted adn observed WS elevation
 plot(wse~dt,solution,
