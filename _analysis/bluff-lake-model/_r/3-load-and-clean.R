@@ -123,7 +123,7 @@ discharge_hourly<- discharge_hourly[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)
 data<-read.xlsx("_dat/Level_logger.xlsx")
 names(data)<-c("ID","location","date_time","pressure", "temp_c","baro","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
-data$dt <- as.POSIXct(data$date_time*3600*24, tz="GMT", origin = "1900-01-01")
+data$dt <- as.POSIXct(data$date_time*3600*24, tz="GMT", origin = "1899-12-30")
 data$dt<- as.POSIXct(strftime(data$dt, format = "%Y/%m/%d %H:%M"))
 data$dt<-round_date(data$dt, "30 mins")
 data<-as.data.table(data)
@@ -168,7 +168,9 @@ lake_info <- merge(loggers,
 # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
 lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_info$hour*60)+
                       (lake_info$minute)-185760 
-
+lake_info[,Cypress:=ifelse(is.nan(Cypress),NA,Cypress)]
+lake_info[,Gauge:=ifelse(is.nan(Gauge),NA,Gauge)]
+lake_info[,Intake:=ifelse(is.nan(Intake),NA,Intake)]
 
 #----------------------------------------------------------------------
 # 
@@ -179,15 +181,14 @@ lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_i
 #
 #----------------------------------------------------------------------
 ## data from intake is the limiting value
-model_data<-as.data.table(lake_info[!is.na(Intake),])
+model_data<-as.data.table(subset(lake_info, dt> as.POSIXct("2019-11-12 11:30:00")))
+model_data$Intake<-dplyr::na.approx(model_data$Intake)
 model_data[,cont_time:=cont_time-min(cont_time)]
 # wse_intake
 wse_intake<-approxfun(model_data$cont_time,
     model_data$Intake,
     rule=1) # return NAs outside of data
 
-model_data[,Cypress:=ifelse(is.nan(Cypress),NA,Cypress)]
-model_data[,Gauge:=ifelse(is.nan(Gauge),NA,Gauge)]
 # wse_lake: average logger data
 model_data$wse_lake<-sapply(1:nrow(model_data),
     function(x){mean(na.omit(
@@ -223,7 +224,7 @@ if(2==3)
 
 #  elevation of water at intake versus Macon
 #  run lake_info and discharge_daily from load-and-clean
-newdat<- subset(lake_info, dt> as.Date("2019/11/12 18:00")) 
+newdat<- subset(lake_info, dt> as.POSIXct("2019/11/12 18:00")) 
 matrix_gam <- data.table(newdat)
 
 gam_4 <- gam(Intake ~ te(Q_bl, doy),
