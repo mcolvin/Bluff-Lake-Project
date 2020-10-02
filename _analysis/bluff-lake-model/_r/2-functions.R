@@ -4,7 +4,6 @@
 #  https://www.engineeringtoolbox.com/weirs-flow-rate-d_592.html
 #----------------------------------------------------------------------
 weir<-function(g=NULL,w=NULL,h=NULL)
-
     {
     Q<-(2/3)*0.66*(2*g)^(0.5)*w*h^(3/2)
     return(Q)
@@ -17,7 +16,10 @@ weir<-function(g=NULL,w=NULL,h=NULL)
 broad_weir<-function(g=NULL,w=NULL,h=NULL)
     {
     C=2.7 #Tracy 195
-    Q<-C*w*h^(3/2)
+    w_ft<- w*3.281 # convert meters to feet
+    h_ft <- h*3.281# convert meters to feet
+    Q<-(C*w_ft*h_ft^(3/2)) # discharge in cfs
+    Q<- Q*0.0283 # convert to cms
     return(Q)
     }
 
