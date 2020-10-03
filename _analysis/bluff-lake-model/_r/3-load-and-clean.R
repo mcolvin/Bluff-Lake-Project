@@ -133,12 +133,6 @@ data$hour <- hour(data$dt)
 data$minute<-minute(data$dt)
 loggers<-dcast(data, dt+year+doy+hour+minute~location,
            value.var="wse", fun.aggregate =mean)
-#loggers<- loggers[,.(water_level=mean(water_level),wse=mean(wse), temp_c=mean(temp_c)),
-#                                    by=.(location, year,doy,hour)]
-
-(subset(data,ID==94629))
-
-subset(loggers,year==2020&doy==135 &hour%in%c(4,5,6,7,8,9,10))
 
 #----------------------------------------------------------------------
 # 
@@ -171,7 +165,7 @@ lake_info <- merge(loggers,
 
 # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
 lake_info$cont_time<-((lake_info$year-2019)*525600)+(lake_info$doy*1440)+(lake_info$hour*60)+
-                      (lake_info$minute)-185760 
+                      (lake_info$minute)-183300
 lake_info[,Cypress:=ifelse(is.nan(Cypress),NA,Cypress)]
 lake_info[,Gauge:=ifelse(is.nan(Gauge),NA,Gauge)]
 
@@ -187,13 +181,19 @@ lake_info[,Intake:=ifelse(is.nan(Intake),NA,Intake)]
 #----------------------------------------------------------------------
 ## data from intake is the limiting value
 model_data<-as.data.table(subset(lake_info, dt> as.POSIXct("2019-11-12 11:30:00")))
+model_data<-model_data[-c(14158:14160),] #delete any trailing NA values
 model_data$Intake<-zoo::na.approx(model_data$Intake)
 model_data[,cont_time:=cont_time-min(cont_time)]
+daylight<-c(rep(0,5596),rep(60,(nrow(model_data)-5596)))
+model_data$cont_time<-model_data$cont_time-daylight #account for daylight savings time
+
+#check for missing values
+model_data$gap <- c(NA, with(model_data, cont_time[-1] - cont_time[-nrow(model_data)]))
+
 # wse_intake
 wse_intake<-approxfun(model_data$cont_time,
     model_data$Intake,
     rule=1) # return NAs outside of data
-lake_info[ year==2020&doy==135 &hour%in%c(4,5,6,7,8,9,10),]
 
 # wse_lake: average logger data
 model_data$wse_lake<-sapply(1:nrow(model_data),
@@ -210,7 +210,6 @@ macon<-approxfun(model_data$cont_time,
     model_data$wse_lake,
     rule=1) # return NAs outside of data
    
-
 if(2==3)
     { # check data streams
     plot(Cypress~cont_time,model_data,type='l',ylab="Water surface elevation",
@@ -251,5 +250,4 @@ plot(FitG4~doy, newdat, type="l", col="red", ylim=c(69,70.2), xlim=c(0,365),
 legend("topright", c("Predicted", "Lake Elevation"),
        col = c("red", "blue"), lty = c(1, 1))        
 
-discharge_daily<-fread("_dat/discharge_daily.csv")
 discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
