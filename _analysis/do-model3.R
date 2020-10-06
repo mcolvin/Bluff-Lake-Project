@@ -1,3 +1,9 @@
+library(dplyr)
+library(lubridate)
+library(raster)
+library(rgdal)
+library(rgeos)
+library(ggplot2)
 #Creating a function for DO from dawn to dusk
 DO_dusk<-10
 parameters <- c(
@@ -63,15 +69,15 @@ DO_fun<-function(t,x,parms)
 dat <- read.csv("DO-Sampling/Export_Output.csv")
 dat$Z<- 68.39712-dat$Elevation #9 boards in the WCS
 dat$Z<-ifelse(dat$Z<=0, 0, dat$Z) #remove dry areas
-dat<-subset(dat, dat$Z>0)
+dat<-subset(dat, dat$Z>0.25)
 dat$tempC<-dat$Temp
 dat$DO_dusk<-dat$DO
 
 dat$DawnDO<-NA 
 for (i in 1:NROW(dat))
 {
-  DO_dusk<-dat$DO_dusk[i]
-  parms=c(tempC = dat$tempC[i], Z = dat$Z[i])
+  DO_dusk<-10
+  parms=c(tempC = 30, Z = dat$Z[i])
   solution<- deSolve::ode(
     y=DO_dusk, 
     times=c(0:(10*60)), 
@@ -80,16 +86,15 @@ for (i in 1:NROW(dat))
     method="euler")
   dat$DawnDO[i]<-solution[601,2]
 }
-
+nrow(subset(dat, dat$DawnDO<=0))
 dat<-na.omit(dat)
 
-
+# Grid
 dat$Longitude<-dat$POINT_X
 dat$Latitude<-dat$POINT_Y
 coordinates(dat) = ~Longitude+Latitude
 proj4string(dat) <- CRS("+proj=utm +zone=16 ellps=WGS84")
 
-# Grid
 dat2 <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 dat2$Longitude<-dat2$ï..POINT_X
 dat2$Latitude<-dat2$POINT_Y
