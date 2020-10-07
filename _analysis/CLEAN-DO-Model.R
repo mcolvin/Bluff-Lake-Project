@@ -1,7 +1,4 @@
-####Check Model against real data----
-dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
-dat$Z<- dat$depth2 #9 boards in the WCS
-dat$tempC<-dat$Temp_C
+#DO Model Function----
 DO_fun<-function(t,x,parms)
 {
   DO<-x
@@ -19,7 +16,10 @@ DO_fun<-function(t,x,parms)
   return(list(dDO))
 }
 
-
+####Check Model against real data----
+dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
+dat$Z<- dat$depth2 #9 boards in the WCS
+dat$tempC<-dat$Temp_C
 dat$DawnDO_Mod<-NA 
 for (i in 1:NROW(dat))
 {
