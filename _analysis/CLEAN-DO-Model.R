@@ -1,7 +1,6 @@
 dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
 dat$Z<- dat$depth2 #9 boards in the WCS
 dat$tempC<-dat$Temp_C
-#at<-subset(dat, dat$depth==1.4)
 DO_fun<-function(t,x,parms)
 {
   DO<-x
@@ -12,7 +11,7 @@ DO_fun<-function(t,x,parms)
   DOsat<-4.09+(10.5*exp(-0.0371*tempC)) #nothing can change here
   SR<- ((((0.287*tempC-2.5)*44.661)*0.7)*0.001)/60
   # diffusive exchange
-  DE<-(DO*DOsat)*(2.2*10^-5)*(0.03^-1)*60*10^-2 #nothing to change here but the 60/10 situation
+  DE<-(DO*DOsat)*(2.2*10^-5)*(0.05^-1)*60*10^-2 #nothing to change here but the 60/10 situation
   # below is eq 2. but i am not sure the do term should be ther
   #dDO<- DO - SR*Z^-1 + WR +DE*Z^-1
   dDO<- -1*(SR*Z^-1+WR+DE*Z^-1)
@@ -36,6 +35,16 @@ for (i in 1:NROW(dat))
 
 dat$DawnDO_Mod<-dat$DO_dusk-dat$DawnDO_Mod
 
-plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen", xlab="Model DO", ylab="True DO", ylim=c(0,9), xlim=c(0,9))
-
+plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen (all depths)", xlab="Model DO", ylab="True DO", ylim=c(0,9), xlim=c(0,9))
 abline(0,1)
+
+dat1<-subset(dat, dat$depth==1)
+plot(dat1$DO_dawn~dat1$DawnDO_Mod, main="Dawn Dissolved Oxygen (1m)", xlab="Model DO", ylab="True DO", ylim=c(0,9), xlim=c(0,9))
+abline(0,1)
+dat6<-subset(dat, dat$depth==.6)
+plot(dat6$DO_dawn~dat6$DawnDO_Mod, main="Dawn Dissolved Oxygen (0.6m)", xlab="Model DO", ylab="True DO", ylim=c(0,9), xlim=c(0,9))
+abline(0,1)
+dat2<-subset(dat, dat$depth==0.2)
+plot(dat2$DO_dawn~dat2$DawnDO_Mod, main="Dawn Dissolved Oxygen (0.2m)", xlab="Model DO", ylab="True DO", ylim=c(0,9), xlim=c(0,9))
+abline(0,1)
+
