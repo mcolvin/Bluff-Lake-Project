@@ -21,7 +21,7 @@ DO_fun<-function(t,x,parms)
 dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
 dat$Z<- dat$depth2-dat$depth #9 boards in the WCS
 dat$tempC<-dat$Temp_C
-dat$k<-0.08*(dat$Z/dat$depth2)
+dat$k<-0.08*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
 dat$DawnDO_Mod<-NA 
 for (i in 1:NROW(dat))
 {
@@ -57,7 +57,7 @@ elevation<-66.45402+(0.2083*boards)
 tempC<-c(20:22) #baby range for now 0-30
 DO_dusk<-c(9:10) #baby range for now 5-10
 combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation)
-combos$SA<-NA
+combos$Vol<-NA
 
 #make new points for volume slices
 for(i in 1:nrow(combos)){
@@ -66,27 +66,28 @@ for(i in 1:nrow(combos)){
   datalist <- list()
   for(k in 1:length(cube)){
     dat2<- subset(dat, dat$Elevation < (combos$elevation[i]-cube[k]))
-    dat2$Z <- c((combos$elevation[i]-dat$Elevation[k])) #depth (for DO equ)
+    dat2$Z <- c((combos$elevation[i]-dat$Elevation[k])) #depth (for calculating k)
     dat2$Z2<-dat2$Z-cube[k] #depth from point to bottom (for DO equ)
     dat2<-subset(dat2, dat2$Z2>0)
+    dat2$k<-0.08*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
     dat2$Z3<-ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
     datalist[[k]]<-dat2
   }
-  datalist <- do.call(rbind, datalist)
+  big_data <- do.call(rbind, datalist)
   DO_dusk<-combos$DO_dusk[i]
   tempC<-combos$tempC[i]
-  dat$DawnDO_Mod<-NA 
-  for(j in 1:nrow(dat)){    #nested DO model, this one only seems to be running for 10 rows
-   parms=c(tempC = tempC, Z = dat$Z[j])
+  big_data$DawnDO_Mod<-NA 
+  for(j in 1:nrow(big_data)){    
+   parms=c(tempC = tempC, Z = big_data$Z2[j], k=big_data$k[j])
     solution<- deSolve::ode(
       y=DO_dusk, 
       times=c(0:(10*60)), 
       func=DO_fun,
       parms= parms,
       method="euler")
-    dat$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
+    big_data$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
   }
-  dat$DawnDO_Mod<-combos$DO_dusk[i]-dat$DawnDO_Mod #calculate surface area
-  Z2<-length(which(dat$DawnDO_Mod > (4.5)))
-  combos$SA[i]<-Z2*4/10000
+  big_data$DawnDO_Mod<-combos$DO_dusk[i]-big_data$DawnDO_Mod #calculate surface area
+  NumPts<-length(which(big_data$DawnDO_Mod > (4.5)))
+  combos$Vol[i]<-sum(NumPts*4*big_data$Z3)/10000 
 }
