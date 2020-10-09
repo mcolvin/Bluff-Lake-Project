@@ -61,17 +61,18 @@ combos$SA<-NA
 
 #make new points for volume slices
 for(i in 1:nrow(combos)){
-  dat<- subset(dat, dat$Elevation < (combos$elevation[i]))
+  dat<- subset(dat, dat$Elevation < (combos$elevation[1]))
   cube<-c(0:5)
   datalist <- list()
   for(k in 1:length(cube)){
-    dat2<- subset(dat, dat$Elevation < (combos$elevation[1]-cube[k]))
-    dat2$Z <- c((combos$elevation[1]-dat$Elevation[k])) #depth (for DO equ)
+    dat2<- subset(dat, dat$Elevation < (combos$elevation[i]-cube[k]))
+    dat2$Z <- c((combos$elevation[i]-dat$Elevation[k])) #depth (for DO equ)
     dat2$Z2<-dat2$Z-cube[k] #depth from point to bottom (for DO equ)
     dat2<-subset(dat2, dat2$Z2>0)
+    dat2$Z3<-ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
     datalist[[k]]<-dat2
   }
-  dat <- do.call(rbind, datalist)
+  datalist <- do.call(rbind, datalist)
   DO_dusk<-combos$DO_dusk[i]
   tempC<-combos$tempC[i]
   dat$DawnDO_Mod<-NA 
