@@ -1,3 +1,5 @@
+library(data.table)
+
 #DO Model Function----
 DO_fun<-function(t,x,parms)
 {
@@ -49,19 +51,23 @@ points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red")
 legend("topleft",legend=c("1.4","1.0","0.6","0.2"),
        col=c("black","blue","green","red"),pch=1,bg="white")
 
-####Run model for bathymetric map----
+
+
+
+####Set up Model on Small Data----
 #dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv") #actual bathymetry
 dat <- read.csv("DO-Sampling/Export_Output.csv") #using a small file with fewer points to check model
 boards<-c(17) #baby range for now 0-17
 elevation<-66.45402+(0.2083*boards)
 tempC<-c(20:22) #baby range for now 0-30
 DO_dusk<-c(9:10) #baby range for now 5-10
-combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation)
+DO_Crit<-c(5,4.5,4,3.5,3)
+combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation, DO_Crit=DO_Crit)
 combos$Vol<-NA
 
 #make new points for volume slices
 for(i in 1:nrow(combos)){
-  dat<- subset(dat, dat$Elevation < (combos$elevation[1]))
+  dat<- subset(dat, dat$Elevation < (combos$elevation[i]))
   cube<-c(0:5)
   datalist <- list()
   for(k in 1:length(cube)){
@@ -88,6 +94,59 @@ for(i in 1:nrow(combos)){
     big_data$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
   }
   big_data$DawnDO_Mod<-combos$DO_dusk[i]-big_data$DawnDO_Mod #calculate surface area
-  NumPts<-length(which(big_data$DawnDO_Mod > (4.5)))
+  NumPts<-length(which(big_data$DawnDO_Mod > (combos$DO_Crit[i])))
   combos$Vol[i]<-sum(NumPts*4*big_data$Z3)/10000 
 }
+tmp<-dcast(combos, tempC+DO_dusk+elevation~DO_Crit)
+tmp<-as.data.frame(tmp)
+
+
+####Run Model on Bathymetric Map----
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv") #actual bathymetry
+#create combos of elevation, starting water temp, and dusk DO to run over
+boards<-c(0:17) #baby range for now 0-17
+elevation<-66.45402+(0.2083*boards)
+tempC<-c(5:30) 
+DO_dusk<-c(5:10) 
+DO_Crit<-c(6.5,6,5.5,5,4.5,4,3.5,3)
+combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation, DO_Crit=DO_Crit)
+combos$Vol<-NA
+
+
+for(i in 1:nrow(combos)){
+  dat<- subset(dat, dat$POINT_Z < (combos$elevation[i]))
+  cube<-c(0:5)
+  datalist <- list()
+  #make new points for volume slices
+  for(k in 1:length(cube)){
+    dat2<- subset(dat, dat$POINT_Z < (combos$elevation[i]-cube[k]))
+    dat2$Z <- c((combos$elevation[i]-dat$POINT_Z[k])) #depth (for calculating k)
+    dat2$Z2<-dat2$Z-cube[k] #depth from point to bottom (for DO equ)
+    dat2<-subset(dat2, dat2$Z2>0)
+    dat2$k<-0.08*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
+    dat2$Z3<-ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
+    datalist[[k]]<-dat2
+  }
+  big_data <- do.call(rbind, datalist)
+  DO_dusk<-combos$DO_dusk[i]
+  tempC<-combos$tempC[i]
+  big_data$DawnDO_Mod<-NA 
+  #run DO model
+  for(j in 1:nrow(big_data)){    
+    parms=c(tempC = tempC, Z = big_data$Z2[j], k=big_data$k[j])
+    solution<- deSolve::ode(
+      y=DO_dusk, 
+      times=c(0:(10*60)), 
+      func=DO_fun,
+      parms= parms,
+      method="euler")
+    big_data$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
+  }
+  big_data$DawnDO_Mod<-combos$DO_dusk[i]-big_data$DawnDO_Mod 
+  #specify DO criteria
+  NumPts<-length(which(big_data$DawnDO_Mod > (combos$DO_Crit[i])))
+  #calculate volume
+  combos$Vol[i]<-sum(NumPts*4*big_data$Z3)/10000 
+}
+tmp<-dcast(combos, tempC+DO_dusk+elevation~DO_Crit)
+tmp<-as.data.frame(tmp)
