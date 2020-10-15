@@ -425,7 +425,6 @@ ggplot(data, aes(elevation, Ramp)) + geom_line() +
   labs(y = "Square meters >0.5m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()
 
-
 ```
 ## Scaling Metrics
 
@@ -443,6 +442,8 @@ Anglers<-rescale(Anglers, to=c(0,1))
 AnglersM <- approxfun(elevation, Anglers, rule=2,yleft=0,yright=1)
 Ramp<-rescale(Ramp, to=c(0,1))
 RampM <- approxfun(elevation, Ramp, rule=2,yleft=0,yright=1)
+dataframe<-data.frame(elevation, WB, WF, Fish, Anglers, Ramp)
+
 ```
 
 
