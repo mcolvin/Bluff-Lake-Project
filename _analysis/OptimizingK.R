@@ -48,3 +48,42 @@ Do_fit<-function(p,dat){
 Do_fit (p=0.08,dat)
 
 Fig<-optimize(Do_fit, dat, interval=c(0,0.15), tol=0.01)
+
+
+
+
+
+
+
+#Using new k value 
+####Check Model against real data----
+dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
+dat$Z<- dat$depth2-dat$depth #9 boards in the WCS
+dat$tempC<-dat$Temp_C
+dat$k<-0.0927*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
+dat$DawnDO_Mod<-NA 
+for (i in 1:NROW(dat))
+{
+  DO_dusk<-dat$DO_dusk[i]
+  parms=c(tempC = dat$tempC[i], Z = dat$Z[i], k=dat$k[i])
+  solution<- deSolve::ode(
+    y=DO_dusk, 
+    times=c(0:(10*60)), 
+    func=DO_fun,
+    parms= parms,
+    method="euler")
+  dat$DawnDO_Mod[i]<-solution[601,2]
+}
+
+dat$DawnDO_Mod<-dat$DO_dusk-dat$DawnDO_Mod
+
+plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen (all depths)", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9))
+abline(0,1)
+dat1<-subset(dat, dat$depth==1)
+points(dat1$DO_dawn~dat1$DawnDO_Mod, col="blue")
+dat6<-subset(dat, dat$depth==.6)
+points(dat6$DO_dawn~dat6$DawnDO_Mod, col="green")
+dat2<-subset(dat, dat$depth==0.2)
+points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red")
+legend("topleft",legend=c("1.4","1.0","0.6","0.2"),
+       col=c("black","blue","green","red"),pch=1,bg="white")
