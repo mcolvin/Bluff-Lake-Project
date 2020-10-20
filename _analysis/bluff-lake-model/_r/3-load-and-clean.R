@@ -181,7 +181,7 @@ lake_info[,Intake:=ifelse(is.nan(Intake),NA,Intake)]
 #----------------------------------------------------------------------
 ## data from intake is the limiting value
 model_data<-as.data.table(subset(lake_info, dt> as.POSIXct("2019-11-12 11:30:00")))
-model_data<-model_data[-c(14158:14160),] #delete any trailing NA values
+model_data<-model_data[-c(16174:16177),] #delete any trailing NA values
 model_data$Intake<-zoo::na.approx(model_data$Intake)
 model_data[,cont_time:=cont_time-min(cont_time)]
 daylight<-c(rep(0,5596),rep(60,(nrow(model_data)-5596)))
