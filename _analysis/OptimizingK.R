@@ -60,7 +60,7 @@ Fig<-optimize(Do_fit, dat, interval=c(0,0.15), tol=0.01)
 dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
 dat$Z<- dat$depth2-dat$depth #9 boards in the WCS
 dat$tempC<-dat$Temp_C
-dat$k<-0.0927*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
+dat$k<-0.0606*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
 dat$DawnDO_Mod<-NA 
 for (i in 1:NROW(dat))
 {
@@ -79,11 +79,11 @@ dat$DawnDO_Mod<-dat$DO_dusk-dat$DawnDO_Mod
 
 plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen (all depths)", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9))
 abline(0,1)
-dat1<-subset(dat, dat$depth==1)
+dat1<-subset(dat, dat$depth>=1)
 points(dat1$DO_dawn~dat1$DawnDO_Mod, col="blue")
-dat6<-subset(dat, dat$depth==.6)
+dat6<-subset(dat, dat$depth<1&dat$depth>0.5)
 points(dat6$DO_dawn~dat6$DawnDO_Mod, col="green")
-dat2<-subset(dat, dat$depth==0.2)
+dat2<-subset(dat, dat$depth<0.5)
 points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red")
-legend("topleft",legend=c("1.4","1.0","0.6","0.2"),
-       col=c("black","blue","green","red"),pch=1,bg="white")
+legend("topleft",legend=c("x>1","1>x>0.5","0.5>x"),
+       col=c("blue","green","red"),pch=1,bg="white")
