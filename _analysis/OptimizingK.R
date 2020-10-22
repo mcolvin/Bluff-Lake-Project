@@ -77,7 +77,7 @@ for (i in 1:NROW(dat))
 
 dat$DawnDO_Mod<-dat$DO_dusk-dat$DawnDO_Mod
 
-plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen (all depths)", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9))
+plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen at depth x", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9))
 abline(0,1)
 dat1<-subset(dat, dat$depth>=1)
 points(dat1$DO_dawn~dat1$DawnDO_Mod, col="blue")

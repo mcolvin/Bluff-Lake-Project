@@ -23,7 +23,7 @@ DO_fun<-function(t,x,parms)
 dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
 dat$Z<- dat$depth2-dat$depth #9 boards in the WCS
 dat$tempC<-dat$Temp_C
-dat$k<-0.08*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
+dat$k<-0.06*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
 dat$DawnDO_Mod<-NA 
 for (i in 1:NROW(dat))
 {
@@ -51,7 +51,11 @@ points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red")
 legend("topleft",legend=c("1.4","1.0","0.6","0.2"),
        col=c("black","blue","green","red"),pch=1,bg="white")
 
-
+####Try to predict dusk dissolved oxygen using temperature
+dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
+M1<-lm(dat$DO_dusk~dat$depth+dat$Temp_C)
+summary(M1)
+plot(M1)
 
 
 ####Set up Model on Small Data----
