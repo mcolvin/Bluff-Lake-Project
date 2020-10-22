@@ -79,7 +79,7 @@ for(i in 1:nrow(combos)){
     dat2$Z <- c((combos$elevation[i]-dat$Elevation[k])) #depth (for calculating k)
     dat2$Z2<-dat2$Z-cube[k] #depth from point to bottom (for DO equ)
     dat2<-subset(dat2, dat2$Z2>0)
-    dat2$k<-0.08*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
+    dat2$k<-0.0606*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
     dat2$Z3<-ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
     datalist[[k]]<-dat2
   }
@@ -127,7 +127,7 @@ for(i in 1:nrow(combos)){
     dat2$Z <- c((combos$elevation[i]-dat$POINT_Z[k])) #depth (for calculating k)
     dat2$Z2<-dat2$Z-cube[k] #depth from point to bottom (for DO equ)
     dat2<-subset(dat2, dat2$Z2>0)
-    dat2$k<-0.08*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
+    dat2$k<-0.0606*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
     dat2$Z3<-ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
     datalist[[k]]<-dat2
   }

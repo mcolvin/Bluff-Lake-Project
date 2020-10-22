@@ -87,3 +87,18 @@ dat2<-subset(dat, dat$depth<0.5)
 points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red")
 legend("topleft",legend=c("x>1","1>x>0.5","0.5>x"),
        col=c("blue","green","red"),pch=1,bg="white")
+
+
+plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen at Temperature x", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9), type="n")
+abline(0,1)
+dat1<-subset(dat, dat$Temp_C>=30)
+points(dat1$DO_dawn~dat1$DawnDO_Mod, col="blue", pch=1)
+dat6<-subset(dat, dat$Temp_C<30&dat$Temp_C>25)
+points(dat6$DO_dawn~dat6$DawnDO_Mod, col="green", pch=2)
+dat2<-subset(dat, dat$Temp_C<25&dat$Temp_C>20)
+points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red", pch=3)
+dat9<-subset(dat, dat$Temp_C<20)
+points(dat9$DO_dawn~dat9$DawnDO_Mod, col="brown", pch=4)
+legend("topleft",legend=c("x>30","30>x>25","25>x>20","x<20"),
+       col=c("blue","green","red","brown"),pch=c(1:4),bg="white")
+
