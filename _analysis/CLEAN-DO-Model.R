@@ -53,10 +53,14 @@ legend("topleft",legend=c("1.4","1.0","0.6","0.2"),
 
 ####Try to predict dusk dissolved oxygen using temperature
 dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
-M1<-lm(dat$DO_dusk~dat$depth+dat$Temp_C)
+dat$ï..dt<-as.Date(dat$ï..dt, "%m/%d/%Y")
+dat$doy<-format(dat$ï..dt,"%j")
+M1<-lm(dat$DO_dusk~dat$depth+dat$Temp_C+dat$doy)
 summary(M1)
 plot(M1)
-
+dat$pred<-predict(M1,dat)
+plot(y=dat$DO_dusk,x=dat$pred, xlab="True Dusk DO", ylab="Predicted Dusk DO", main="Predicting Dusk DO given depth, temp, and DOY")
+abline(0,1)
 
 ####Set up Model on Small Data----
 #dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv") #actual bathymetry
