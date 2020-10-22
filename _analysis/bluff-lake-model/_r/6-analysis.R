@@ -32,8 +32,8 @@ wse_dyn<-function(t,x,parms)
     #----------------------------------------------------------------------
     # board elevation
     WCS1_wse<-c(68.39712,68.39712,68.39712,68.39712,68.39712,
-        68.39712,68.39712,68.39712) # eight bays
-    wcs_width<-rep(1.6764,8)
+                68.39712,68.39712) # seven bays
+    # wcs_width<-rep(1.6764,8)
     # water control structure head
     # set head to zero when wse<=board
     wcs_head<- sapply(WCS1_wse,function(x)
@@ -47,8 +47,7 @@ wse_dyn<-function(t,x,parms)
         0*weir(g=9.81,w=wcs_width[4], h=wcs_head[4])+
         0*weir(g=9.81,w=wcs_width[5], h=wcs_head[5])+
         0*weir(g=9.81,w=wcs_width[6], h=wcs_head[6])+
-        weir(g=9.81,w=wcs_width[7], h=wcs_head[7])+
-        weir(g=9.81,w=wcs_width[8], h=wcs_head[8])
+        weir(g=9.81,w=wcs_width[7], h=wcs_head[7])
     wcs_out<-(wcs_out*60*30)*0.8        
     # emergency spillway
     #emergency overflow measurements (meters)

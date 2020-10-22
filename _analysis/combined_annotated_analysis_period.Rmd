@@ -38,14 +38,13 @@ dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 # one point=4m^2
 volume<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.56832+(0.2032*boards) 
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
 Z <- c((elevation[i]-Z))
 Z <- Z*4
 volume[i]<-sum(Z)
 }
-#actual board elevations <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
 data<-data.frame(volume, elevation)
 ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
 
@@ -351,7 +350,7 @@ dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathym
 # areas must be less than 20 cm in depth
 WB<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.56832+(0.2032*boards) 
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z > (elevation[i]-.20)))
 Z <- Z*4
@@ -367,7 +366,7 @@ ggplot(data, aes(elevation, WB)) + geom_line() +
 # Dry Areas
 WF<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.56832+(0.2032*boards) 
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z > (elevation[i])))
   Z <- Z*4*0.4374 #convert to DED per area
@@ -382,7 +381,7 @@ ggplot(data, aes(elevation, WF)) + geom_line() +
 # Areas greater than 1 meter in depth
 Fish<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.56832+(0.2032*boards) 
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z < (elevation[i])))
   Z <- Z*4 #convert to DED per area
@@ -398,7 +397,7 @@ ggplot(data, aes(elevation, Fish)) + geom_line() +
 Adat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Anglers.csv")
 Anglers<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.56832+(0.2032*boards) 
 for(i in 1:length(elevation)){
   Z <- length(which(Adat$POINT_Z < (elevation[i]-1)))
   Z <- Z*4 #convert to DED per area
@@ -414,7 +413,7 @@ ggplot(data, aes(elevation, Anglers)) + geom_line() +
 Bdat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Boat.csv")
 Ramp<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.56832+(0.2032*boards) 
 for(i in 1:length(elevation)){
   Z <- length(which(Bdat$POINT_Z < (elevation[i]-0.5)))
   Z <- Z*4 #convert to DED per area

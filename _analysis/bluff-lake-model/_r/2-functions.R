@@ -62,7 +62,7 @@ In_out_el<-function(location, WSE, discharge)
 dat <- read.csv("../Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 volume<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards) #added additional elevation up to ~70m
+elevation<-66.56832+(0.2032*boards) #added additional elevation up to ~70m
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))
