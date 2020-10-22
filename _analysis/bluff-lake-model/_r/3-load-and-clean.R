@@ -251,3 +251,13 @@ legend("topright", c("Predicted", "Lake Elevation"),
        col = c("red", "blue"), lty = c(1, 1))        
 
 discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
+
+
+#creating combinations
+elevation
+year<-unique(discharge_daily$year)
+week<-as.numeric(seq(1,53, 2))
+pfish<-c(0, 81360, 162720, 244080, 325440, 406800, 488160)
+combos<-expand.grid(year=year, week=week, elevation=elevation, pfish=pfish)
+#code to get week number from date
+#strftime(c("2014-03-16", "2014-03-17","2014-03-18", "2014-01-01"), format = "%V")
