@@ -51,16 +51,16 @@ DO_fun<-function(t,x,parms)
 # legend("topleft",legend=c("1.4","1.0","0.6","0.2"),
 #        col=c("black","blue","green","red"),pch=1,bg="white")
 # 
-# ####Try to predict dusk dissolved oxygen using temperature
-# #add in distance to shore (west to east)
+####Try to predict dusk dissolved oxygen using temperature
+#add in distance to shore (west to east)
 # dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
 # dat$ï..dt<-as.Date(dat$ï..dt, "%m/%d/%Y")
 # dat$doy<-as.numeric(format(dat$ï..dt,"%j"))
-# M1<-lm(dat$DO_dusk~dat$depth*dat$Temp_C)
+# M1<-lm(dat$DO_dusk~dat$depth+dat$Temp_C+dat$y+dat$x)
 # summary(M1)
 # plot(M1)
 # dat$pred<-predict(M1,dat)
-# plot(y=dat$DO_dusk,x=dat$Temp_C, xlab="True Dusk DO", ylab="Predicted Dusk DO", main="Predicting Dusk DO given depth, temp, and DOY")
+# plot(y=dat$pred,x=dat$DO_dusk, xlab="True Dusk DO", ylab="Predicted Dusk DO", main="Predicting Dusk DO given depth, temp, and location")
 # abline(0,1)
 # 
 # ####Set up Model on Small Data----
