@@ -111,20 +111,12 @@ DO_fun<-function(t,x,parms)
 
 ####Run Model on Bathymetric Map----
 dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv") #actual bathymetry
-# #create combos of elevation, starting water temp, and dusk DO to run over
-# boards<-c(0:17) #baby range for now 0-17
-# elevation<-66.45402+(0.2083*boards)
-# tempC<-c(5:30) 
-# DO_dusk<-c(5:10) 
-# DO_Crit<-c(6.5,6,5.5,5,4.5,4,3.5,3)
-# combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation, DO_Crit=DO_Crit)
-# combos$Vol<-NA
-# #create combos of elevation, starting water temp, and dusk DO to run over
-boards<-c(17) #baby range for now 0-17
-elevation<-66.45402+(0.2032*boards)
-tempC<-c(28)
-DO_dusk<-c(5)
-DO_Crit<-c(6.5,6)
+#create combos of elevation, starting water temp, and dusk DO to run over
+boards<-c(0:17) #baby range for now 0-17
+elevation<-66.45402+(0.2083*boards)
+tempC<-c(5:30)
+DO_dusk<-c(5:10)
+DO_Crit<-c(6.5,6,5.5,5,4.5,4,3.5,3)
 combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation, DO_Crit=DO_Crit)
 combos$Vol<-NA
 
@@ -162,6 +154,7 @@ for(i in 1:nrow(combos)){
   NumPts<-length(which(big_data$DawnDO_Mod > (combos$DO_Crit[i])))
   #calculate volume
   combos$Vol[i]<-sum(NumPts*4*big_data$Z3)/10000 
+  print(i/nrow(combos))
 }
 tmp<-dcast(combos, tempC+DO_dusk+elevation~DO_Crit)
 tmp<-as.data.frame(tmp)
