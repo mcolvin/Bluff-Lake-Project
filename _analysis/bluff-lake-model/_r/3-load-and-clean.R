@@ -180,11 +180,17 @@ lake_info[,Intake:=ifelse(is.nan(Intake),NA,Intake)]
 #
 #----------------------------------------------------------------------
 ## data from intake is the limiting value
-model_data<-as.data.table(subset(lake_info, dt> as.POSIXct("2019-11-12 11:30:00")))
-model_data<-model_data[-c(16174:16177),] #delete any trailing NA values
+#model_data<-as.data.table(subset(lake_info, dt> as.POSIXct("2019-11-12 11:30:00")))
+#truncate model data to avoid water level managment
+model_data<-as.data.table(subset(lake_info, dt> as.POSIXct("2020-1-25 00:00:00")& 
+                                   dt < as.POSIXct("2020-8-20 00:00:00")))
+
+
+#model_data<-model_data[-c(16174:16177),] #delete any trailing NA values
 model_data$Intake<-zoo::na.approx(model_data$Intake)
 model_data[,cont_time:=cont_time-min(cont_time)]
-daylight<-c(rep(0,5596),rep(60,(nrow(model_data)-5596)))
+#model_data$daylight<-c(rep(0,5596),rep(60,(nrow(model_data)-5596))) #before truncate
+daylight<-c(rep(0,2067),rep(60,(nrow(model_data)-2067))) #before truncate
 model_data$cont_time<-model_data$cont_time-daylight #account for daylight savings time
 
 #check for missing values

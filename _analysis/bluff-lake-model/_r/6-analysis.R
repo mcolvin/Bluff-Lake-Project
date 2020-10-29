@@ -52,7 +52,7 @@ wse_dyn<-function(t,x,parms)
     # emergency spillway
     #emergency overflow measurements (meters)
     EOFwidth<-23
-    EOFheight<-68.597
+    EOFheight<-68.698
     EOF_head<-max(0,ele_lake-EOFheight) 
     EOF_out<-broad_weir(w=EOFwidth, h=EOF_head)
     EOF_out<-EOF_out*60*30     
