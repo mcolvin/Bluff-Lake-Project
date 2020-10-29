@@ -154,6 +154,8 @@ for(i in 1:nrow(combos)){
   NumPts<-length(which(big_data$DawnDO_Mod > (combos$DO_Crit[i])))
   #calculate volume
   combos$Vol[i]<-sum(NumPts*4*big_data$Z3)/10000 
+  saveRDS(list(big_data=big_data, combos=combos[i]),
+	paste0("_do-outputs/",i,".RDS"))
   print(i/nrow(combos))
 }
 tmp<-dcast(combos, tempC+DO_dusk+elevation~DO_Crit)
