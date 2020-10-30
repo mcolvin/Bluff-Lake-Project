@@ -1,11 +1,12 @@
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
-
+library(tidyverse)
+library(scales)
 # ---- Lake Volume
 # one point=4m^2
 volume<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-66.45402+(0.2032*boards)
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))
@@ -101,6 +102,8 @@ ggplot(data, aes(elevation, Ramp)) + geom_line() +
   labs(y = "Square meters >0.5m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()
 dataframe<-data.frame(elevation, WB, WF, Fish, Anglers, Ramp)
+
+
 #incooporate timing to objective utility
 DOY<-c(1:365)
 datalist <- list()
@@ -110,6 +113,53 @@ for(i in 1:length(DOY)){
 }
 big_data1 <- do.call(rbind, datalist)
 write.csv(big_data1, "~/GitHub/Bluff-Lake-Project/_analysis/RawMetrics.csv")
+
+#Incorporate Seasonal Weighting
+dates<-data.frame(matrix(ncol = 2, nrow =365))
+dates$DOY<-c(1:365)
+dates$Month<-NA
+for(i in 1:365){
+  date<-as.Date(i, origin = "2016-01-01")
+  Month<-month(as.POSIXlt(date, format="%d/%m/%Y"))
+  dates$Month[i]<-Month
+}
+dates<-dates[,-c(1:2)]
+big_data1<-merge(dates,big_data1)
+#boating season
+big_data1$Ramp<-ifelse(big_data1$DOY>=60 & big_data1$DOY<=304, big_data1$Ramp, 0)
+#fishing season weight-Boat
+Bt<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/BoatAngEF.csv")
+Bt<-Bt%>%dplyr::group_by(Month)%>%dplyr::summarise(BTmean=mean(Total))
+Month<-c(1,2,11,12)
+BTmean<-c(0,0,0,0)
+d1<-data.frame(Month, BTmean)
+Bt<-rbind(Bt,d1)
+Bt$BTmean<-Bt$BTmean/sum(Bt$BTmean)
+mult<-merge(big_data1,Bt)
+big_data1$Ramp<-mult$Ramp*mult$BTmean
+#fishing season weight-Bank
+Bk<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/BankAngEF.csv")
+Bk<-Bk%>%dplyr::group_by(Month)%>%dplyr::summarise(BKmean=mean(Total))
+#sub in missing months
+Month<-c(1,2,11,12)
+BKmean<-c(200,400,200,200)
+d1<-data.frame(Month, BKmean)
+Bk<-rbind(Bk,d1)
+Bk$BKmean<- Bk$BKmean/sum(Bk$BKmean)
+mult<-merge(mult,Bk)
+big_data1$Anglers<-mult$Anglers*mult$BKmean
+#waterbird Seasonality
+range <- c(1:365)
+mean <- 196
+sd <-80
+dist <- dnorm(range, mean = mean, sd = sd)+0.003
+df <- data.frame("DOY" = range, "distribution" = dist)
+df$distribution<-df$distribution/sum(df$distribution)
+plot(df$distribution~df$DOY, main="waterbird")
+mult<-merge(big_data1,df)
+big_data1$WB<-mult$distribution*big_data1$WB
+#Mississippi Growing Season
+big_data1$WF<-ifelse(big_data1$DOY>=60 & big_data1$DOY<=304, big_data1$WF, 0)
 
 #Rescale Metrics
 WB<- rescale(WB, to=c(0,1))
@@ -134,18 +184,16 @@ for(i in 1:length(DOY)){
 big_data2 <- do.call(rbind, datalist)
 write.csv(big_data2, "~/GitHub/Bluff-Lake-Project/_analysis/RescaleMetrics.csv")
 
-#Incorporate Seasonality
-big_data$Ramp<-ifelse(big_data$DOY>=60 & big_data$DOY<=304, big_data$Ramp, 1)
-big_data$Anglers
-big_data$WB
-big_data$WF
 
-
+#Form overall utility
 W<- c(.25,.25,.25,.25)
-dat2$Utility<-(W[1]*((dat2$RampUt*.5) + (dat2$AngUt*.5))) + (W[2]*dat2$FishUt) + (W[3]*dat2$WBUt) + (W[4]*dat2$WFUt)
+big_data2$Utility<-(W[1]*((big_data2$Ramp*.5) + (big_data2$Anglers*.5))) + 
+  (W[2]*big_data2$Fish) + (W[3]*big_data2$WB) + (W[4]*big_data2$WF)
 
 #no utility for empty lake
-dat2$Utility<-ifelse(dat2$volume<=100447696, 0, dat2$Utility)
+#run function code from bluff lake model functions script to run next line
+big_data2$volume<-EL_2_Vol(big_data2$elevation)
+big_data2$Utility<-ifelse(big_data2$volume<24859, 0, big_data2$Utility)
 
 
 

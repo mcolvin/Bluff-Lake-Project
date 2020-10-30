@@ -78,7 +78,7 @@ ExpandedHours<-Bank%>%dplyr::group_by(Year,Month,Time)%>%
   dplyr::summarise(mAngler.Hours=mean(Angler.Hours, na.rm=T), ndays= n())
 ExpandedHours<-ExpandedHours%>%dplyr::group_by(Year,Month)%>%
   dplyr::summarise(x=sum(mAngler.Hours), var=var(mAngler.Hours))
-ExpandedHours$Days<-c(31,30,31,30,31,31,30,31,31,31,30)
+ExpandedHours$Days<-c(31,30,31,30,31,31,30,31,31,31,30,31,31,30,31)
 ExpandedHours$Group<-c("Bank")
 ExpandedHours$Total<-ExpandedHours$x*ExpandedHours$Days
 ExpandedHours$var<-ExpandedHours$var*ExpandedHours$Days^2
@@ -108,7 +108,7 @@ ExpandedHours2<-Boat%>%dplyr::group_by(Year, Month,Time)%>%
 ExpandedHours2<-ExpandedHours2%>%dplyr::group_by(Year,Month)%>%
   dplyr::summarise(x=sum(PredAngler2),  var=var(PredAngler2))
 ExpandedHours2$Group<-c("Boat")
-ExpandedHours2$Days<-c(31,30,31,30,31,31,30,31,31,31,30)
+ExpandedHours2$Days<-c(31,30,31,30,31,31,30,31,31,31,30,31,31,30,31)
 ExpandedHours2$Total<-ExpandedHours2$x*ExpandedHours2$Days
 ExpandedHours2$var<-ExpandedHours2$var*ExpandedHours2$Days^2
 ExpandedHours2$CIhigh<-ExpandedHours2$Total+1.96*sqrt(ExpandedHours2$var)
@@ -116,6 +116,13 @@ ExpandedHours2$CIlow<-ExpandedHours2$Total-1.96*sqrt(ExpandedHours2$var)
 ExpandedHours2$CIlow<-ifelse(ExpandedHours2$CIlow<0,0,ExpandedHours2$CIlow)
 ggplot(ExpandedHours2, aes(x = Month, y=Total, fill=Year)) + geom_bar(position=position_dodge(), stat="identity") + theme_classic() +labs(y= "Effort (hours)", x = "Month") +
     geom_errorbar(aes(x=Month, ymin=CIlow, ymax=CIhigh), color="black", width=0.05,  position=position_dodge(.9)) +scale_fill_grey()
+
+#save angler efforts
+write.csv(ExpandedHours, "~/GitHub/Bluff-Lake-Project/_analysis/BankAngEF.csv")
+write.csv(ExpandedHours2, "~/GitHub/Bluff-Lake-Project/_analysis/BoatAngEF.csv")
+
+
+
 AllAnglers<-rbind(ExpandedHours, ExpandedHours2)
 Apr2020<-data.frame(c(2020, 2020, 2020, 2020, 2020,2020, 2020, 2020, 2020, 2020),
                     c(4, 7, 8, 9, 10, 4, 7, 8, 9, 10),
@@ -197,10 +204,15 @@ counts1 <- apply(counts1,2,function(x){x/sum(x)})
 counts1<-as.table(counts1)
 counts1<-as.data.frame(counts1)
 counts1$Group<-counts1$Var1
+label<-data.frame(Group= c("Any", "Bass","Catfish","Catfish","Crappie","Bass","Bream","Catfish", "Crappie","Any","Bass","Catfish","Bass","Bream","Catfish", "Crappie", "Any", "Bass", "Catfish"), Var2=c("May","May","May","Jun","Jun","Jul","Jul","Jul","Jul","Aug","Aug","Aug","Sep", "Sep","Sep","Sep", "Oct", "Oct", "Oct"), Freq=c(.1))
+tabulatedcounts <- ldply(counts1[-1], function(sc) {
+  as.data.frame(score = sc))
+})
 ggplot(counts1, aes(fill=Group, x = Var2, y=Freq), las=2)+
   geom_bar(position=position_dodge(),stat="identity") + 
     theme_classic() + scale_fill_grey()+
-    labs(y= "Relative Frequency", x = "Month") 
+    labs(y= "Relative Frequency", x = "Month")+geom_text(data = label, aes(Var2,
+    Freq,group=Group), label = "0",position = position_dodge(0.5)) 
 ```
 
 # Species Caught By Anglers
