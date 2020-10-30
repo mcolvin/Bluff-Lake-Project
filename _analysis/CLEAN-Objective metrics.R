@@ -13,7 +13,7 @@ for(i in 1:length(elevation)){
   Z <- Z*4
   volume[i]<-sum(Z)
 }
-#actual board elevations <- c(66.45402, 66.67402, 66.89402, 67.11402, 67.33402, 67.55402, 67.77402, 67.99402, 68.21402, 68.43402)
+
 data<-data.frame(volume, elevation)
 ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
 
@@ -22,7 +22,7 @@ Vol_EL<-approxfun(volume, elevation, rule=2)
 
 
 
-
+#
 dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 # ---- Waterbirds
 # areas must be less than 20 cm in depth
@@ -191,9 +191,8 @@ big_data2$Utility<-(W[1]*((big_data2$Ramp*.5) + (big_data2$Anglers*.5))) +
   (W[2]*big_data2$Fish) + (W[3]*big_data2$WB) + (W[4]*big_data2$WF)
 
 #no utility for empty lake
-#run function code from bluff lake model functions script to run next line
-big_data2$volume<-EL_2_Vol(big_data2$elevation)
-big_data2$Utility<-ifelse(big_data2$volume<24859, 0, big_data2$Utility)
+big_data2$volume<-EL_Vol(big_data2$elevation)
+big_data2$Utility<-ifelse(big_data2$volume<25861, 0, big_data2$Utility)
 
 
 
