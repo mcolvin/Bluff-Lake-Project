@@ -110,9 +110,9 @@ DO_fun<-function(t,x,parms)
 # tmp<-as.data.frame(tmp)
 
 ####Run Model on Bathymetric Map----
-dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv") #actual bathymetry
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv") #actual bathymetry
 #create combos of elevation, starting water temp, and dusk DO to run over
-boards<-c(0:17) #baby range for now 0-17
+boards<-c(1:17) #baby range for now 0-17
 elevation<-66.45402+(0.2083*boards)
 tempC<-c(5:30)
 DO_dusk<-c(5:10)
