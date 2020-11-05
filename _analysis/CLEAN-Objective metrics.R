@@ -1,5 +1,4 @@
-dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
-dat <- read.csv("Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
 library(tidyverse)
 library(scales)
 # ---- Lake Volume
