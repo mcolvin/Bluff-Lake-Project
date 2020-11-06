@@ -148,13 +148,13 @@ Bk$BKmean<- Bk$BKmean/sum(Bk$BKmean)
 mult<-merge(mult,Bk)
 big_data1$Anglers<-mult$Anglers*mult$BKmean
 #waterbird Seasonality
-range <- c(1:365)
-mean <- 196
-sd <-80
-dist <- dnorm(range, mean = mean, sd = sd)+0.003
-df <- data.frame("DOY" = range, "distribution" = dist)
-df$distribution<-df$distribution/sum(df$distribution)
-plot(df$distribution~df$DOY, main="waterbird")
+range <- c(1:12)
+mean <- 6
+sd <-3
+dist <- dnorm(range, mean = mean, sd = sd)
+df <- data.frame("Month" = range, "WB" = dist)
+df$WB<-df$WB/sum(df$WB)
+plot(df$WB~df$Month, main="waterbird")
 mult<-merge(big_data1,df)
 big_data1$WB<-mult$distribution*big_data1$WB
 #Mississippi Growing Season

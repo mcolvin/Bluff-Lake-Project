@@ -104,7 +104,7 @@ DO_fun<-function(t,x,parms)
 #   }
 #   big_data$DawnDO_Mod<-combos$DO_dusk[i]-big_data$DawnDO_Mod #calculate surface area
 #   NumPts<-length(which(big_data$DawnDO_Mod > (combos$DO_Crit[i])))
-#   combos$Vol[i]<-sum(NumPts*4*big_data$Z3)/10000
+#   combos$Vol[i]<-sum(4*NumPts3$Z3) 
 # }
 # tmp<-dcast(combos, tempC+DO_dusk+elevation~DO_Crit)
 # tmp<-as.data.frame(tmp)
@@ -136,12 +136,12 @@ for(i in 1:nrow(combos)){
     dat2$Z <- c((combos$elevation[i]-dat2$POINT_Z)) #depth (for calculating k)
     dat2$Z2 <- dat2$Z-cube[k] #depth from point to bottom (for DO equ)
     dat2 <- subset(dat2, dat2$Z2>0)
-    dat2$k <- 0.0606*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
+    dat2$k <- 0.01*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
     dat2$Z3 <- ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
     datalist[[k]] <- dat2
   }
   big_data <- do.call(rbind, datalist)
-  big_data<- subset(big_data, big_data$Z3>=0.1)
+  big_data<- subset(big_data, big_data$Z3>=0.15)
   DO_dusk<-combos$DO_dusk[i]
   tempC<-combos$tempC[i]
   big_data$DawnDO_Mod<-NA 
@@ -158,7 +158,7 @@ for(i in 1:nrow(combos)){
   }
   big_data$DawnDO_Mod<-ifelse(is.nan(big_data$DawnDO_Mod),NA,big_data$DawnDO_Mod)
   big_data<-na.omit(big_data)
-  big_data$DawnDO_Mod<-combos$DO_dusk[i]-big_data$DawnDO_Mod 
+  big_data$DawnDO_Mod<-combos$DO_dusk[i]+big_data$DawnDO_Mod 
   #specify DO criteria
   NumPts6.5<-subset(big_data, big_data$DawnDO_Mod > 6.5)
   NumPts6<-subset(big_data, big_data$DawnDO_Mod > 6)
@@ -177,8 +177,8 @@ for(i in 1:nrow(combos)){
   combos$Vol4[i]<-sum(4*NumPts4$Z3) 
   combos$Vol3.5[i]<-sum(4*NumPts3.5$Z3)  
   combos$Vol3[i]<-sum(4*NumPts3$Z3) 
-  saveRDS(list(big_data=big_data, combos=combos[i]),
-	paste0("_do-outputs/",i,".RDS"))
+  #saveRDS(list(big_data=big_data, combos=combos[i]),
+	#paste0("_do-outputs/",i,".RDS"))
   print(i/nrow(combos))
 }
 
