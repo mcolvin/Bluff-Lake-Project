@@ -120,10 +120,10 @@ ggplot(ExpandedHours2, aes(x = Month, y=Total, fill=Year)) + geom_bar(position=p
 #save angler efforts
 write.csv(ExpandedHours, "~/GitHub/Bluff-Lake-Project/_analysis/BankAngEF.csv")
 write.csv(ExpandedHours2, "~/GitHub/Bluff-Lake-Project/_analysis/BoatAngEF.csv")
-
-
-
 AllAnglers<-rbind(ExpandedHours, ExpandedHours2)
+write.csv(AllAnglers, "~/GitHub/Bluff-Lake-Project/_analysis/AllAnglers.csv")
+
+
 Apr2020<-data.frame(c(2020, 2020, 2020, 2020, 2020,2020, 2020, 2020, 2020, 2020),
                     c(4, 7, 8, 9, 10, 4, 7, 8, 9, 10),
                     c(0,0,0,0,0,0,0,0,0,0), c(0,0,0,0,0,0,0,0,0,0), 

@@ -128,7 +128,10 @@ big_data1<-merge(dates,big_data1)
 big_data1$Ramp<-ifelse(big_data1$DOY>=60 & big_data1$DOY<=304, big_data1$Ramp, 0)
 #fishing season weight-Boat
 Bt<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/BoatAngEF.csv")
-Bt<-Bt%>%dplyr::group_by(Month)%>%dplyr::summarise(BTmean=mean(Total))
+Total<-Bt%>%dplyr::group_by(Year)%>%summarise(sum(Total))
+Total<-merge(Bt,Total)
+Bt<-Total%>%dplyr::group_by(Year, Month)%>%summarise(normalized=sum(Total)/`sum(Total)`)
+Bt<-Bt%>%dplyr::group_by(Month)%>%summarise(BTmean=mean(normalized))
 Month<-c(1,2,11,12)
 BTmean<-c(0,0,0,0)
 d1<-data.frame(Month, BTmean)
@@ -138,12 +141,17 @@ mult<-merge(big_data1,Bt)
 big_data1$Ramp<-mult$Ramp*mult$BTmean
 #fishing season weight-Bank
 Bk<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/BankAngEF.csv")
-Bk<-Bk%>%dplyr::group_by(Month)%>%dplyr::summarise(BKmean=mean(Total))
-#sub in missing months
-Month<-c(1,2,11,12)
-BKmean<-c(200,400,200,200)
-d1<-data.frame(Month, BKmean)
+#sub in missing dates
+Month<-c(1,1,2,2,11,11,12,12)
+Total<-c(200,200,400,400,200,200,200,200)
+Year<-c(2019,2020,2019,2020,2019,2020,2019,2020)
+d1<-data.frame(Month, Total,Year)
+Bk<-data.frame(Month=Bk$Month,Total=Bk$Total,Year=Bk$Year)
 Bk<-rbind(Bk,d1)
+Total<-Bk%>%dplyr::group_by(Year)%>%summarise(sum(Total))
+Bk<-merge(Bk,Total)
+Bk<-Bk%>%dplyr::group_by(Year, Month)%>%summarise(normalized=sum(Total)/`sum(Total)`)
+Bk<-Bk%>%dplyr::group_by(Month)%>%summarise(BKmean=mean(normalized))
 Bk$BKmean<- Bk$BKmean/sum(Bk$BKmean)
 mult<-merge(mult,Bk)
 big_data1$Anglers<-mult$Anglers*mult$BKmean
@@ -161,37 +169,48 @@ big_data1$WB<-mult$distribution*big_data1$WB
 big_data1$WF<-ifelse(big_data1$DOY>=60 & big_data1$DOY<=304, big_data1$WF, 0)
 
 #Rescale Metrics
-WB<- rescale(WB, to=c(0,1))
-WBM<-approxfun(elevation, WB, rule=2,yleft=0,yright=1)
-plot(elevation, WB, xlab="Water Surface Elevation", ylab="Hectares (<20cm)", main = "Waterbird Habitat", type="l", col="blue")
-WF<-rescale(WF, to=c(0,1))
-WFM <- approxfun(elevation, WF, rule=2,yleft=0,yright=1)
-Fish <-rescale(Fish, to=c(0,1))
-FishM <- approxfun(elevation, Fish, rule=2,yleft=0,yright=1)
-Anglers<-rescale(Anglers, to=c(0,1))
-AnglersM <- approxfun(elevation, Anglers, rule=2,yleft=0,yright=1)
-Ramp<-rescale(Ramp, to=c(0,1))
-RampM <- approxfun(elevation, Ramp, rule=2,yleft=0,yright=1)
-dataframe2<-data.frame(elevation, WB, WF, Fish, Anglers, Ramp)
-#incooporate timing to objective utility
-DOY<-c(1:365)
-datalist <- list()
-for(i in 1:length(DOY)){
-  dataframe2$DOY<-DOY[i]
-  datalist[[i]]<-dataframe2
-}
-big_data2 <- do.call(rbind, datalist)
-write.csv(big_data2, "~/GitHub/Bluff-Lake-Project/_analysis/RescaleMetrics.csv")
+big_data1$WB<- rescale(big_data1$WB, to=c(0,1))
+WBM<-approxfun(big_data1$elevation, big_data1$WB, rule=2,yleft=0,yright=1)
+big_data1$WF<-rescale(big_data1$WF, to=c(0,1))
+WFM <- approxfun(big_data1$elevation, big_data1$WF, rule=2,yleft=0,yright=1)
+big_data1$Fish <-rescale(big_data1$Fish, to=c(0,1))
+FishM <- approxfun(big_data1$elevation, big_data1$Fish, rule=2,yleft=0,yright=1)
+big_data1$Anglers<-rescale(big_data1$Anglers, to=c(0,1))
+AnglersM <- approxfun(big_data1$elevation, big_data1$Anglers, rule=2,yleft=0,yright=1)
+big_data1$Ramp<-rescale(big_data1$Ramp, to=c(0,1))
+RampM <- approxfun(big_data1$elevation, big_data1$Ramp, rule=2,yleft=0,yright=1)
+
+big_data1<-big_data1[order(big_data1$elevation),]
+
+ggplot(big_data1,aes(DOY, WB, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, WF, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, Fish, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, Anglers, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, Ramp, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+
+
+# dataframe2<-data.frame(elevation, WB, WF, Fish, Anglers, Ramp)
+# #incooporate timing to objective utility
+# DOY<-c(1:365)
+# datalist <- list()
+# for(i in 1:length(DOY)){
+#   dataframe2$DOY<-DOY[i]
+#   datalist[[i]]<-dataframe2
+# }
+# big_data2 <- do.call(rbind, datalist)
+# write.csv(big_data2, "~/GitHub/Bluff-Lake-Project/_analysis/RescaleMetrics.csv")
 
 
 #Form overall utility
 W<- c(.25,.25,.25,.25)
-big_data2$Utility<-(W[1]*((big_data2$Ramp*.5) + (big_data2$Anglers*.5))) + 
-  (W[2]*big_data2$Fish) + (W[3]*big_data2$WB) + (W[4]*big_data2$WF)
+big_data1$Utility<-(W[1]*((big_data1$Ramp*.5) + (big_data1$Anglers*.5))) + 
+  (W[2]*big_data1$Fish) + (W[3]*big_data1$WB) + (W[4]*big_data1$WF)
 
 #no utility for empty lake
-big_data2$volume<-EL_Vol(big_data2$elevation)
-big_data2$Utility<-ifelse(big_data2$volume<25861, 0, big_data2$Utility)
+big_data1$volume<-EL_Vol(big_data1$elevation)
+big_data1$Utility<-ifelse(big_data1$volume<25861, 0, big_data1$Utility)
+
+ggplot(big_data1,aes(DOY, Utility, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
 
 
 
