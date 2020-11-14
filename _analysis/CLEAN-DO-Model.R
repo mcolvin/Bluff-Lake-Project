@@ -177,8 +177,9 @@ for(i in 1:nrow(combos)){
   combos$Vol4[i]<-sum(4*NumPts4$Z3) 
   combos$Vol3.5[i]<-sum(4*NumPts3.5$Z3)  
   combos$Vol3[i]<-sum(4*NumPts3$Z3) 
-  #saveRDS(list(big_data=big_data, combos=combos[i]),
-	#paste0("_do-outputs/",i,".RDS"))
+  write.csv(combos,"_do-outputs/combos.csv")
   print(i/nrow(combos))
+  print(i)
+  print(nrow(combos))
 }
 
