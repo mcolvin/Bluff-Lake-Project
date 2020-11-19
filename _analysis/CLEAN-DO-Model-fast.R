@@ -110,13 +110,17 @@ DO_fun<-function(t,x,parms)
 # tmp<-as.data.frame(tmp)
 
 ####Run Model on Bathymetric Map----
-dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv") #actual bathymetry
+dat <- fread("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv") #actual bathymetry
+dat[,POINT_Z:=round(POINT_Z,2)]
+
 #create combos of elevation, starting water temp, and dusk DO to run over
 boards<-c(1:17) #baby range for now 0-17
-elevation<-66.45402+(0.2083*boards)
+elevation<-round(66.45402+(0.2083*boards),2)
 tempC<-c(5:30)
 DO_dusk<-c(5:10)
-combos<-expand.grid(tempC=tempC, DO_dusk=DO_dusk, elevation=elevation)
+combos<-expand.grid(tempC=tempC, 
+    DO_dusk=DO_dusk, 
+    elevation=elevation)
 combos$Vol6.5<-NA
 combos$Vol6<-NA
 combos$Vol5.5<-NA
@@ -125,104 +129,76 @@ combos$Vol4.5<-NA
 combos$Vol4<-NA
 combos$Vol3.5<-NA 
 combos$Vol3<-NA
+ptm<-proc.time()
+for(i in 1:nrow(combos))
+    {
+    dat<- subset(dat, dat$POINT_Z < (combos$elevation[i]))
+    cube<-c(0:5)
+    datalist <- list()
+    #make new points for volume slices
+    datalist<-lapply(1:length(cube),function(k)
+        {
+        dat2<- subset(dat, dat$POINT_Z < (combos$elevation[i]-cube[k]))
+        dat2$Z <- c((combos$elevation[i]-dat2$POINT_Z)) #depth (for calculating k)
+        dat2$Z2 <- dat2$Z-cube[k] #depth from point to bottom (for DO equ)
+        dat2 <- subset(dat2, dat2$Z2>0)
+        dat2$k <- 0.01*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
+        dat2$Z3 <- ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
+        return(dat2)
+        })
+    big_data <- rbindlist(datalist)
+    big_data<- subset(big_data, big_data$Z3>=0.15)
+    DO_dusk<-combos$DO_dusk[i]
+    tempC<-combos$tempC[i]
+    #big_data$DawnDO_Mod<-NA 
+    # round Z2 and k to 4 digits
+    big_data[,Z2:=round(Z2,4)]
+    big_data[,k:=round(k,4)]
+    # tally up unique combos of Z2 and k
+    tmp<-big_data[,.(N=.N),by=.(Z2,k)]
+    tmp[,DawnDO_Mod:=NA]
 
-for(i in rev(1:nrow(combos))){
-  dat<- subset(dat, dat$POINT_Z < (combos$elevation[i]))
-  cube<-c(0:5)
-  datalist <- list()
-  #make new points for volume slices
-  for(k in 1:length(cube)){
-    dat2<- subset(dat, dat$POINT_Z < (combos$elevation[i]-cube[k]))
-    dat2$Z <- c((combos$elevation[i]-dat2$POINT_Z)) #depth (for calculating k)
-    dat2$Z2 <- dat2$Z-cube[k] #depth from point to bottom (for DO equ)
-    dat2 <- subset(dat2, dat2$Z2>0)
-    dat2$k <- 0.01*(dat2$Z2/dat2$Z) #depth from pt 2 bttmm/total depth
-    dat2$Z3 <- ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
-    datalist[[k]] <- dat2
-  }
-  # improved speed
-  big_data <- rbindlist(datalist)
-  big_data<- subset(big_data, Z3>=0.15)
-  DO_dusk<-combos$DO_dusk[i]
-  tempC<-combos$tempC[i]
-  big_data$DawnDO_Mod<-NA 
-  #run DO model
- 
-  big_data<-big_data[1:2000,]
-  ptm<-proc.time()
-  big_data[,DawnDO_Mod:=lapply(.I,function(x)
-    {
-    solution<- deSolve::ode(
-      y=DO_dusk, 
-      times=c(0:(10*60)), 
-      func=DO_fun,
-      parms= c(tempC = tempC, Z = big_data$Z2[x], k=big_data$k[x]),
-      method="euler")[601,2] #pull last value "dawn"
-    return(solution)
-    })]
-  proc.time()-ptm
+    #run DO model
+    for(j in 1:nrow(tmp))
+        {    
+        parms=c(tempC = tempC, Z = tmp$Z2[j], k=tmp$k[j])
+        solution<- deSolve::ode(
+            y=DO_dusk, 
+            times=c(0:(10*60)), 
+            func=DO_fun,
+            parms= parms,
+            method="euler")
+        tmp$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
+        }
+
+
   
-  big_data$tmp<-apply(big_data[,.SD,.SDcols=c("Z2","k")],1,paste,collapse="-")
-  length(unique(big_data$tmp))
-  nrow(big_data)
-  
-  
-  library(parallel)
-  detectCores()
-  cl <- makeCluster(3)
-  clusterExport(cl, c("DO_dusk","DO_fun","tempC","big_data"))
-  ptm<-proc.time()
-  test<-parLapply(cl,1:nrow(big_data),function(x)
-    {
-    solution<- deSolve::ode(
-      y=DO_dusk, 
-      times=c(0:(10*60)), 
-      func=DO_fun,
-      parms= c(tempC = tempC, Z = big_data$Z2[x], k=big_data$k[x]),
-      method="euler")[601,2] #pull last value "dawn"
-    return(solution)
-    })
-  proc.time()-ptm
-  stopCluster(cl)
-  
-  ptm<-proc.time()
-  for(j in 1:nrow(big_data)){    
-    parms=c(tempC = tempC, Z = big_data$Z2[j], k=big_data$k[j])
-    solution<- deSolve::ode(
-      y=DO_dusk, 
-      times=c(0:(10*60)), 
-      func=DO_fun,
-      parms= parms,
-      method="euler")
-    big_data$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
-  }
-  proc.time()-ptm
-  
-  
-  big_data$DawnDO_Mod<-ifelse(is.nan(big_data$DawnDO_Mod),NA,big_data$DawnDO_Mod)
-  big_data<-na.omit(big_data)
-  big_data$DawnDO_Mod<-combos$DO_dusk[i]+big_data$DawnDO_Mod 
-  #specify DO criteria
-  NumPts6.5<-subset(big_data, big_data$DawnDO_Mod > 6.5)
-  NumPts6<-subset(big_data, big_data$DawnDO_Mod > 6)
-  NumPts5.5<-subset(big_data, big_data$DawnDO_Mod > 5.5)
-  NumPts5<-subset(big_data, big_data$DawnDO_Mod > 5)
-  NumPts4.5<-subset(big_data, big_data$DawnDO_Mod > 4.5)
-  NumPts4<-subset(big_data, big_data$DawnDO_Mod > 4)
-  NumPts3.5<-subset(big_data, big_data$DawnDO_Mod > 3.5)
-  NumPts3<-subset(big_data, big_data$DawnDO_Mod > 3)
-  #calculate volume
-  combos$Vol6.5[i]<-sum(4*NumPts6.5$Z3) 
-  combos$Vol6[i]<-sum(4*NumPts6$Z3) 
-  combos$Vol5.5[i]<-sum(4*NumPts5.5$Z3)  
-  combos$Vol5[i]<-sum(4*NumPts5$Z3)
-  combos$Vol4.5[i]<-sum(4*NumPts4.5$Z3)  
-  combos$Vol4[i]<-sum(4*NumPts4$Z3) 
-  combos$Vol3.5[i]<-sum(4*NumPts3.5$Z3)  
-  combos$Vol3[i]<-sum(4*NumPts3$Z3) 
-  write.csv(combos,"_do-outputs/combos-rev.csv")
-  print(i/nrow(combos))
-  print(i)
-  print(nrow(combos))
-}
+    # merge tmp with big_data
+    big_data<-merge(big_data,tmp,by=c("Z2","k"),
+        all.x=TRUE)
+    big_data$DawnDO_Mod<-ifelse(is.nan(big_data$DawnDO_Mod),NA,big_data$DawnDO_Mod)
+    big_data<-na.omit(big_data)
+    big_data$DawnDO_Mod<-combos$DO_dusk[i]+big_data$DawnDO_Mod 
+    #specify DO criteria
+    NumPts6.5<-subset(big_data, big_data$DawnDO_Mod > 6.5)
+    NumPts6<-subset(big_data, big_data$DawnDO_Mod > 6)
+    NumPts5.5<-subset(big_data, big_data$DawnDO_Mod > 5.5)
+    NumPts5<-subset(big_data, big_data$DawnDO_Mod > 5)
+    NumPts4.5<-subset(big_data, big_data$DawnDO_Mod > 4.5)
+    NumPts4<-subset(big_data, big_data$DawnDO_Mod > 4)
+    NumPts3.5<-subset(big_data, big_data$DawnDO_Mod > 3.5)
+    NumPts3<-subset(big_data, big_data$DawnDO_Mod > 3)
+    #calculate volume
+    combos$Vol6.5[i]<-sum(4*NumPts6.5$Z3) 
+    combos$Vol6[i]<-sum(4*NumPts6$Z3) 
+    combos$Vol5.5[i]<-sum(4*NumPts5.5$Z3)  
+    combos$Vol5[i]<-sum(4*NumPts5$Z3)
+    combos$Vol4.5[i]<-sum(4*NumPts4.5$Z3)  
+    combos$Vol4[i]<-sum(4*NumPts4$Z3) 
+    combos$Vol3.5[i]<-sum(4*NumPts3.5$Z3)  
+    combos$Vol3[i]<-sum(4*NumPts3$Z3) 
+    fwrite(combos,"_do-outputs/combos-fast.csv")
+    print(i/nrow(combos))
+    }
+proc.time()-ptm
 
