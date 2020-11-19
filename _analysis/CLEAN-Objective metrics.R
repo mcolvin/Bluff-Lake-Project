@@ -1,4 +1,5 @@
 dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
+library(lubridate)
 library(tidyverse)
 library(scales)
 # ---- Lake Volume
