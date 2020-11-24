@@ -10,8 +10,7 @@ elevation<-66.45402+(0.2032*boards)
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))
-  Z <- Z*4
-  volume[i]<-sum(Z)
+  volume[i]<-sum(Z*4)
 }
 
 data<-data.frame(volume, elevation)

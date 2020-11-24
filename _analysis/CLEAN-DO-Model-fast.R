@@ -122,13 +122,13 @@ combos<-expand.grid(tempC=tempC,
     DO_dusk=DO_dusk, 
     elevation=elevation)
 combos$Vol6.5<-NA
-combos$Vol6<-NA
+combos$Vol6<-  NA
 combos$Vol5.5<-NA
-combos$Vol5<-NA
+combos$Vol5<-  NA
 combos$Vol4.5<-NA
-combos$Vol4<-NA
+combos$Vol4<-  NA
 combos$Vol3.5<-NA 
-combos$Vol3<-NA
+combos$Vol3<-  NA
 ptm<-proc.time()
 for(i in 1:nrow(combos))
     {
@@ -147,12 +147,12 @@ for(i in 1:nrow(combos))
         return(dat2)
         })
     big_data <- rbindlist(datalist)
-    big_data<- subset(big_data, big_data$Z3>=0.15)
+    big_data<- subset(big_data, big_data$Z3>=0.25)
     DO_dusk<-combos$DO_dusk[i]
     tempC<-combos$tempC[i]
     #big_data$DawnDO_Mod<-NA 
     # round Z2 and k to 4 digits
-    big_data[,Z2:=round(Z2,4)]
+    big_data[,Z2:=round(Z2,1)] #maybe change to 2
     big_data[,k:=round(k,4)]
     # tally up unique combos of Z2 and k
     tmp<-big_data[,.(N=.N),by=.(Z2,k)]
@@ -170,8 +170,6 @@ for(i in 1:nrow(combos))
             method="euler")
         tmp$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
         }
-
-
   
     # merge tmp with big_data
     big_data<-merge(big_data,tmp,by=c("Z2","k"),
@@ -181,22 +179,22 @@ for(i in 1:nrow(combos))
     big_data$DawnDO_Mod<-combos$DO_dusk[i]+big_data$DawnDO_Mod 
     #specify DO criteria
     NumPts6.5<-subset(big_data, big_data$DawnDO_Mod > 6.5)
-    NumPts6<-subset(big_data, big_data$DawnDO_Mod > 6)
+    NumPts6<-  subset(big_data, big_data$DawnDO_Mod > 6)
     NumPts5.5<-subset(big_data, big_data$DawnDO_Mod > 5.5)
-    NumPts5<-subset(big_data, big_data$DawnDO_Mod > 5)
+    NumPts5<-  subset(big_data, big_data$DawnDO_Mod > 5)
     NumPts4.5<-subset(big_data, big_data$DawnDO_Mod > 4.5)
-    NumPts4<-subset(big_data, big_data$DawnDO_Mod > 4)
+    NumPts4<-  subset(big_data, big_data$DawnDO_Mod > 4)
     NumPts3.5<-subset(big_data, big_data$DawnDO_Mod > 3.5)
-    NumPts3<-subset(big_data, big_data$DawnDO_Mod > 3)
+    NumPts3<-  subset(big_data, big_data$DawnDO_Mod > 3)
     #calculate volume
     combos$Vol6.5[i]<-sum(4*NumPts6.5$Z3) 
-    combos$Vol6[i]<-sum(4*NumPts6$Z3) 
+    combos$Vol6[i]<-  sum(4*NumPts6$Z3) 
     combos$Vol5.5[i]<-sum(4*NumPts5.5$Z3)  
-    combos$Vol5[i]<-sum(4*NumPts5$Z3)
+    combos$Vol5[i]<-  sum(4*NumPts5$Z3)
     combos$Vol4.5[i]<-sum(4*NumPts4.5$Z3)  
-    combos$Vol4[i]<-sum(4*NumPts4$Z3) 
+    combos$Vol4[i]<-  sum(4*NumPts4$Z3) 
     combos$Vol3.5[i]<-sum(4*NumPts3.5$Z3)  
-    combos$Vol3[i]<-sum(4*NumPts3$Z3) 
+    combos$Vol3[i]<-  sum(4*NumPts3$Z3) 
     fwrite(combos,"_do-outputs/combos-fast.csv")
     print(i/nrow(combos))
     }
