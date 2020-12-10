@@ -1,0 +1,165 @@
+
+
+#----------------------------------------------------------------------
+# 
+#  lake hydrodynanamic model
+#
+#----------------------------------------------------------------------
+wse_dyn<-function(t,x,parms)
+    {    
+    #----------------------------------------------------------------------
+    # 
+    #  parameters and conversions
+    #
+    #----------------------------------------------------------------------
+    # lake volume in m^3
+    V<-x[1]
+    # convert lake volume to water surface elevation
+    wse<- Vol_2_EL(V)
+    # lake surface area
+    sa<- Vol_2_SA(V)
+    # acceleration due to gravity m/sec^2
+    acc_due_to_gravity<- 9.81
+    # wse at intake
+    ele_intake<-wse_intake(t)
+    # wse lake
+    ele_lake<-  wse# wse_lake(t)
+
+    #----------------------------------------------------------------------
+    # 
+    #  water releasing over the WCS
+    #
+    #----------------------------------------------------------------------
+    # board elevation
+    WCS1_wse<-c(68.39712,68.39712,68.39712,68.39712,68.39712,
+                68.39712,68.39712) # seven bays
+    # wcs_width<-rep(1.6764,8)
+    # water control structure head
+    # set head to zero when wse<=board
+    wcs_head<- sapply(WCS1_wse,function(x)
+        {
+        max(0,ele_lake-WCS1_wse)    
+        })
+    # amount of water flowing out of each bay of the wcs
+    wcs_out<- weir(g=9.81,w=wcs_width[1], h=wcs_head[1])+
+        weir(g=9.81,w=wcs_width[2], h=wcs_head[2])+
+        0*weir(g=9.81,w=wcs_width[3], h=wcs_head[3])+
+        0*weir(g=9.81,w=wcs_width[4], h=wcs_head[4])+
+        0*weir(g=9.81,w=wcs_width[5], h=wcs_head[5])+
+        0*weir(g=9.81,w=wcs_width[6], h=wcs_head[6])+
+        weir(g=9.81,w=wcs_width[7], h=wcs_head[7])
+    wcs_out<-(wcs_out*60*30)*0.8        
+    # emergency spillway
+    #emergency overflow measurements (meters)
+    EOFwidth<-23
+    EOFheight<-68.698
+    EOF_head<-max(0,ele_lake-EOFheight) 
+    EOF_out<-broad_weir(w=EOFwidth, h=EOF_head)
+    EOF_out<-EOF_out*60*30     
+
+    #----------------------------------------------------------------------
+    # 
+    #  water coming in (intake)
+    #
+    #----------------------------------------------------------------------
+    # board elevation
+    intake_board_wse<- c(68.800,68.800) # meters bay 1 and 2
+    intake_width<- c(1.6764,1.6764) # meters bay 1 and 2
+    intake_head<- c(max(0,ele_intake-intake_board_wse[1]),
+        max(0,ele_intake-intake_board_wse[2]))
+    # water inputs to intake (cms)
+    intake_in<-weir(g=9.81,h=intake_head[1],w=intake_width[1])+ # bay 1
+        weir(g=9.81,h=intake_head[2],w=intake_width[2]) # bay 2
+    # convert to cubic meters per 30 minutes
+    intake_in<-intake_in*60*30
+    
+    #----------------------------------------------------------------------
+    # 
+    #  change in volume
+    #
+    #----------------------------------------------------------------------
+    V<-V+(intake_in-(wcs_out+EOF_out))# iteration needs the actual volume, not dV
+    return(list(V=V,wse=wse,
+        ele_lake=ele_lake,
+        sa=sa,
+        intake_in=intake_in,
+        EOF_out=EOF_out,
+        wcs_out=wcs_out))
+    }
+# initialize lake volume in m^3 given elevation at t0
+ini_values<-EL_2_Vol(wse_lake(1))
+parameters<-NULL # no parameters yet
+solution<- ode(
+    y=ini_values, 
+    times=discharge_hourly$cont_time, 
+    func=wse_dyn, 
+    parms=parameters, 
+    method="iteration")
+colnames(solution)[2] <- "V"
+solution<-as.data.table(solution)
+solution<-cbind(solution,discharge_hourly)
+plot(V~time,solution,ylab="Lake volume",las=1,main="")
+
+
+
+
+## plot of predicted adn observed WS elevation
+plot(wse~dt,solution,
+    ylab="Water Surface elevation, meters",
+    las=1,main="",type='l',ylim=c(68.0,69.5))
+points(wse_lake~dt,solution,type='l',
+    col="blue")
+legend("topright",lty=c(1,1),lwd=3,col=c("blue","black"),legend=c("Observed","Predicted"))  
+abline(h=EOFheight);text(2000,EOFheight,"EOF elevation",pos=3)
+    
+    
+## plot of intake versus observed WS elevation
+plot(intake_in~dt,solution,
+    ylab="Water intake",
+    las=1,main="",type='l')
+par(new=TRUE)
+plot(wse_lake~dt,solution,type='l',ylab="",
+    col="blue",yaxt='n',xaxt='n')
+    axis(4,at=axTicks(2),labels=TRUE,col="blue",col.axis="blue")
+legend("topright",lty=c(1,1),lwd=3,col=c("blue","black"),legend=c("Lake elevation (m)","Flow in (M^3/30 minutes)"))  
+#abline(h=EOFheight);text(2000,EOFheight,"EOF elevation",pos=3) 
+   
+
+   
+#EOF_out 
+#wcs_out
+#intake_in   
+plot(wse~time,solution,
+    ylab="Water Surface elevation, meters",
+    las=1,main="",type='l',ylim=c(0,15000))
+par(new=TRUE)
+plot(wse_lake~cont_time,solution,type='l',
+    col="blue")
+legend("topright",lty=c(1,1),lwd=3,col=c("blue","black"),legend=c("Observed","Predicted"))  
+abline(h=EOFheight);text(2000,EOFheight,"EOF elevation",pos=3)
+  
+
+plot(wse_lake~dt,model_data,type='l',
+    col="blue")
+legend("topright",lty=c(1,1),lwd=3,col=c("blue","black"),legend=c("Observed","Predicted"))  
+abline(h=EOFheight);text(2000,EOFheight,"EOF elevation",pos=3)
+
+  
+    
+plot(ele_lake~time,solution,ylab="Water Surface elevation, meters",las=1,main="")
+plot(intake_in~time,solution,ylab="Input from intake (m^3/minute)",las=1,main="")
+plot(wcs_out~time,solution,ylab="Output from WCS (m^3/minute)",las=1,main="")
+
+
+
+
+solution<-as.data.table(solution)
+plot(V~time,solution,ylab="Lake volume",las=1,main="")
+plot(sa~time,solution,ylab="Lake surface area",las=1,main="")
+plot(wse~time,solution,ylab="Lake water surface elevation",las=1,main="")
+
+
+
+
+
+
