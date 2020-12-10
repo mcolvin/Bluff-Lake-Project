@@ -31,30 +31,34 @@ discharge_hourly$dateTime<-round_date(discharge_hourly$dateTime, "30 mins")
 discharge_hourly$hour<-hour(discharge_hourly$dateTime)
 discharge_hourly$minute<-minute(discharge_hourly$dateTime)
 
+years<-c(2014:2019)
 # subset hourly discharge data to year of concern
-discharge_year<- discharge_hourly[year==2015,]
-
-# get the mean discharge
-discharge_year<-discharge_year[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)),
-                                    by=.(dateTime,year,doy,hour, minute)]
-
-#Sub in any missing data 
-dateTime<-seq(discharge_year$dateTime[1],discharge_year$dateTime[1]+days(364), "30 min")
-dateTime<-as.data.frame(dateTime)
-dateTime$doy<-as.numeric(format(dateTime$dateTime,"%j"))
-dateTime$hour<-hour(dateTime$dateTime)
-dateTime$minute<-minute(dateTime$dateTime)
-discharge_year<-left_join(dateTime, discharge_year, by = c("dateTime"="dateTime", "doy"="doy", "hour"="hour", "minute"="minute"))
-
-discharge_year$discharge_cms<-discharge_year$discharge*0.0283168
-discharge_year$doy<-as.numeric(discharge_year$doy)
-
-# make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
-discharge_year<-unique(discharge_year)
-discharge_year$cont_time<-(discharge_year$doy*1440)+(discharge_year$hour*60)+  (discharge_year$minute)-1440
-
-#check for missing values
-discharge_year$gap<-c(NA, with(discharge_year, cont_time[-1] - cont_time[-nrow(discharge_year)]))
-
-#fill in missing data
-discharge_year$discharge<-na.approx(discharge_year$discharge)
+datalist <- list()
+for(i in 1:length(years)){
+  discharge_year<- subset(discharge_hourly, discharge_hourly$year==years[i])
+  # get the mean discharge
+  discharge_year<-discharge_year[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)),
+                                 by=.(dateTime,year,doy,hour, minute)]
+  #Sub in any missing data 
+  dateTime<-seq(discharge_year$dateTime[1],discharge_year$dateTime[1]+days(364), "30 min")
+  dateTime<-as.data.frame(dateTime)
+  dateTime$doy<-as.numeric(format(dateTime$dateTime,"%j"))
+  dateTime$hour<-hour(dateTime$dateTime)
+  dateTime$minute<-minute(dateTime$dateTime)
+  discharge_year<-left_join(dateTime, discharge_year, by = c("dateTime"="dateTime",
+                                                                  "doy"="doy", "hour"="hour", 
+                                                                  "minute"="minute"))
+  discharge_year$discharge_cms<-discharge_year$discharge*0.0283168
+  discharge_year$doy<-as.numeric(discharge_year$doy)
+  # make a field for 'continuous time' which is a fractional day starting at 0 for the first row of data an increasing fractinally for each hour and minute (i.e., 5:30 am would be 330 minutes in, 330/1440 = 0.2291667, the same time on the next day would be 1.2291667)
+  discharge_year<-unique(discharge_year)
+  discharge_year$cont_time<-(discharge_year$doy*1440)+(discharge_year$hour*60)+
+    (discharge_year$minute)-1440
+  #check for missing values
+  discharge_year$gap<-c(NA, with(discharge_year, cont_time[-1] - 
+                                   cont_time[-nrow(discharge_year)]))
+  #fill in missing data
+  discharge_year$discharge<-na.approx(discharge_year$discharge)
+  datalist[[i]] <- discharge_year
+  }
+  big_data <- do.call(rbind, datalist)
