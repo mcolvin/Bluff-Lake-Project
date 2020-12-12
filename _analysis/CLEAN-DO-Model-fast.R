@@ -13,6 +13,7 @@ DO_fun<-function(t,x,parms)
   SR<- ((((0.287*tempC-2.5)*44.661)*0.7)*0.001)/60
   # diffusive exchange
   DE<-(DO*DOsat)*(2.2*10^-5)*(k^-1)*60*10^-2 #nothing to change here but the 60/10 situation
+  
   # below is eq 2. but i am not sure the do term should be ther
   #dDO<- DO - SR*Z^-1 + WR +DE*Z^-1
   dDO<- -1*(SR*Z^-1+WR+DE*Z^-1)
@@ -53,7 +54,7 @@ for(i in 1:nrow(combos))
         dat2$Z <- c((combos$elevation[i]-dat2$POINT_Z)) #depth (for calculating k)
         dat2$Z2 <- dat2$Z-cube[k] #depth from point to bottom (for DO equ)
         dat3 <- subset(dat2, dat2$Z2>0)
-        dat3$k <- 0.06*(dat3$Z2/dat3$Z) #depth from pt 2 bttmm/total depth
+        dat3$k <- 0.06 #depth from pt 2 bttmm/total depth *(dat3$Z2/dat3$Z)
         dat3$Z3 <- ifelse(dat3$Z2>1,1,dat3$Z2) #depth of volume cube
         return(dat3)
         })
