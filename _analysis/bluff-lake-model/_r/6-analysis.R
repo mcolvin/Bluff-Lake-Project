@@ -21,7 +21,7 @@ wse_dyn<-function(t,x,parms)
     # acceleration due to gravity m/sec^2
     acc_due_to_gravity<- 9.81
     # wse at intake
-    ele_intake<-wse_intake(t)
+    ele_intake<-wse_intake(t) 
     # wse lake
     ele_lake<-  wse# wse_lake(t)
 

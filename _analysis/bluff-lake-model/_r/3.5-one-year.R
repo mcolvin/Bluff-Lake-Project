@@ -27,18 +27,21 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
 # scale discharge to watershed area m^3/second
 discharge_hourly[,Q_bl:=(discharge/bluff_lake)*0.0283168]
 discharge_hourly$dateTime<-as_datetime(discharge_hourly$dateTime)
-discharge_hourly$dateTime<-round_date(discharge_hourly$dateTime, "30 mins")
+discharge_hourly$dateTime<-round_date(discharge_hourly$dateTime, "1 hour")
+
+discharge_hourly<- discharge_hourly%>%group_by(dateTime)%>%summarise(doy=mean(doy), Q_bl=mean(Q_bl), discharge=mean(discharge))
+  
 discharge_hourly$hour<-hour(discharge_hourly$dateTime)
 discharge_hourly$minute<-minute(discharge_hourly$dateTime)
+discharge_hourly$doy<-yday(discharge_hourly$dateTime)
+discharge_hourly$year<-year(discharge_hourly$dateTime)
+
 
 years<-c(2014:2019)
 # subset hourly discharge data to year of concern
 datalist <- list()
 for(i in 1:length(years)){
   discharge_year<- subset(discharge_hourly, discharge_hourly$year==years[i])
-  # get the mean discharge
-  discharge_year<-discharge_year[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)),
-                                 by=.(dateTime,year,doy,hour, minute)]
   #Sub in any missing data 
   dateTime<-seq(discharge_year$dateTime[1],discharge_year$dateTime[1]+days(364), "30 min")
   dateTime<-as.data.frame(dateTime)
