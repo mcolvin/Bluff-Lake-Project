@@ -6,7 +6,6 @@ dat<-read.csv("_do-outputs/combos-fast.csv")
 dat$value <- paste(dat$tempC, dat$DO_dusk, sep="_")
 
 
-
 ggplot(dat, aes( elevation,Vol6.5/1000000, color=value)) + geom_line() + 
   labs(y = "Volume", x = "Elevation", title = 6.5)+   
   theme_classic()+theme(legend.position = "none")+ylim(0,10)
@@ -37,5 +36,12 @@ ggplot(dat, aes( elevation,Vol3.5/1000000, color=value)) + geom_line() +
 
 ggplot(dat, aes( elevation,Vol3/1000000, color=value)) + geom_line() + 
   labs(y = "Volume", x = "Elevation", title = 3)+   
+  theme_classic()+theme(legend.position = "none")+ylim(0,10) 
+
+prob<-dat%>%group_by(DO_dusk,elevation)%>%summarize(mean=mean(Vol4.5))
+
+
+ggplot(prob, aes(elevation,mean/1000000, group=DO_dusk, color=DO_dusk)) + geom_line() + 
+  labs(y = "Volume", x = "Elevation", title = 4.5)+   
   theme_classic()+theme(legend.position = "none")+ylim(0,10) 
 
