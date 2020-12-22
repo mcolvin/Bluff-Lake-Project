@@ -61,7 +61,7 @@ In_out_el<-function(location, WSE, discharge)
 #volume in cubic meters
 dat <- read.csv("../Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
 volume<-NA
-boards<-c(0:17)
+boards<-c(-10:-1,0:17)
 elevation<-66.56832+(0.2032*boards) #added additional elevation up to ~70m
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
@@ -90,17 +90,31 @@ EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
 
 # Function for Board Elevation over Time
-Board_Time<-function(DOY, Rotation)
+# Board_Time<-function(DOY, Rotation)
+# {
+#   if(DOY>=1 & DOY<=14) {x<-68.19392}
+#   if(DOY>=15 & DOY<=181) {x<-68.39712}
+#   if(DOY>=182 & DOY<=195) {x<-68.19392}
+#   if(DOY>=196 & DOY<=212) {x<-67.98562}
+#   if(DOY>=213 & DOY<=226) {x<-67.77732}
+#   if(DOY>=227 & DOY<=243) {x<-67.56902}
+#   if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
+#   if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
+#   if(DOY>=335 & DOY<=348) {x<-67.77732}
+#   if(DOY>=349 & DOY<=366) {x<-67.98562}
+#   return(x)
+# }
+
+Board_Time<-function(period)
 {
-  if(DOY>=1 & DOY<=14) {x<-68.19392}
-  if(DOY>=15 & DOY<=181) {x<-68.39712}
-  if(DOY>=182 & DOY<=195) {x<-68.19392}
-  if(DOY>=196 & DOY<=212) {x<-67.98562}
-  if(DOY>=213 & DOY<=226) {x<-67.77732}
-  if(DOY>=227 & DOY<=243) {x<-67.56902}
-  if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
-  if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
-  if(DOY>=335 & DOY<=348) {x<-67.77732}
-  if(DOY>=349 & DOY<=366) {x<-67.98562}
+  if(period==1) {x<-68.19392}
+  if(period==2) {x<-68.39712}
+  if(period==3) {x<-68.19392}
+  if(period==4) {x<-67.98562}
+  if(period==5) {x<-67.77732}
+  if(period==6) {x<-67.56902}
+  if(period==7) {x<-67.33402}
+  if(period==8) {x<-67.77732}
+  if(period==9) {x<-67.98562}
   return(x)
 }

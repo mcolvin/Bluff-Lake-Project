@@ -211,9 +211,12 @@ big_data1$Utility<-ifelse(big_data1$volume<25861, 0, big_data1$Utility)
 
 ggplot(big_data1,aes(DOY, Utility, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
 
+big_data1$doy<-big_data1$DOY
+big_data1<-big_data1[rep(seq_len(nrow(big_data1)), each = 24), ]
+
+big_data1$period<-ifelse(test = big_data1$doy>=1 & big_data1$doy<=14, yes= "1", no=ifelse(big_data1$doy>=15 & big_data1$doy<=181, yes="2", no=ifelse(big_data1$doy>=182 & big_data1$doy<=195, yes="3", no=ifelse(big_data1$doy>=196 & big_data1$doy<=212, yes="4", no=ifelse(big_data1$doy>=213 & big_data1$doy<=226, yes="5", no=ifelse(big_data1$doy>=227 & big_data1$doy<=243, yes="6", no=ifelse(big_data1$doy>=244 & big_data1$doy<=334, yes="7", no=ifelse(big_data1$doy>=335 & big_data1$doy<=348, yes="8", no="9"))))))))
 
 
-
-
-
+big_data1 <- big_data1 %>% dplyr::group_by(elevation,period) %>%
+  dplyr::mutate(HOP = seq_along(period))
 
