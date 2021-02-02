@@ -37,7 +37,7 @@ Do_fit<-function(p,dat){
       method="euler")
     dat$DawnDO_Mod[i]<-solution[601,2]
   }
-  dat$DawnDO_Mod<-dat$DO_dusk+dat$DawnDO_Mod
+  dat$DawnDO_Mod<-dat$DO_dusk-dat$DawnDO_Mod
   # compare predicted to observed
   resid<- dat$DO_dawn-dat$DawnDO_Mod
   ss_res<- sum(resid^2) # sum of square residuals, minimize error
@@ -60,7 +60,7 @@ Fig<-optimize(Do_fit, dat, interval=c(0,0.15), tol=0.01)
 dat <- read.csv("DO-Sampling/_dat/Data/DawnDuskDO.csv")
 dat$Z<- dat$depth2-dat$depth #9 boards in the WCS
 dat$tempC<-dat$Temp_C
-dat$k<-0.01*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
+dat$k<-0.06*(dat$Z/dat$depth2) #depth from pt 2 bttmm/total depth
 dat$DawnDO_Mod<-NA 
 for (i in 1:NROW(dat))
 {
@@ -75,7 +75,7 @@ for (i in 1:NROW(dat))
   dat$DawnDO_Mod[i]<-solution[601,2]
 }
 
-dat$DawnDO_Mod<-dat$DO_dusk+dat$DawnDO_Mod
+dat$DawnDO_Mod<-dat$DO_dusk-dat$DawnDO_Mod
 
 plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen at depth x", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9))
 abline(0,1)

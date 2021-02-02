@@ -213,7 +213,7 @@ wse_lake<-approxfun(model_data$cont_time,
 model_data[,time:=1:.N]    
 # macon
 macon<-approxfun(model_data$cont_time,
-    model_data$wse_lake,
+    model_data$Gauge,
     rule=1) # return NAs outside of data
    
 if(2==3)

@@ -140,12 +140,52 @@ for(i in rev(1:nrow(combos))){
     dat2$Z3 <- ifelse(dat2$Z2>1,1,dat2$Z2) #depth of volume cube
     datalist[[k]] <- dat2
   }
-  big_data <- do.call(rbind, datalist)
-  big_data<- subset(big_data, big_data$Z3>=0.15)
+  # improved speed
+  big_data <- rbindlist(datalist)
+  big_data<- subset(big_data, Z3>=0.15)
   DO_dusk<-combos$DO_dusk[i]
   tempC<-combos$tempC[i]
   big_data$DawnDO_Mod<-NA 
   #run DO model
+ 
+  big_data<-big_data[1:2000,]
+  ptm<-proc.time()
+  big_data[,DawnDO_Mod:=lapply(.I,function(x)
+    {
+    solution<- deSolve::ode(
+      y=DO_dusk, 
+      times=c(0:(10*60)), 
+      func=DO_fun,
+      parms= c(tempC = tempC, Z = big_data$Z2[x], k=big_data$k[x]),
+      method="euler")[601,2] #pull last value "dawn"
+    return(solution)
+    })]
+  proc.time()-ptm
+  
+  big_data$tmp<-apply(big_data[,.SD,.SDcols=c("Z2","k")],1,paste,collapse="-")
+  length(unique(big_data$tmp))
+  nrow(big_data)
+  
+  
+  library(parallel)
+  detectCores()
+  cl <- makeCluster(3)
+  clusterExport(cl, c("DO_dusk","DO_fun","tempC","big_data"))
+  ptm<-proc.time()
+  test<-parLapply(cl,1:nrow(big_data),function(x)
+    {
+    solution<- deSolve::ode(
+      y=DO_dusk, 
+      times=c(0:(10*60)), 
+      func=DO_fun,
+      parms= c(tempC = tempC, Z = big_data$Z2[x], k=big_data$k[x]),
+      method="euler")[601,2] #pull last value "dawn"
+    return(solution)
+    })
+  proc.time()-ptm
+  stopCluster(cl)
+  
+  ptm<-proc.time()
   for(j in 1:nrow(big_data)){    
     parms=c(tempC = tempC, Z = big_data$Z2[j], k=big_data$k[j])
     solution<- deSolve::ode(
@@ -156,6 +196,9 @@ for(i in rev(1:nrow(combos))){
       method="euler")
     big_data$DawnDO_Mod[j]<-solution[601,2] #pull last value "dawn"
   }
+  proc.time()-ptm
+  
+  
   big_data$DawnDO_Mod<-ifelse(is.nan(big_data$DawnDO_Mod),NA,big_data$DawnDO_Mod)
   big_data<-na.omit(big_data)
   big_data$DawnDO_Mod<-combos$DO_dusk[i]+big_data$DawnDO_Mod 

@@ -104,8 +104,3 @@ Board_Time<-function(DOY, Rotation)
   if(DOY>=349 & DOY<=366) {x<-67.98562}
   return(x)
 }
-
-
-
-
-

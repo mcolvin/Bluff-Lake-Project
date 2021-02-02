@@ -1,16 +1,17 @@
+setwd("~/GitHub/Bluff-Lake-Project/_analysis")
 dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
+library(lubridate)
 library(tidyverse)
 library(scales)
 # ---- Lake Volume
 # one point=4m^2
 volume<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2032*boards)
+elevation<-round(66.45402+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))
-  Z <- Z*4
-  volume[i]<-sum(Z)
+  volume[i]<-sum(Z*4)
 }
 
 data<-data.frame(volume, elevation)
@@ -27,7 +28,7 @@ dat <- read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathym
 # areas must be less than 20 cm in depth
 WB<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-round(66.45402+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z > (elevation[i]-.20)))
   Z <- Z*4
@@ -43,7 +44,7 @@ ggplot(data, aes(elevation, WB)) + geom_line() +
 # Dry Areas
 WF<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-round(66.45402+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z > (elevation[i])))
   Z <- Z*4*0.4374 #convert to DED per area
@@ -56,25 +57,19 @@ ggplot(data, aes(elevation, WF)) + geom_line() +
 
 # ---- Fish
 # Areas greater than 1 meter in depth
-Fish<-NA
-boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
-for(i in 1:length(elevation)){
-  Z <- length(which(dat$POINT_Z < (elevation[i])))
-  Z <- Z*4 #convert to DED per area
-  Fish[i]<-sum(Z)/10000
-}
-data<-data.frame(Fish, elevation)
-ggplot(data, aes(elevation, Fish)) + geom_line() + 
-  labs(y = "Hectares >0m in depth", x = "Water Surface Elevation (m)")+   
-  theme_classic()
+Fish<-read.csv("_do-outputs/combos-fast.csv")
+Fish<-Fish%>%group_by(elevation)%>%summarize(Fish4.5=mean(Vol4.5))
+
+ggplot(Fish, aes(elevation,Fish4.5/1000000)) + geom_line() + 
+  labs(y = "Volume", x = "Elevation", title = 4.5)+   
+  theme_classic()+theme(legend.position = "none")+ylim(0,10) 
 
 #### ---- Anglers
 # For now, following fish model, Areas greater than 1 meter in depth
 Adat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Anglers.csv")
 Anglers<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-round(66.45402+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(Adat$POINT_Z < (elevation[i]-1)))
   Z <- Z*4 #convert to DED per area
@@ -90,7 +85,7 @@ ggplot(data, aes(elevation, Anglers)) + geom_line() +
 Bdat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Boat.csv")
 Ramp<-NA
 boards<-c(0:17)
-elevation<-66.45402+(0.2083*boards)
+elevation<-round(66.45402+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(Bdat$POINT_Z < (elevation[i]-0.5)))
   Z <- Z*4 #convert to DED per area
@@ -100,7 +95,11 @@ data<-data.frame(Ramp, elevation)
 ggplot(data, aes(elevation, Ramp)) + geom_line() + 
   labs(y = "Square meters >0.5m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()
-dataframe<-data.frame(elevation, WB, WF, Fish, Anglers, Ramp)
+
+
+
+dataframe<-data.frame(elevation, WB, WF, Anglers, Ramp)
+dataframe<-cbind(dataframe, Fish=Fish$Fish4.5)
 
 
 #incooporate timing to objective utility
