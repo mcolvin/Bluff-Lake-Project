@@ -102,6 +102,10 @@ Boat<-ggplot(data, aes(elevation, Ramp)) + geom_line() +
   labs(y = "Square meters >0.5m", x = "Water Surface Elevation (m)")+   
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
   annotate(geom="text", x=66.5, y=225,size=3,label="D")
+
+
+
+
 grid.arrange(WF2, WB2, Bank, Boat,Fish2, ncol=3,
              bottom="Water Surface Elevation (m)")
 

@@ -270,8 +270,9 @@ All_Years$WF<-WFM(All_Years$Avg15days)
 All_Years$Fish<-FishM(All_Years$elevation)
 All_Years$Anglers<-AnglersM(All_Years$elevation)
 All_Years$Ramp<-RampM(All_Years$elevation)
+All_Years$Paddlefish<-rescale(All_Years$WCS_strategy, to=c(0,1))
 
-
+                              
 #Seasonal Weights
 All_Years$DOY<-All_Years$doy
 All_Years<-merge(All_Years, dates, by="DOY")
@@ -281,13 +282,12 @@ All_Years$WF<-All_Years$WB*All_Years$WB_S
 All_Years$Ramp<-All_Years$Ramp*All_Years$BoatS
 All_Years$Anglers<-All_Years$Anglers*All_Years$BankS
 
-#Weight Utilities
-W<- c(.20,.23,.27,.3)
-All_Years$Utility<-(W[1]*((All_Years$Ramp*.5) + (All_Years$Anglers*.5))) + 
-  (W[2]*All_Years$Fish) + (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
-#no utility for empty lake
-#All_Years$Utility<-ifelse(All_Years$elevation<=66.568, 0, All_Years$Utility)
+#Weight Utilities
+W<- c(.15,.20,.25,.3,.1)
+All_Years$Utility<-(W[5]*All_Years$Paddlefish)+(W[1]*((All_Years$Ramp*.5) + 
+                  (All_Years$Anglers*.5))) + (W[2]*All_Years$Fish) + 
+                  (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
 
 #Group and average
@@ -303,8 +303,8 @@ for(p in 1:length(discharges)){
   p1<- p1 %>% dplyr::group_by(year,period, doy) %>% summarise(Utility=mean(Utility), 
                                                               EL=mean(EL))
   p1 <- p1 %>% dplyr::group_by(year,period) %>%dplyr::arrange(doy) %>%
-  dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p], minEL=min(EL))
-  p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
+  dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p]) #, minEL=min(EL)
+  #p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
   datalist5[[p]] <- p1
 }
 PERIODS2 <- rbindlist(datalist5)
@@ -319,8 +319,31 @@ Final<- PERIODS2 %>%
   dplyr::group_by(WCS_strategy, year, period) %>% 
   dplyr::arrange(doy) %>%  
   dplyr::slice(n())
-Final<- Final%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt))
 
+Final$elevation<-Final$EL
+fin1<-subset(Final, Final$period==1)
+fin1$penalty<-PenaltyM1(fin1$elevation)
+fin2<-subset(Final, Final$period==2)
+fin2$penalty<-PenaltyM2(fin2$elevation)
+fin3<-subset(Final, Final$period==3)
+fin3$penalty<-PenaltyM3(fin3$elevation)
+fin4<-subset(Final, Final$period==4)
+fin4$penalty<-PenaltyM4(fin4$elevation)
+fin5<-subset(Final, Final$period==5)
+fin5$penalty<-PenaltyM5(fin5$elevation)
+fin6<-subset(Final, Final$period==6)
+fin6$penalty<-PenaltyM6(fin6$elevation)
+fin7<-subset(Final, Final$period==7)
+fin7$penalty<-PenaltyM7(fin7$elevation)
+fin8<-subset(Final, Final$period==8)
+fin8$penalty<-PenaltyM8(fin8$elevation)
+fin9<-subset(Final, Final$period==9)
+fin9$penalty<-PenaltyM9(fin9$elevation)
+Final<-rbind(fin1,fin2,fin3,fin4,fin5,fin6,fin7,fin8,fin9)
+
+Final<- Final%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt), Penalty=mean(penalty))
+
+Final$CumUt<-Final$CumUt*Final$Penalty
 
 Final<- Final %>% dplyr::group_by(period) %>% 
   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
