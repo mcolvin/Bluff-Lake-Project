@@ -255,7 +255,7 @@ for(i in 1:length(years)){
   datalist[[i]]<-Solution
 }
 All_Years   <- do.call(rbind, datalist)
-#write.csv(All_Years,"_dat/All_Years_Discharge_Drawdown_Sims.csv")
+write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
 # HydroYears <- do.call(rbind, datalist)
 # Solution   <- do.call(rbind, datalist2)
 
@@ -269,11 +269,11 @@ All_Years   <- do.call(rbind, datalist)
 
 
 setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
-All_Years<-read.csv("_dat/All_Years_Discharge_Drawdown_Sims.csv")
+All_Years<-read.csv("_dat/All_Years_All_Elevations_Discharge_Sims.csv")
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
-All_Years<-All_Years%>%group_by(year, period, PfD)%>%
-  mutate(Avg15days=rollmax(elevation, k=336, fill=EL))
+All_Years<-All_Years%>%group_by(WCS_strategy, year, period)%>%
+  mutate(Avg15days=rollmean(elevation, k=336, fill=EL))
 All_Years$WF<-WFM(All_Years$Avg15days)
 All_Years$Fish<-FishM(All_Years$elevation)
 All_Years$Anglers<-AnglersM(All_Years$elevation)
@@ -294,45 +294,50 @@ W<- c(.20,.23,.27,.3)
 All_Years$Utility<-(W[1]*((All_Years$Ramp*.5) + (All_Years$Anglers*.5))) + 
   (W[2]*All_Years$Fish) + (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
-#no utility for empty lake
-#All_Years$Utility<-ifelse(All_Years$elevation<=66.568, 0, All_Years$Utility)
 
-
-#Group and average
-All_Years$WCS_strategy<-as.factor(All_Years$WCS_strategy)
-All_Years$period<-as.factor(All_Years$period)
-
-discharges<- c(0, 2.8, 5.6, 8.5, 11.3, 14.1, 17)
-
-PERIODS2 <-All_Years
-datalist5<-list()
-for(p in 1:length(discharges)){
-  p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-  p1 <- p1 %>% dplyr::group_by(year,period) %>%dplyr::arrange(doy) %>%
-  dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=WCS_strategy, minEL=min(EL))
-  p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
-  datalist5[[p]] <- p1
-}
-PERIODS2 <- rbindlist(datalist5)
-
-
-Final<- PERIODS2 %>% 
-  dplyr::group_by(year, WCS_strategy, period) %>% 
-  dplyr::arrange(doy) %>%  
-  dplyr::slice(n())
-Final<- Final%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt))
-
-Final<- Final %>% dplyr::group_by(period) %>% 
-  dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
-
-ggplot(Final, aes(x=period, y=WCS_strategy)) +
-  geom_tile(aes(fill = Utility)) +
-  scale_fill_distiller(palette = "Greys") +
-  labs(title = "Decision",
-       y = "Strategy",
-       x = "Period")
-
-
-
-Final<-dcast(Final, period~WCS_strategy)
-
+# #Group and average
+# All_Years$WCS_strategy<-as.factor(All_Years$WCS_strategy)
+# All_Years$period<-as.factor(All_Years$period)
+# 
+# discharges<- c(0, 2.8, 5.6, 8.5, 11.3, 14.1, 17)
+# 
+# PERIODS2 <-All_Years
+# datalist5<-list()
+# for(p in 1:length(discharges)){
+#   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
+#   p1<- p1 %>% dplyr::group_by(year,period, doy) %>% summarise(Utility=mean(Utility), 
+#                                                               EL=mean(EL))
+#   p1 <- p1 %>% dplyr::group_by(year,period) %>%dplyr::arrange(doy) %>%
+#     dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p], minEL=min(EL))
+#   p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
+#   datalist5[[p]] <- p1
+# }
+# PERIODS2 <- rbindlist(datalist5)
+# 
+# subz<-subset(PERIODS2, PERIODS2$period==3)
+# subz<-subset(subz, subz$year==2019)
+# subz$WCS_strategy<-as.factor(subz$WCS_strategy)
+# ggplot()+geom_line(data=subz, aes(x=doy, y=CumUt, color=WCS_strategy), size=0.75)+theme_classic()+xlab("Day of Year")+ ylab("Utility")+theme(legend.title = element_blank())
+# 
+# 
+# Final<- PERIODS2 %>% 
+#   dplyr::group_by(WCS_strategy, year, period) %>% 
+#   dplyr::arrange(doy) %>%  
+#   dplyr::slice(n())
+# Final<- Final%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt))
+# 
+# 
+# Final<- Final %>% dplyr::group_by(period) %>% 
+#   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
+# 
+# Final$WCS_strategy<-as.factor(Final$WCS_strategy)
+# ggplot(Final, aes(x=period, y=WCS_strategy)) +
+#   geom_tile(aes(fill = Utility)) +
+#   scale_fill_distiller(palette = "Greys") +
+#   labs(title = "Decision",
+#        y = "Strategy",
+#        x = "Period")
+# 
+# 
+# 
+# Final<-dcast(Final, period~WCS_strategy)
