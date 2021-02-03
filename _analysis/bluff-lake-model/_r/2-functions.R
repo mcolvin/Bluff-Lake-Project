@@ -15,7 +15,7 @@ weir<-function(g=NULL,w=NULL,h=NULL)
 #----------------------------------------------------------------------
 broad_weir<-function(g=NULL,w=NULL,h=NULL)
     {
-    C=2.7 #Tracy 195
+    C=2.7 #Tracy 1957
     w_ft<- w*3.281 # convert meters to feet
     h_ft <- h*3.281# convert meters to feet
     Q<-(C*w_ft*h_ft^(3/2)) # discharge in cfs
@@ -59,16 +59,18 @@ In_out_el<-function(location, WSE, discharge)
 # Function for converting elevation to volume or volume to elevation ----
 #elevation in meters above sea level
 #volume in cubic meters
-dat <- read.csv("../Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+setwd("~/GitHub/Bluff-Lake-Project/_analysis")
+dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
 volume<-NA
 boards<-c(-10:-1,0:17)
-elevation<-66.56832+(0.2032*boards) #added additional elevation up to ~70m
+elevation<-66.568+(0.2032*boards) #added additional elevation up to ~70m
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))
   Z <- Z*4
   volume[i]<-sum(Z)
 }
+plot(volume~elevation)
 EL_2_Vol<- approxfun(elevation, volume, rule=2)
 Vol_2_EL<- approxfun(volume, elevation, rule=2)
 
@@ -118,3 +120,4 @@ Board_Time<-function(period)
   if(period==9) {x<-67.98562}
   return(x)
 }
+

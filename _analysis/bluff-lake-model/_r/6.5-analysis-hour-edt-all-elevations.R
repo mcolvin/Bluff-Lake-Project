@@ -58,7 +58,7 @@ for(i in 1:length(years)){
   discharge_year<- subset(discharge_hourly, discharge_hourly$year==years[i]) #years[i]
 
   #Sub in any missing data 
-  dateTime<-seq(from=discharge_year$dateTime[1],discharge_year$dateTime[1]+days(364), "1 hour")
+  dateTime<-seq(from=discharge_year$dateTime[1],discharge_year$dateTime[i]+days(364), "1 hour")
   dateTime<-as.data.frame(dateTime)
   dateTime$doy<-as.numeric(format(dateTime$dateTime,"%j"))
   dateTime$hour<-hour(dateTime$dateTime)
@@ -105,7 +105,15 @@ for(i in 1:length(years)){
   }
   discharge_hourly4 <- rbindlist(datalist3)
   #discharge_hourly<-discharge_year3
-  discharge_hourly4$period_dist<-paste(discharge_hourly4$period, discharge_hourly4$WCS_strategy,discharge_hourly4$year,sep="-")
+
+  datalistz <- list()
+  for(z in 1:length(elevation)){
+    discharge_hourly4$Board<-elevation[z]
+    datalistz[[z]] <- discharge_hourly4
+  }
+  discharge_hourly4 <- rbindlist(datalistz)
+  
+  discharge_hourly4$period_dist<-paste(discharge_hourly4$period, discharge_hourly4$WCS_strategy,discharge_hourly4$year, discharge_hourly4$Board, sep="-")
   combos<-unique(discharge_hourly4$period_dist)
   
   
@@ -115,7 +123,7 @@ for(i in 1:length(years)){
   
   period<-mean(as.numeric(Period$period))
   
-  Board<-Board_Time(period)
+  Board<-mean(as.numeric(Period$Board))
   
   
   
@@ -236,10 +244,10 @@ for(i in 1:length(years)){
   
   solution<-left_join(solution,Period)
   solution$EL<-Vol_2_EL(solution$V)
-  
+  solution$V<-ifelse(solution$V<0, 0, solution$V)
   datalist2[[k]] <- solution
   
-  plot(EL~time,solution,ylab="Lake volume",las=1,
+  plot(EL~time,solution,ylab="Lake elevation",las=1,
        main=combos[k])
   abline(a=66.568,b=0)
   }
@@ -264,8 +272,8 @@ setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 All_Years<-read.csv("_dat/All_Years_Discharge_Drawdown_Sims.csv")
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
-All_Years<-All_Years%>%group_by(WCS_strategy, year, period)%>%
-  mutate(Avg15days=rollmean(elevation, k=336, fill=EL))
+All_Years<-All_Years%>%group_by(year, period, PfD)%>%
+  mutate(Avg15days=rollmax(elevation, k=336, fill=EL))
 All_Years$WF<-WFM(All_Years$Avg15days)
 All_Years$Fish<-FishM(All_Years$elevation)
 All_Years$Anglers<-AnglersM(All_Years$elevation)
@@ -300,32 +308,23 @@ PERIODS2 <-All_Years
 datalist5<-list()
 for(p in 1:length(discharges)){
   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-  p1<- p1 %>% dplyr::group_by(year,period, doy) %>% summarise(Utility=mean(Utility), 
-                                                              EL=mean(EL))
   p1 <- p1 %>% dplyr::group_by(year,period) %>%dplyr::arrange(doy) %>%
-  dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p], minEL=min(EL))
+  dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=WCS_strategy, minEL=min(EL))
   p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
   datalist5[[p]] <- p1
 }
 PERIODS2 <- rbindlist(datalist5)
 
-subz<-subset(PERIODS2, PERIODS2$period==3)
-subz<-subset(subz, subz$year==2019)
-subz$WCS_strategy<-as.factor(subz$WCS_strategy)
-ggplot()+geom_line(data=subz, aes(x=doy, y=CumUt, color=WCS_strategy), size=0.75)+theme_classic()+xlab("Day of Year")+ ylab("Utility")+theme(legend.title = element_blank())
-
 
 Final<- PERIODS2 %>% 
-  dplyr::group_by(WCS_strategy, year, period) %>% 
+  dplyr::group_by(year, WCS_strategy, period) %>% 
   dplyr::arrange(doy) %>%  
   dplyr::slice(n())
 Final<- Final%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt))
 
-
 Final<- Final %>% dplyr::group_by(period) %>% 
   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
 
-Final$WCS_strategy<-as.factor(Final$WCS_strategy)
 ggplot(Final, aes(x=period, y=WCS_strategy)) +
   geom_tile(aes(fill = Utility)) +
   scale_fill_distiller(palette = "Greys") +
