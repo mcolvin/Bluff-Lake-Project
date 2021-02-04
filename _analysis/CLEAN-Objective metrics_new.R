@@ -29,8 +29,8 @@ library(egg)
 # ---- Waterbirds
 # areas must be less than 20 cm in depth
 WB<-NA
-boards<-c(0:17)
-elevation<-round(66.568+(0.2032*boards),2)
+# boards<-c(0:17)
+#elevation<-round(66.568+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z > (elevation[i]-.20)))
   Z <- Z*4
@@ -40,14 +40,14 @@ data<-data.frame(WB, elevation)
 WB2<-ggplot(data, aes(elevation, WB)) + geom_line() + 
   labs(y = "Hectares <0.20m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-  annotate(geom="text", x=66.5, y=425,size=3,label="B")
+  annotate(geom="text", x=64.5, y=425,size=3,label="B")
 
 # ---- Waterfowl
 # DED/m^2=0.4374
 # Dry Areas
 WF<-NA
-boards<-c(0:17)
-elevation<-round(66.568+(0.2032*boards),2)
+#boards<-c(0:17)
+#elevation<-round(66.568+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(dat$POINT_Z > (elevation[i])))
   Z <- Z*4*0.4374 #convert to DED per area
@@ -57,24 +57,25 @@ data<-data.frame(WF, elevation)
 WF2<-ggplot(data, aes(elevation, WF)) + geom_line() + 
   labs(y = "Duck Energy Days (million)", x = "Water Surface Elevation (m)")+   
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-  annotate(geom="text", x=66.5, y=2,size=3,label="A")
+  annotate(geom="text", x=64.5, y=2,size=3,label="A")
 
 # ---- Fish
 # Areas greater than 1 meter in depth
 Fish<-read.csv("_do-outputs/combos-fast2.csv")
 Fish<-Fish%>%dplyr::group_by(elevation)%>%dplyr::summarize(Fish5=mean(Vol5))
 
+
 Fish2<-ggplot(Fish, aes(elevation,Fish5/1000000)) + geom_line() + 
   labs(y = bquote('Water Volume'~('million'~m^3)), x = "Elevation")+   
   theme_classic()+theme(legend.position = "none")+ylim(0,10)+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-  annotate(geom="text", x=66.5, y=10,size=3,label="E") 
+  annotate(geom="text", x=64.5, y=10,size=3,label="E") 
 
 #### ---- Anglers
 # For now, following fish model, Areas greater than 1 meter in depth
 Adat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Anglers.csv")
 Anglers<-NA
-boards<-c(0:17)
-elevation<-round(66.568+(0.2032*boards),2)
+# boards<-c(0:17)
+# elevation<-round(66.568+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(Adat$POINT_Z < (elevation[i]-1)))
   Z <- Z*4 
@@ -84,14 +85,14 @@ data<-data.frame(Anglers, elevation)
 Bank<-ggplot(data, aes(elevation, Anglers)) + geom_line() + 
   labs(y = "Hectares >1m in depth", x = "Water Surface Elevation (m)")+   
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-                          annotate(geom="text", x=66.5, y=7,size=3,label="C")
+                          annotate(geom="text", x=64.5, y=7,size=3,label="C")
 
 # Need to deliniate shorelines and establish "end" of boat ramp
 #areas >.5m in depth
 Bdat<-read.csv("~/GitHub/Bluff-Lake-Project/_analysis/Depth-Mapping/_dat/Bathymetry/Boat.csv")
 Ramp<-NA
-boards<-c(0:17)
-elevation<-round(66.568+(0.2032*boards),2)
+# boards<-c(0:17)
+# elevation<-round(66.568+(0.2032*boards),2)
 for(i in 1:length(elevation)){
   Z <- length(which(Bdat$POINT_Z < (elevation[i]-0.5)))
   Z <- Z*4 #convert to DED per area
@@ -101,7 +102,7 @@ data<-data.frame(Ramp, elevation)
 Boat<-ggplot(data, aes(elevation, Ramp)) + geom_line() + 
   labs(y = "Square meters >0.5m", x = "Water Surface Elevation (m)")+   
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-  annotate(geom="text", x=66.5, y=225,size=3,label="D")
+  annotate(geom="text", x=64.5, y=225,size=3,label="D")
 
 
 
@@ -208,22 +209,17 @@ names(dates)[7]<-"WF_S"
 
 big_data1<-merge(big_data1, dates, by="DOY")
 
-big_data1$WB<-big_data1$WF*big_data1$WF_S
-big_data1$WF<-big_data1$WB*big_data1$WB_S
-big_data1$Ramp<-big_data1$Ramp*big_data1$BoatS
-big_data1$Anglers<-big_data1$Anglers*big_data1$BankS
+# big_data1$WB<-big_data1$WF*big_data1$WF_S
+# big_data1$WF<-big_data1$WB*big_data1$WB_S
+# big_data1$Ramp<-big_data1$Ramp*big_data1$BoatS
+# big_data1$Anglers<-big_data1$Anglers*big_data1$BankS
 
 
-#Rescale Metrics
-big_data1$WB<- rescale(big_data1$WB, to=c(0,1))
+#Metric Functions
 WBM<-approxfun(big_data1$elevation, big_data1$WB, rule=2,yleft=0,yright=1)
-big_data1$WF<-rescale(big_data1$WF, to=c(0,1))
 WFM <- approxfun(big_data1$elevation, big_data1$WF, rule=2,yleft=0,yright=1)
-big_data1$Fish <-rescale(big_data1$Fish, to=c(0,1))
 FishM <- approxfun(big_data1$elevation, big_data1$Fish, rule=2,yleft=0,yright=1)
-big_data1$Anglers<-rescale(big_data1$Anglers, to=c(0,1))
 AnglersM <- approxfun(big_data1$elevation, big_data1$Anglers, rule=2,yleft=0,yright=1)
-big_data1$Ramp<-rescale(big_data1$Ramp, to=c(0,1))
 RampM <- approxfun(big_data1$elevation, big_data1$Ramp, rule=2,yleft=0,yright=1)
 
 big_data1<-big_data1[order(big_data1$elevation),]

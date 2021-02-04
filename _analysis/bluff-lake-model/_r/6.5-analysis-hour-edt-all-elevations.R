@@ -1,7 +1,7 @@
 setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 
 #----------------------------------------------------------------------
-# 
+#
 #  NOXUBEE RIVER DISCHARGE DATA: HOURLY
 #
 #----------------------------------------------------------------------
@@ -12,13 +12,13 @@ discharge_hourly<-fread("_dat/discharge_hourly.csv")
 discharge_hourly[,date:=as.Date(date)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_hourly$date)))
 if(tmp>15)# pull data again if more than 15 days have passed since last pull
-{    
+{
   discharge_hourly <- dataRetrieval::readNWISuv(siteNumbers = "02448000",
                                                 parameterCd = c("00060","00065"),
                                                 startDate = as.Date("1986-10-10"),
                                                 endDate = Sys.Date(),
                                                 tz="America/Chicago")
-  discharge_hourly<-as.data.table(discharge_hourly)        
+  discharge_hourly<-as.data.table(discharge_hourly)
   names(discharge_hourly)[4]<-"discharge"
   names(discharge_hourly)[6]<-"gage"
   discharge_hourly[,date:=as.Date(dateTime)]
@@ -39,15 +39,6 @@ discharge_hourly$doy<-yday(discharge_hourly$dateTime)
 discharge_hourly$year<-year(discharge_hourly$dateTime)
 
 
-
-
-
-
-
-######################################################################
-
-
-
 #1993 and 2012 do not start on 1/1
 years<-c(1990:1992,1994:2011, 2013:2020)
 # subset hourly discharge data to year of concern
@@ -55,10 +46,10 @@ datalist <- list()
 datalist2<- list()
 
 for(i in 1:length(years)){
-  discharge_year<- subset(discharge_hourly, discharge_hourly$year==years[i]) #years[i]
+  discharge_year<- subset(discharge_hourly, discharge_hourly$year==years[1]) #years[i]
 
   #Sub in any missing data 
-  dateTime<-seq(from=discharge_year$dateTime[1],discharge_year$dateTime[i]+days(364), "1 hour")
+  dateTime<-seq(from=discharge_year$dateTime[1],discharge_year$dateTime[1]+days(364), "1 hour")
   dateTime<-as.data.frame(dateTime)
   dateTime$doy<-as.numeric(format(dateTime$dateTime,"%j"))
   dateTime$hour<-hour(dateTime$dateTime)
@@ -252,21 +243,12 @@ for(i in 1:length(years)){
   abline(a=66.568,b=0)
   }
   Solution   <- do.call(rbind, datalist2)
-  datalist[[i]]<-Solution
+  datalist[[1]]<-Solution
 }
 All_Years   <- do.call(rbind, datalist)
 write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
-# HydroYears <- do.call(rbind, datalist)
-# Solution   <- do.call(rbind, datalist2)
 
-#write.csv(HydroYears,"_dat/HydroYears.csv")
-#write.csv(Solution,"_dat/Solution.csv")
-
-
-
-
-#Utilities
-
+# Calculating Utilties
 
 setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 All_Years<-read.csv("_dat/All_Years_All_Elevations_Discharge_Sims.csv")
@@ -278,6 +260,7 @@ All_Years$WF<-WFM(All_Years$Avg15days)
 All_Years$Fish<-FishM(All_Years$elevation)
 All_Years$Anglers<-AnglersM(All_Years$elevation)
 All_Years$Ramp<-RampM(All_Years$elevation)
+All_Years$Paddlefish<-rescale(All_Years$WCS_strategy, to=c(0,1))
 
 
 #Seasonal Weights
@@ -289,55 +272,85 @@ All_Years$WF<-All_Years$WB*All_Years$WB_S
 All_Years$Ramp<-All_Years$Ramp*All_Years$BoatS
 All_Years$Anglers<-All_Years$Anglers*All_Years$BankS
 
-#Weight Utilities
-W<- c(.20,.23,.27,.3)
-All_Years$Utility<-(W[1]*((All_Years$Ramp*.5) + (All_Years$Anglers*.5))) + 
-  (W[2]*All_Years$Fish) + (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
+#Rescale
+All_Years$WB<-rescale(All_Years$WF, to=c(0,1))
+All_Years$WF<-rescale(All_Years$WB, to=c(0,1))
+All_Years$Ramp<-rescale(All_Years$Ramp, to=c(0,1))
+All_Years$Anglers<-rescale(All_Years$Anglers, to=c(0,1))
+All_Years$Fish<-rescale(All_Years$Anglers, to=c(0,1))
+
+#Weight Utilities acording to CCP to form Cumulative Utility
+W<- c(.15,.20,.25,.3,.1)
+All_Years$Utility<-(W[5]*All_Years$Paddlefish)+(W[1]*((All_Years$Ramp*.5) + 
+                  (All_Years$Anglers*.5))) + (W[2]*All_Years$Fish) + 
+                  (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
 
-# #Group and average
-# All_Years$WCS_strategy<-as.factor(All_Years$WCS_strategy)
-# All_Years$period<-as.factor(All_Years$period)
-# 
-# discharges<- c(0, 2.8, 5.6, 8.5, 11.3, 14.1, 17)
-# 
-# PERIODS2 <-All_Years
-# datalist5<-list()
-# for(p in 1:length(discharges)){
-#   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-#   p1<- p1 %>% dplyr::group_by(year,period, doy) %>% summarise(Utility=mean(Utility), 
-#                                                               EL=mean(EL))
-#   p1 <- p1 %>% dplyr::group_by(year,period) %>%dplyr::arrange(doy) %>%
-#     dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p], minEL=min(EL))
-#   p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
-#   datalist5[[p]] <- p1
-# }
-# PERIODS2 <- rbindlist(datalist5)
-# 
-# subz<-subset(PERIODS2, PERIODS2$period==3)
-# subz<-subset(subz, subz$year==2019)
-# subz$WCS_strategy<-as.factor(subz$WCS_strategy)
-# ggplot()+geom_line(data=subz, aes(x=doy, y=CumUt, color=WCS_strategy), size=0.75)+theme_classic()+xlab("Day of Year")+ ylab("Utility")+theme(legend.title = element_blank())
-# 
-# 
-# Final<- PERIODS2 %>% 
-#   dplyr::group_by(WCS_strategy, year, period) %>% 
-#   dplyr::arrange(doy) %>%  
-#   dplyr::slice(n())
-# Final<- Final%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt))
-# 
-# 
-# Final<- Final %>% dplyr::group_by(period) %>% 
-#   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
-# 
-# Final$WCS_strategy<-as.factor(Final$WCS_strategy)
-# ggplot(Final, aes(x=period, y=WCS_strategy)) +
-#   geom_tile(aes(fill = Utility)) +
-#   scale_fill_distiller(palette = "Greys") +
-#   labs(title = "Decision",
-#        y = "Strategy",
-#        x = "Period")
-# 
-# 
-# 
-# Final<-dcast(Final, period~WCS_strategy)
+#Group and average
+All_Years$WCS_strategy<-as.factor(All_Years$WCS_strategy)
+All_Years$period<-as.factor(All_Years$period)
+
+discharges<- c(0, 2.8, 5.6, 8.5, 11.3, 14.1, 17)
+
+PERIODS2 <-All_Years
+datalist5<-list()
+for(p in 1:length(discharges)){
+  p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
+  p1<- p1 %>% dplyr::group_by(year,period, Board, doy) %>% summarise(Utility=mean(Utility), 
+                                                              EL=mean(EL))
+  p1 <- p1 %>% dplyr::group_by(year,period, Board) %>%dplyr::arrange(doy) %>%
+    dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p]) 
+  datalist5[[p]] <- p1
+}
+PERIODS2 <- rbindlist(datalist5)
+
+Final<- PERIODS2 %>% 
+  dplyr::group_by(WCS_strategy, year, period, Board) %>% 
+  dplyr::arrange(doy) %>%  
+  dplyr::slice(n())
+
+Final$elevation<-Final$EL
+fin1<-subset(Final, Final$period==1)
+fin1$penalty<-PenaltyM1(fin1$elevation)
+fin2<-subset(Final, Final$period==2)
+fin2$penalty<-PenaltyM2(fin2$elevation)
+fin3<-subset(Final, Final$period==3)
+fin3$penalty<-PenaltyM3(fin3$elevation)
+fin4<-subset(Final, Final$period==4)
+fin4$penalty<-PenaltyM4(fin4$elevation)
+fin5<-subset(Final, Final$period==5)
+fin5$penalty<-PenaltyM5(fin5$elevation)
+fin6<-subset(Final, Final$period==6)
+fin6$penalty<-PenaltyM6(fin6$elevation)
+fin7<-subset(Final, Final$period==7)
+fin7$penalty<-PenaltyM7(fin7$elevation)
+fin8<-subset(Final, Final$period==8)
+fin8$penalty<-PenaltyM8(fin8$elevation)
+fin9<-subset(Final, Final$period==9)
+fin9$penalty<-PenaltyM9(fin9$elevation)
+Final<-rbind(fin1,fin2,fin3,fin4,fin5,fin6,fin7,fin8,fin9)
+
+Final$CumUt<-Final$CumUt*Final$penalty
+
+Final<- Final%>%group_by(WCS_strategy, period, Board) %>%summarise(CumUt=mean(CumUt))
+
+Final<- Final %>% dplyr::group_by(period, Board) %>% 
+  dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
+
+Final$WCS_strategy<-as.factor(Final$WCS_strategy)
+plots<-list()
+for(u in 1:length(elevation)){
+  fnl<-subset(Final, Final$Board==elevation[u])
+  plt<-ggplot(fnl, aes(x=period, y=WCS_strategy)) +
+    geom_tile(aes(fill = Utility)) +
+    scale_fill_distiller(palette = "Greys") +
+    labs(title = elevation[u],
+       y = "Strategy",
+       x = "Period")+theme(legend.position = "none", axis.title.x=element_blank(), 
+                           axis.title.y=element_blank())
+  plots[[u]]<-plt
+}
+
+grid.arrange(grobs = plots, ncol = 5) 
+
+Final<-dcast(Final, period~WCS_strategy)

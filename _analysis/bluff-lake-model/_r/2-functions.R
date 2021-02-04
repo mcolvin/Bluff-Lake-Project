@@ -62,8 +62,8 @@ In_out_el<-function(location, WSE, discharge)
 setwd("~/GitHub/Bluff-Lake-Project/_analysis")
 dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
 volume<-NA
-boards<-c(-10:-1,0:17)
-elevation<-66.568+(0.2032*boards) #added additional elevation up to ~70m
+boards<-c(-10:-1,0:18)
+elevation<-66.40+(0.20*boards) #added additional elevation up to ~70m
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))

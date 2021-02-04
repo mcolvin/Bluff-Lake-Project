@@ -26,8 +26,8 @@ data <- fread("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv") #actual bathymetr
 data[,POINT_Z:=round(POINT_Z,2)]
 
 #create combos of elevation, starting water temp, and dusk DO to run over
-boards<-c(0:17) 
-elevation<-round(66.568+(0.2032*boards),2)
+boards<-c(-10:-1,0:18)
+elevation<-66.40+(0.20*boards) #added additional elevation up to ~70m
 tempC<-c(5:30) #5-30
 DO_dusk<-c(5:10) #5-10
 combos<-expand.grid(tempC=tempC, 
