@@ -1,3 +1,6 @@
+source("_r/1-global.R")
+source("_r/2-functions.R")
+source("_r/3-load-and-clean.R")
 
 
 #----------------------------------------------------------------------
@@ -124,7 +127,6 @@ actual <- solution$wse_lake
 rss <- sum((preds - actual) ^ 2, na.rm=T)  ## residual sum of squares
 tss <- sum((actual - mean(actual, na.rm=T)) ^ 2, na.rm=T)  ## total sum of squares
 rsq <- 1 - rss/tss
-adjR<-1-(((1-rsq)*(9981-1))/(9981-3-1))
 
 solution2<-subset(solution, doy> 182)
 preds2 <- solution2$wse
@@ -132,8 +134,6 @@ actual2 <- solution2$wse_lake
 rss2 <- sum((preds2 - actual2) ^ 2, na.rm=T)  ## residual sum of squares
 tss2 <- sum((actual2 - mean(actual2, na.rm=T)) ^ 2, na.rm=T)  ## total sum of squares
 rsq2 <- 1 - (rss2/tss2)
-adjR2<-1-(((1-rsq2)*(3456-1))/(3456-3-1))
-
     
 ## plot of intake versus observed WS elevation
 plot(intake_in~dt,solution,

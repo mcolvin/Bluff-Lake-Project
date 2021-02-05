@@ -1,0 +1,11 @@
+
+## run simulations to evaluate all drawdown stages and lake elevations
+
+source("1-global.R")
+source("2-functions.R")
+source("3-load-and-clean.R")
+source("6.5-analysis-hour-edt-all-elevations.R")
+
+
+
+
