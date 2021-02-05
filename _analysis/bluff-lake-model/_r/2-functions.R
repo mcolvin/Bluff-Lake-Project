@@ -15,7 +15,7 @@ weir<-function(g=NULL,w=NULL,h=NULL)
 #----------------------------------------------------------------------
 broad_weir<-function(g=NULL,w=NULL,h=NULL)
     {
-    C=2.7 #Tracy 195
+    C=2.7 #Tracy 1957
     w_ft<- w*3.281 # convert meters to feet
     h_ft <- h*3.281# convert meters to feet
     Q<-(C*w_ft*h_ft^(3/2)) # discharge in cfs
@@ -59,16 +59,17 @@ In_out_el<-function(location, WSE, discharge)
 # Function for converting elevation to volume or volume to elevation ----
 #elevation in meters above sea level
 #volume in cubic meters
-dat <- read.csv("../Depth-Mapping/_dat/Bathymetry/WCS_BTTMUP_2_2.csv")
+dat <- read.csv("_dat/CompleteMap.csv")
 volume<-NA
-boards<-c(0:17)
-elevation<-66.56832+(0.2032*boards) #added additional elevation up to ~70m
+boards<-c(-10:-1,0:18)
+elevation<-66.40+(0.20*boards) #added additional elevation up to ~70m
 for(i in 1:length(elevation)){
   Z <- subset(dat$POINT_Z, dat$POINT_Z < (elevation[i]))
   Z <- c((elevation[i]-Z))
   Z <- Z*4
   volume[i]<-sum(Z)
 }
+plot(volume~elevation)
 EL_2_Vol<- approxfun(elevation, volume, rule=2)
 Vol_2_EL<- approxfun(volume, elevation, rule=2)
 
@@ -90,17 +91,89 @@ EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
 
 # Function for Board Elevation over Time
-Board_Time<-function(DOY, Rotation)
+# Board_Time<-function(DOY, Rotation)
+# {
+#   if(DOY>=1 & DOY<=14) {x<-68.19392}
+#   if(DOY>=15 & DOY<=181) {x<-68.39712}
+#   if(DOY>=182 & DOY<=195) {x<-68.19392}
+#   if(DOY>=196 & DOY<=212) {x<-67.98562}
+#   if(DOY>=213 & DOY<=226) {x<-67.77732}
+#   if(DOY>=227 & DOY<=243) {x<-67.56902}
+#   if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
+#   if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
+#   if(DOY>=335 & DOY<=348) {x<-67.77732}
+#   if(DOY>=349 & DOY<=366) {x<-67.98562}
+#   return(x)
+# }
+
+Board_Time<-function(period)
 {
-  if(DOY>=1 & DOY<=14) {x<-68.19392}
-  if(DOY>=15 & DOY<=181) {x<-68.39712}
-  if(DOY>=182 & DOY<=195) {x<-68.19392}
-  if(DOY>=196 & DOY<=212) {x<-67.98562}
-  if(DOY>=213 & DOY<=226) {x<-67.77732}
-  if(DOY>=227 & DOY<=243) {x<-67.56902}
-  if(DOY>=244 & DOY<=334 & Rotation==1) {x<-67.33402}
-  if(DOY>=244 & DOY<=334 & Rotation==2) {x<-67.56902}
-  if(DOY>=335 & DOY<=348) {x<-67.77732}
-  if(DOY>=349 & DOY<=366) {x<-67.98562}
+  if(period==1) {x<-68.19392}
+  if(period==2) {x<-68.39712}
+  if(period==3) {x<-68.19392}
+  if(period==4) {x<-67.98562}
+  if(period==5) {x<-67.77732}
+  if(period==6) {x<-67.56902}
+  if(period==7) {x<-67.33402}
+  if(period==8) {x<-67.77732}
+  if(period==9) {x<-67.98562}
   return(x)
 }
+
+#Board Penalty
+Penalty<-as.data.frame(elevation)
+Penalty$volume<-volume
+
+DOY<-c(1:365)
+datalist <- list()
+for(i in 1:length(DOY)){
+  Penalty$doy<-DOY[i]
+  datalist[[i]]<-Penalty
+}
+Penalty <- do.call(rbind, datalist)
+
+Penalty$period<-ifelse(test = Penalty$doy>=1 & Penalty$doy<=14, yes= "1", no=ifelse(Penalty$doy>=15 & Penalty$doy<=181, yes="2", no=ifelse(Penalty$doy>=182 & Penalty$doy<=195, yes="3", no=ifelse(Penalty$doy>=196 & Penalty$doy<=212, yes="4", no=ifelse(Penalty$doy>=213 & Penalty$doy<=226, yes="5", no=ifelse(Penalty$doy>=227 & Penalty$doy<=243, yes="6", no=ifelse(Penalty$doy>=244 & Penalty$doy<=334, yes="7", no=ifelse(Penalty$doy>=335 & Penalty$doy<=348, yes="8", no="9"))))))))
+Penalty$period<-as.factor(Penalty$period)
+for(q in 1:nrow(Penalty)){
+  Penalty$Period_board[q]<-Board_Time(Penalty$period[q])
+}
+
+Penalty<- Penalty %>% 
+  dplyr::group_by(elevation,period) %>% 
+  dplyr::arrange(doy) %>%  
+  dplyr::slice(n())
+
+Penalty2<-Penalty
+Penalty2$penalty<-Penalty$elevation/Penalty$Period_board
+Penalty2$penalty<-rescale(Penalty2$penalty, to=c(0,1))
+Penalty2$penalty<-ifelse(Penalty2$elevation>Penalty2$Period_board, 1, Penalty2$penalty)
+Penalty2$penalty<-ifelse(Penalty2$elevation<66.568, 0, Penalty2$penalty)
+
+
+ggplot(Penalty2, aes(elevation, penalty, group=period,color=period)) + geom_line() + 
+  labs(x = "Water Surface Elevation (m)")+   
+  theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
+  annotate(geom="text", x=64.5, y=1,size=3,label="D")
+
+
+PP1<-subset(Penalty2, Penalty2$period==1)
+PP2<-subset(Penalty2, Penalty2$period==2)
+PP3<-subset(Penalty2, Penalty2$period==3)
+PP4<-subset(Penalty2, Penalty2$period==4)
+PP5<-subset(Penalty2, Penalty2$period==5)
+PP6<-subset(Penalty2, Penalty2$period==6)
+PP7<-subset(Penalty2, Penalty2$period==7)
+PP8<-subset(Penalty2, Penalty2$period==8)
+PP9<-subset(Penalty2, Penalty2$period==9)
+
+
+PenaltyM1<-approxfun(PP1$elevation, PP1$penalty, rule=2,yleft=0,yright=1)
+PenaltyM2<-approxfun(PP2$elevation, PP2$penalty, rule=2,yleft=0,yright=1)
+PenaltyM3<-approxfun(PP3$elevation, PP3$penalty, rule=2,yleft=0,yright=1)
+PenaltyM4<-approxfun(PP4$elevation, PP4$penalty, rule=2,yleft=0,yright=1)
+PenaltyM5<-approxfun(PP5$elevation, PP5$penalty, rule=2,yleft=0,yright=1)
+PenaltyM6<-approxfun(PP6$elevation, PP6$penalty, rule=2,yleft=0,yright=1)
+PenaltyM7<-approxfun(PP7$elevation, PP7$penalty, rule=2,yleft=0,yright=1)
+PenaltyM8<-approxfun(PP8$elevation, PP8$penalty, rule=2,yleft=0,yright=1)
+PenaltyM9<-approxfun(PP9$elevation, PP9$penalty, rule=2,yleft=0,yright=1)
+

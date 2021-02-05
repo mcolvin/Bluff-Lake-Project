@@ -140,7 +140,7 @@ loggers<-dcast(data, dt+year+doy+hour+minute~location,
 #
 #----------------------------------------------------------------------
 
-bath<- fread("_dat/Bathymetry/CompleteMap.csv")
+bath<- fread("_dat/CompleteMap.csv")
 names(bath)<-c("X","Y","elevation")
 
 
@@ -213,7 +213,7 @@ wse_lake<-approxfun(model_data$cont_time,
 model_data[,time:=1:.N]    
 # macon
 macon<-approxfun(model_data$cont_time,
-    model_data$Gauge,
+    model_data$wse_lake,
     rule=1) # return NAs outside of data
    
 if(2==3)
@@ -237,6 +237,9 @@ if(2==3)
 #  elevation of water at intake versus Macon
 #  run lake_info and discharge_daily from load-and-clean
 newdat<- subset(lake_info, dt> as.POSIXct("2019/11/12 18:00")) 
+newdat<-subset(newdat, is.na(newdat$Q_bl)==FALSE)
+newdat<-subset(newdat, is.na(newdat$Intake)==FALSE)
+
 matrix_gam <- data.table(newdat)
 
 gam_4 <- gam(Intake ~ te(Q_bl, doy),
@@ -255,6 +258,9 @@ plot(FitG4~doy, newdat, type="l", col="red", ylim=c(69,70.2), xlim=c(0,365),
      ylab="Water Surface Elevation")
 legend("topright", c("Predicted", "Lake Elevation"),
        col = c("red", "blue"), lty = c(1, 1))        
+
+ggplot()+geom_line(data=newdat, aes(y=FitG4, x=doy), color="blue")+ylab("Elevation")+
+  xlab("Day of Year")+ geom_line(data=newdat, aes(y=Intake, x=doy), color="red")+theme_classic()
 
 discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
 

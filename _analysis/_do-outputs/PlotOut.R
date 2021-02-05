@@ -38,10 +38,10 @@ ggplot(dat, aes( elevation,Vol3/1000000, color=value)) + geom_line() +
   labs(y = "Volume", x = "Elevation", title = 3)+   
   theme_classic()+theme(legend.position = "none")+ylim(0,10) 
 
-prob<-dat%>%group_by(DO_dusk,elevation)%>%summarize(mean=mean(Vol4.5))
+prob<-dat%>%group_by(tempC,elevation)%>%summarize(mean=mean(Vol4.5))
 
 
-ggplot(prob, aes(elevation,mean/1000000, group=DO_dusk, color=DO_dusk)) + geom_line() + 
+ggplot(prob, aes(elevation,mean/1000000, group=tempC, color=tempC)) + geom_line() + 
   labs(y = "Volume", x = "Elevation", title = 4.5)+   
   theme_classic()+theme(legend.position = "none")+ylim(0,10) 
 

@@ -1,3 +1,6 @@
+source("_r/1-global.R")
+source("_r/2-functions.R")
+source("_r/3-load-and-clean.R")
 
 
 #----------------------------------------------------------------------
@@ -101,6 +104,8 @@ solution<-cbind(solution,model_data)
 plot(V~time,solution,ylab="Lake volume",las=1,main="")
 
 
+names(solution)[1]<-"time1"
+solution$date<-as.Date(solution$dt)
 
 
 ## plot of predicted adn observed WS elevation
@@ -111,7 +116,24 @@ points(wse_lake~dt,solution,type='l',
     col="blue")
 legend("topright",lty=c(1,1),lwd=3,col=c("blue","black"),legend=c("Observed","Predicted"))  
 abline(h=EOFheight);text(2000,EOFheight,"EOF elevation",pos=3)
-    
+
+
+ggplot()+geom_line(data=solution, aes(x=dt, y=wse_lake))+theme_classic()+
+  geom_line(aes(x=solution$dt, y=solution$wse), color="blue")+xlab("Day of Year")+
+  ylab("Elevation")+geom_hline(yintercept = EOFheight, linetype="dashed")+
+  scale_x_datetime(date_labels = "%j")+geom_vline( xintercept = as.POSIXct("2020-06-30 00:00:00"), linetype="solid")
+preds <- solution$wse
+actual <- solution$wse_lake
+rss <- sum((preds - actual) ^ 2, na.rm=T)  ## residual sum of squares
+tss <- sum((actual - mean(actual, na.rm=T)) ^ 2, na.rm=T)  ## total sum of squares
+rsq <- 1 - rss/tss
+
+solution2<-subset(solution, doy> 182)
+preds2 <- solution2$wse
+actual2 <- solution2$wse_lake
+rss2 <- sum((preds2 - actual2) ^ 2, na.rm=T)  ## residual sum of squares
+tss2 <- sum((actual2 - mean(actual2, na.rm=T)) ^ 2, na.rm=T)  ## total sum of squares
+rsq2 <- 1 - (rss2/tss2)
     
 ## plot of intake versus observed WS elevation
 plot(intake_in~dt,solution,
@@ -157,9 +179,6 @@ solution<-as.data.table(solution)
 plot(V~time,solution,ylab="Lake volume",las=1,main="")
 plot(sa~time,solution,ylab="Lake surface area",las=1,main="")
 plot(wse~time,solution,ylab="Lake water surface elevation",las=1,main="")
-
-
-
 
 
 
