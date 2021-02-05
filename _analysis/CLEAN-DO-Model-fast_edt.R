@@ -20,7 +20,7 @@ DO_fun<-function(t,x,parms)
   return(list(dDO))
 }
 
-
+setwd("~/GitHub/Bluff-Lake-Project/_analysis")
 ####Run Model on Bathymetric Map----
 data <- fread("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv") #actual bathymetry
 data[,POINT_Z:=round(POINT_Z,2)]

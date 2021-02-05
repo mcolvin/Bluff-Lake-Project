@@ -49,7 +49,6 @@ wcs_width[7]<- board_bay_width*2
 
 # PULL DISCHARGE AND GAUGE DATA FROM USGS PORTAL
 ## PARAMETER CODE 00065 Gage height, feet 00060; Discharge, cubic feet per second
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 discharge_daily<-fread("_dat/discharge_daily.csv")
 discharge_daily[,date:=as.Date(datetime)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_daily$date)))
@@ -141,7 +140,7 @@ loggers<-dcast(data, dt+year+doy+hour+minute~location,
 #
 #----------------------------------------------------------------------
 
-bath<- fread("_dat/Bathymetry/CompleteMap.csv")
+bath<- fread("_dat/CompleteMap.csv")
 names(bath)<-c("X","Y","elevation")
 
 

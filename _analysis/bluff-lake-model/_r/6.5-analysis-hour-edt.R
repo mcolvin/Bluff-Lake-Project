@@ -1,4 +1,8 @@
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
+source("_r/1-global.R")
+source("_r/2-functions.R")
+source("_r/3-load-and-clean.R")
+source("_r/6-analysis.R")
+source("_r/CLEAN-Objective metrics_new.R")
 
 #----------------------------------------------------------------------
 #
@@ -255,7 +259,6 @@ setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 #Utilities
 
 
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 All_Years<-read.csv("_dat/All_Years_Discharge_Drawdown_Sims.csv")
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)

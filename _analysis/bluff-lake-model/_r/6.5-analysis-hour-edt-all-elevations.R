@@ -1,4 +1,9 @@
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
+source("_r/1-global.R")
+source("_r/2-functions.R")
+source("_r/3-load-and-clean.R")
+source("_r/6-analysis.R")
+source("_r/CLEAN-Objective metrics_new.R")
+
 
 #----------------------------------------------------------------------
 #
@@ -250,7 +255,6 @@ write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
 
 # Calculating Utilties
 
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 All_Years<-read.csv("_dat/All_Years_All_Elevations_Discharge_Sims.csv")
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
@@ -339,6 +343,7 @@ Final<- Final %>% dplyr::group_by(period, Board) %>%
 
 Final$WCS_strategy<-as.factor(Final$WCS_strategy)
 plots<-list()
+elevation<-unique(Final$Board)
 for(u in 1:length(elevation)){
   fnl<-subset(Final, Final$Board==elevation[u])
   plt<-ggplot(fnl, aes(x=period, y=WCS_strategy)) +
@@ -347,10 +352,22 @@ for(u in 1:length(elevation)){
     labs(title = elevation[u],
        y = "Strategy",
        x = "Period")+theme(legend.position = "none", axis.title.x=element_blank(), 
-                           axis.title.y=element_blank())
+                           axis.title.y=element_blank(), axis.text.x=element_blank(),
+                           axis.text.y=element_blank())
   plots[[u]]<-plt
 }
 
 grid.arrange(grobs = plots, ncol = 5) 
 
-Final<-dcast(Final, period~WCS_strategy)
+decision<- Final%>%group_by(period, Board)%>% filter(Utility== max(Utility)) %>% 
+  select(WCS_strategy)
+
+decision$Board<-as.factor(decision$Board)
+decision$WCS_strategy<-as.factor(decision$WCS_strategy)
+
+ggplot(decision, aes(x=period, y=Board)) +
+  geom_tile(aes(fill = WCS_strategy)) + #scale_fill_grey()+
+  theme_classic()+
+  labs(title = "Decison",
+       y = "Elevation",
+       x = "Period")

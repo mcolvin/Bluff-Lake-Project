@@ -59,8 +59,7 @@ In_out_el<-function(location, WSE, discharge)
 # Function for converting elevation to volume or volume to elevation ----
 #elevation in meters above sea level
 #volume in cubic meters
-setwd("~/GitHub/Bluff-Lake-Project/_analysis")
-dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
+dat <- read.csv("_dat/CompleteMap.csv")
 volume<-NA
 boards<-c(-10:-1,0:18)
 elevation<-66.40+(0.20*boards) #added additional elevation up to ~70m
