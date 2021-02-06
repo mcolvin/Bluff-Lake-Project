@@ -313,7 +313,7 @@ for(p in 1:length(discharges)){
 }
 PERIODS2 <- rbindlist(datalist5)
 
-subz<-subset(PERIODS2, PERIODS2$period==4)
+subz<-subset(PERIODS2, PERIODS2$period==2)
 subz<-subset(subz, subz$year==2019)
 subz$WCS_strategy<-as.factor(subz$WCS_strategy)
 ggplot()+geom_line(data=subz, aes(x=doy, y=CumUt, color=WCS_strategy), size=0.75)+theme_classic()+xlab("Day of Year")+ ylab("Utility")+theme(legend.title = element_blank())
