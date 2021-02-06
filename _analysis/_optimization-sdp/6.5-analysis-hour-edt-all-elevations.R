@@ -1,4 +1,3 @@
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 
 #----------------------------------------------------------------------
 # 

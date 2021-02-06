@@ -49,8 +49,7 @@ wcs_width[7]<- board_bay_width*2
 
 # PULL DISCHARGE AND GAUGE DATA FROM USGS PORTAL
 ## PARAMETER CODE 00065 Gage height, feet 00060; Discharge, cubic feet per second
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
-discharge_daily<-fread("_dat/discharge_daily.csv")
+discharge_daily<-fread("discharge_daily.csv")
 discharge_daily[,date:=as.Date(datetime)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_daily$date)))
 if(tmp>15)# pull data again if more than 15 days have passed since last pull
@@ -64,7 +63,7 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     discharge_daily[,date:=as.Date(datetime)]
     discharge_daily[,year:=as.numeric(format(date,"%Y"))]
     discharge_daily[,doy:=as.numeric(format(date,"%j"))]
-    write.csv(discharge_daily,"_dat/discharge_daily.csv")
+    write.csv(discharge_daily,"discharge_daily.csv")
     }
     
     
@@ -80,7 +79,7 @@ discharge_daily[,Q_bl:=(discharge/bluff_lake)*0.0283168]
 
 # PULL DISCHARGE AND GAUGE DATA FROM USGS PORTAL
 ## PARAMETER CODE 00065 Gage height, feet 00060; Discharge, cubic feet per second
-discharge_hourly<-fread("_dat/discharge_hourly.csv")
+discharge_hourly<-fread("discharge_hourly.csv")
 discharge_hourly[,date:=as.Date(date)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_hourly$date)))
 if(tmp>15)# pull data again if more than 15 days have passed since last pull
@@ -121,7 +120,7 @@ discharge_hourly<- discharge_hourly[,.(Q_bl=mean(Q_bl),discharge=mean(discharge)
 #
 #----------------------------------------------------------------------
 # Bluff Lake WSE data begins 05/07/2019
-data<-read.xlsx("_dat/Level_logger.xlsx")
+data<-read.xlsx("Level_logger.xlsx")
 names(data)<-c("ID","location","date_time","pressure", "temp_c","baro","water_level","wse")
 # open xlsx convertToDateTime fails on big datasets...
 data$dt <- as.POSIXct(data$date_time*3600*24, tz="GMT", origin = "1899-12-30")
@@ -141,7 +140,7 @@ loggers<-dcast(data, dt+year+doy+hour+minute~location,
 #
 #----------------------------------------------------------------------
 
-bath<- fread("_dat/Bathymetry/CompleteMap.csv")
+bath<- fread("CompleteMap.csv")
 names(bath)<-c("X","Y","elevation")
 
 
@@ -154,6 +153,7 @@ names(bath)<-c("X","Y","elevation")
 # several fields to include: year, doy, hour, wse, discharge (@macon, adjusted to watershed, in cms as units)
 discharge_hourly$discharge_cms<-discharge_hourly$discharge*0.0283168
 discharge_hourly$doy<-as.numeric(discharge_hourly$doy)
+
 loggers$doy<-as.numeric(loggers$doy)
 
 
