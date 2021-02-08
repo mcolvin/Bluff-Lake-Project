@@ -365,9 +365,10 @@ decision<- Final%>%group_by(period, Board)%>% filter(Utility== max(Utility)) %>%
 decision$Board<-as.factor(decision$Board)
 decision$WCS_strategy<-as.factor(decision$WCS_strategy)
 
-ggplot(decision, aes(x=period, y=Board)) +
+p<-ggplot(decision, aes(x=period, y=Board)) +
   geom_tile(aes(fill = WCS_strategy)) + #scale_fill_grey()+
   theme_classic()+
   labs(title = "Decison",
        y = "Elevation",
        x = "Period")
+ggsave("outputs.jpg",plot=p)
