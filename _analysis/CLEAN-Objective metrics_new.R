@@ -1,4 +1,8 @@
+#setwd("~/GitHub/Bluff-Lake-Project/_analysis")
+#dat <- read.csv("Depth-Mapping/_dat/Bathymetry/CompleteMap.csv")
+
 dat <- read.csv("_dat/CompleteMap.csv")
+
 library(lubridate)
 library(tidyverse)
 library(scales)
@@ -71,7 +75,10 @@ Fish2<-ggplot(Fish, aes(elevation,Fish5/1000000)) + geom_line() +
 
 #### ---- Anglers
 # For now, following fish model, Areas greater than 1 meter in depth
+
+#Adat<-read.csv("./Depth-Mapping/_dat/Bathymetry/Anglers.csv")
 Adat<-read.csv("_dat/Anglers.csv")
+
 Anglers<-NA
 # boards<-c(0:17)
 # elevation<-round(66.568+(0.2032*boards),2)
@@ -86,8 +93,9 @@ Bank<-ggplot(data, aes(elevation, Anglers)) + geom_line() +
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
                           annotate(geom="text", x=64.5, y=7,size=3,label="C")
 
-# Need to deliniate shorelines and establish "end" of boat ramp
+# Need to delineate shorelines and establish "end" of boat ramp
 #areas >.5m in depth
+#Bdat<-read.csv("./Depth-Mapping/_dat/Bathymetry/Boat.csv")
 Bdat<-read.csv("_dat/Boat.csv")
 Ramp<-NA
 # boards<-c(0:17)
@@ -113,7 +121,7 @@ dataframe<-data.frame(elevation, WB, WF, Anglers, Ramp)
 dataframe<-cbind(dataframe, Fish=Fish$Fish5)
 
 
-#incooporate timing to objective utility
+#incorporate timing to objective utility
 DOY<-c(1:365)
 datalist <- list()
 for(i in 1:length(DOY)){
@@ -121,6 +129,9 @@ for(i in 1:length(DOY)){
   datalist[[i]]<-dataframe
 }
 big_data1 <- do.call(rbind, datalist)
+
+write.csv(big_data1, "RawMetrics.csv")
+
 #write.csv(big_data1, "~/GitHub/Bluff-Lake-Project/_analysis/RawMetrics.csv")
 
 dates<-data.frame(matrix(ncol = 2, nrow =365))
@@ -135,7 +146,10 @@ dates<-dates[,-c(1:2)]
 #boating season
 dates$Ramp<-ifelse(dates$DOY>=60 & dates$DOY<=304, 1, 0)
 #fishing season weight-Boat
+
+#Bt<-read.csv("./BoatAngEF.csv")
 Bt<-read.csv("_dat/BoatAngEF.csv")
+
 Total<-Bt%>%dplyr::group_by(Year)%>%summarise(sum(Total))
 Total<-merge(Bt,Total)
 Bt<-Total%>%dplyr::group_by(Year, Month)%>%summarise(normalized=sum(Total)/`sum(Total)`)
@@ -147,7 +161,10 @@ Bt<-rbind(Bt,d1)
 Bt$BTmean<-Bt$BTmean/sum(Bt$BTmean)
 dates<-merge(dates,Bt)
 #fishing season weight-Bank
-Bk<-read.csv("_dat/BankAngEF.csv")
+
+Bk<-read.csv("BankAngEF.csv")
+#Bk<-read.csv("_dat/BankAngEF.csv")
+
 #sub in missing dates
 Month<-c(1,1,2,2,11,11,12,12)
 Total<-c(200,200,400,400,200,200,200,200)
@@ -199,6 +216,39 @@ FishM <- approxfun(big_data1$elevation, big_data1$Fish, rule=2,yleft=0,yright=1)
 AnglersM <- approxfun(big_data1$elevation, big_data1$Anglers, rule=2,yleft=0,yright=1)
 RampM <- approxfun(big_data1$elevation, big_data1$Ramp, rule=2,yleft=0,yright=1)
 
+
+big_data1<-big_data1[order(big_data1$elevation),]
+
+ggplot(big_data1,aes(DOY, WB, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, WF, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, Fish, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, Anglers, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+ggplot(big_data1,aes(DOY, Ramp, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
+
+
+# dataframe2<-data.frame(elevation, WB, WF, Fish, Anglers, Ramp)
+# #incorporate timing to objective utility
+# DOY<-c(1:365)
+# datalist <- list()
+# for(i in 1:length(DOY)){
+#   dataframe2$DOY<-DOY[i]
+#   datalist[[i]]<-dataframe2
+# }
+# big_data2 <- do.call(rbind, datalist)
+# write.csv(big_data2, "~/GitHub/Bluff-Lake-Project/_analysis/RescaleMetrics.csv")
+
+
+#Form overall utility
+W<- c(.20,.23,.27,.3)
+big_data1$Utility<-(W[1]*((big_data1$Ramp*.5) + (big_data1$Anglers*.5))) + 
+  (W[2]*big_data1$Fish) + (W[3]*big_data1$WB) + (W[4]*big_data1$WF)
+
+#no utility for empty lake
+big_data1$volume<-EL_2_Vol(big_data1$elevation)
+big_data1$Utility<-ifelse(big_data1$elevation<66.568, 0, big_data1$Utility)
+
+ggplot(big_data1,aes(DOY, Utility, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "Day of Year")+ theme_classic()
+
 # big_data1<-big_data1[order(big_data1$elevation),]
 # 
 # ggplot(big_data1,aes(DOY, WB, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "DOY")+ theme_classic()
@@ -230,4 +280,5 @@ RampM <- approxfun(big_data1$elevation, big_data1$Ramp, rule=2,yleft=0,yright=1)
 # big_data1$Utility<-ifelse(big_data1$elevation<66.568, 0, big_data1$Utility)
 # 
 # ggplot(big_data1,aes(DOY, Utility, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "Day of Year")+ theme_classic()
+
 

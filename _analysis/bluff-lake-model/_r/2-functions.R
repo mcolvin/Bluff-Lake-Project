@@ -69,7 +69,8 @@ for(i in 1:length(elevation)){
   Z <- Z*4
   volume[i]<-sum(Z)
 }
-plot(volume~elevation)
+
+ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
 EL_2_Vol<- approxfun(elevation, volume, rule=2)
 Vol_2_EL<- approxfun(volume, elevation, rule=2)
 
@@ -108,9 +109,9 @@ EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
 Board_Time<-function(period)
 {
-  if(period==1) {x<-68.19392}
-  if(period==2) {x<-68.39712}
-  if(period==3) {x<-68.19392}
+  if(period==1) {x<-68.19392} 
+  if(period==2) {x<-68.39712} 
+  if(period==3) {x<-68.19392} 
   if(period==4) {x<-67.98562}
   if(period==5) {x<-67.77732}
   if(period==6) {x<-67.56902}
@@ -150,12 +151,6 @@ Penalty2$penalty<-ifelse(Penalty2$elevation>Penalty2$Period_board, 1, Penalty2$p
 Penalty2$penalty<-ifelse(Penalty2$elevation<66.568, 0, Penalty2$penalty)
 
 
-ggplot(Penalty2, aes(elevation, penalty, group=period,color=period)) + geom_line() + 
-  labs(x = "Water Surface Elevation (m)")+   
-  theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-  annotate(geom="text", x=64.5, y=1,size=3,label="D")
-
-
 PP1<-subset(Penalty2, Penalty2$period==1)
 PP2<-subset(Penalty2, Penalty2$period==2)
 PP3<-subset(Penalty2, Penalty2$period==3)
@@ -177,3 +172,15 @@ PenaltyM7<-approxfun(PP7$elevation, PP7$penalty, rule=2,yleft=0,yright=1)
 PenaltyM8<-approxfun(PP8$elevation, PP8$penalty, rule=2,yleft=0,yright=1)
 PenaltyM9<-approxfun(PP9$elevation, PP9$penalty, rule=2,yleft=0,yright=1)
 
+# Function for Board Elevation over Time
+
+Penalty2<-subset(Penalty2, Penalty2$period==1|Penalty2$period==2|Penalty2$period==4|Penalty2$period==5|Penalty2$period==6|Penalty2$period==7)
+Penalty2$period<-as.character(Penalty2$period)
+Penalty2$period[Penalty2$period=="1"] <- "1 & 3"
+Penalty2$period[Penalty2$period=="4"] <- "4 & 9"
+Penalty2$period[Penalty2$period=="5"] <- "5 & 8"
+
+
+ggplot(Penalty2, aes(elevation, penalty, group=period,color=period)) + geom_line(size=0.75) + 
+  labs(x = "Water Surface Elevation (m)", y="Penalty")+   
+  theme_classic()

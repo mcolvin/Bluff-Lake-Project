@@ -1,3 +1,4 @@
+source("_r/2-functions.R")
 dat <- read.csv("_dat/CompleteMap.csv")
 library(lubridate)
 library(tidyverse)
