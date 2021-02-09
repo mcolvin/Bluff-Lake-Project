@@ -43,7 +43,7 @@ discharge_hourly$minute<-minute(discharge_hourly$dateTime)
 discharge_hourly$doy<-yday(discharge_hourly$dateTime)
 discharge_hourly$year<-year(discharge_hourly$dateTime)
 
-
+elevation<-subset(elevation, elevation>=66.6)
 #1993 and 2012 do not start on 1/1
 years<-c(1990:1992,1994:2011, 2013:2020)
 # subset hourly discharge data to year of concern
