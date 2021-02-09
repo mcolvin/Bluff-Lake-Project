@@ -341,6 +341,8 @@ Final<- Final%>%group_by(WCS_strategy, period, Board) %>%summarise(CumUt=mean(Cu
 Final<- Final %>% dplyr::group_by(period, Board) %>% 
   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
 
+Final<-read.csv("_outputs/final.csv")
+Final<-subset(Final, Board>66.6)
 Final$WCS_strategy<-as.factor(Final$WCS_strategy)
 plots<-list()
 elevation<-unique(Final$Board)
@@ -359,13 +361,19 @@ for(u in 1:length(elevation)){
 
 grid.arrange(grobs = plots, ncol = 5) 
 
+Final<-read.csv("_outputs/final.csv")
+Final<-subset(Final, Board>66.6)
 decision<- Final%>%group_by(period, Board)%>% filter(Utility== max(Utility)) %>% 
-  select(WCS_strategy)
+  select(WCS_strategy, Utility)
+decision$WCS_strategy<-ifelse(decision$Utility<1, 0, decision$WCS_strategy)
 
 decision$Board<-as.factor(decision$Board)
 decision$WCS_strategy<-as.factor(decision$WCS_strategy)
+decision$period<-as.factor(decision$period)
 
-p<-ggplot(decision, aes(x=period, y=Board)) +
+
+#p<-
+ggplot(decision, aes(x=period, y=Board)) +
   geom_tile(aes(fill = WCS_strategy)) + #scale_fill_grey()+
   theme_classic()+
   labs(title = "Decison",

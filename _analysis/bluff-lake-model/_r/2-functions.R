@@ -69,8 +69,9 @@ for(i in 1:length(elevation)){
   Z <- Z*4
   volume[i]<-sum(Z)
 }
-
-ggplot(data,aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
+s<-as.data.frame(elevation)
+data<-cbind(s, volume)
+ggplot(data, aes(elevation, (volume/1000000))) + geom_line()+labs(y = bquote('Water Volume'~('million'~m^3)), x = "Water Surface Elevation (m)")+ theme_classic()
 EL_2_Vol<- approxfun(elevation, volume, rule=2)
 Vol_2_EL<- approxfun(volume, elevation, rule=2)
 
