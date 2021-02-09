@@ -7,7 +7,7 @@
 
 # PULL DISCHARGE AND GAUGE DATA FROM USGS PORTAL
 ## PARAMETER CODE 00065 Gage height, feet 00060; Discharge, cubic feet per second
-discharge_hourly<-fread("_dat/discharge_hourly.csv")
+discharge_hourly<-fread("discharge_hourly.csv")
 discharge_hourly[,date:=as.Date(date)]
 tmp<-as.numeric(Sys.Date()-as.Date(max(discharge_hourly$date)))
 if(tmp>15)# pull data again if more than 15 days have passed since last pull

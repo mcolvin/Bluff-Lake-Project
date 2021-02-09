@@ -267,7 +267,7 @@ discharge_daily$Pred_El<-predict(gam_4, discharge_daily)
 
 
 #creating combinations
-elevation
+elevation 
 year<-unique(discharge_daily$year)
 week<-as.numeric(seq(1,53, 2))
 pfish<-c(0, 81360, 162720, 244080, 325440, 406800, 488160)
