@@ -43,6 +43,7 @@ discharge_hourly$minute<-minute(discharge_hourly$dateTime)
 discharge_hourly$doy<-yday(discharge_hourly$dateTime)
 discharge_hourly$year<-year(discharge_hourly$dateTime)
 
+elevation<-subset(elevation, elevation>=66.6)
 
 #1993 and 2012 do not start on 1/1
 years<-c(1990:1992,1994:2011, 2013:2020)
@@ -248,14 +249,27 @@ for(i in 1:length(years)){
   abline(a=66.568,b=0)
   }
   Solution   <- do.call(rbind, datalist2)
-  datalist[[i]]<-Solution
+  #datalist[[i]]<-Solution
+  print(i/length(years))
+  fwrite(Solution,paste("_outputs/",years[i],"-hydro-sims.csv",sep=""))
 }
-All_Years   <- do.call(rbind, datalist)
-write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
+#All_Years   <- do.call(rbind, datalist)
+#write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
+
+
+
 
 # Calculating Utilties
 
-All_Years<-read.csv("_dat/All_Years_All_Elevations_Discharge_Sims.csv")
+# Get file list
+file_list <- list.files()
+
+# Read all csv files in the folder and create a list of dataframes
+ldf <- lapply(file_list , read.csv)
+
+# Combine each dataframe in the list into a single dataframe
+df.final <- do.call("rbind", ldf)
+
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
 All_Years<-All_Years%>%group_by(WCS_strategy, year, period)%>%
