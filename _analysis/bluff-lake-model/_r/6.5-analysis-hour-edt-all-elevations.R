@@ -44,6 +44,7 @@ discharge_hourly$doy<-yday(discharge_hourly$dateTime)
 discharge_hourly$year<-year(discharge_hourly$dateTime)
 
 elevation<-subset(elevation, elevation>=66.6)
+
 #1993 and 2012 do not start on 1/1
 years<-c(1990:1992,1994:2011, 2013:2020)
 # subset hourly discharge data to year of concern
@@ -250,7 +251,7 @@ for(i in 1:length(years)){
   Solution   <- do.call(rbind, datalist2)
   #datalist[[i]]<-Solution
   print(i/length(years))
-    fwrite(Solution,paste("_outputs/",years[i],"-hydro-sims.csv",sep=""))
+  fwrite(Solution,paste("_outputs/",years[i],"-hydro-sims.csv",sep=""))
 }
 #All_Years   <- do.call(rbind, datalist)
 #write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
@@ -258,10 +259,17 @@ for(i in 1:length(years)){
 
 
 
-
 # Calculating Utilties
 
-All_Years<-read.csv("_dat/All_Years_All_Elevations_Discharge_Sims.csv")
+# Get file list
+file_list <- list.files()
+
+# Read all csv files in the folder and create a list of dataframes
+ldf <- lapply(file_list , read.csv)
+
+# Combine each dataframe in the list into a single dataframe
+df.final <- do.call("rbind", ldf)
+
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
 All_Years<-All_Years%>%group_by(WCS_strategy, year, period)%>%
@@ -295,6 +303,11 @@ All_Years$Utility<-(W[5]*All_Years$Paddlefish)+(W[1]*((All_Years$Ramp*.5) +
                   (All_Years$Anglers*.5))) + (W[2]*All_Years$Fish) + 
                   (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
+#Don't Drain the Lake!!
+All_Years2<- All_Years%>%group_by(WCS_strategy, year, period, Board)%>%
+  mutate(EL= min(EL))
+All_Years2$Utility<-ifelse(All_Years2$EL<=66.6, 0, All_Years2$Utility)
+All_Years<-All_Years2
 
 #Group and average
 All_Years$WCS_strategy<-as.factor(All_Years$WCS_strategy)
@@ -306,8 +319,6 @@ PERIODS2 <-All_Years
 datalist5<-list()
 for(p in 1:length(discharges)){
   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-  p1<- p1 %>% dplyr::group_by(year,period, Board, doy) %>% summarise(Utility=mean(Utility), 
-                                                              EL=mean(EL))
   p1 <- p1 %>% dplyr::group_by(year,period, Board) %>%dplyr::arrange(doy) %>%
     dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p]) 
   datalist5[[p]] <- p1
@@ -320,34 +331,12 @@ Final<- PERIODS2 %>%
   dplyr::slice(n())
 
 Final$elevation<-Final$EL
-fin1<-subset(Final, Final$period==1)
-fin1$penalty<-PenaltyM1(fin1$elevation)
-fin2<-subset(Final, Final$period==2)
-fin2$penalty<-PenaltyM2(fin2$elevation)
-fin3<-subset(Final, Final$period==3)
-fin3$penalty<-PenaltyM3(fin3$elevation)
-fin4<-subset(Final, Final$period==4)
-fin4$penalty<-PenaltyM4(fin4$elevation)
-fin5<-subset(Final, Final$period==5)
-fin5$penalty<-PenaltyM5(fin5$elevation)
-fin6<-subset(Final, Final$period==6)
-fin6$penalty<-PenaltyM6(fin6$elevation)
-fin7<-subset(Final, Final$period==7)
-fin7$penalty<-PenaltyM7(fin7$elevation)
-fin8<-subset(Final, Final$period==8)
-fin8$penalty<-PenaltyM8(fin8$elevation)
-fin9<-subset(Final, Final$period==9)
-fin9$penalty<-PenaltyM9(fin9$elevation)
-Final<-rbind(fin1,fin2,fin3,fin4,fin5,fin6,fin7,fin8,fin9)
-
-Final$CumUt<-Final$CumUt*Final$penalty
 
 Final<- Final%>%group_by(WCS_strategy, period, Board) %>%summarise(CumUt=mean(CumUt))
 
 Final<- Final %>% dplyr::group_by(period, Board) %>% 
   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
 
-Final$WCS_strategy<-as.factor(Final$WCS_strategy)
 plots<-list()
 elevation<-unique(Final$Board)
 for(u in 1:length(elevation)){
@@ -366,17 +355,27 @@ for(u in 1:length(elevation)){
 grid.arrange(grobs = plots, ncol = 5) 
 
 decision<- Final%>%group_by(period, Board)%>% filter(Utility== max(Utility)) %>% 
-  select(WCS_strategy)
+  select(WCS_strategy, Utility)
+
+#Alternate method for above
+#Final<-as.data.table(Final)
+# dd<-split(Final, by=c("period","Board"))
+# dd<-lapply(dd,function(x)
+#     {
+#     x[which.max(x$Utility)]
+#   })
+# dd<-rbindlist(dd)
+decision$WCS_strategy<-ifelse(decision$Utility<1, 0, decision$WCS_strategy)
 
 decision$Board<-as.factor(decision$Board)
+decision$period<-as.factor(decision$period)
 decision$WCS_strategy<-as.factor(decision$WCS_strategy)
 
-p<-ggplot(decision, aes(x=period, y=Board)) +
+
+#p<-
+ggplot(decision, aes(x=period, y=Board)) +
   geom_tile(aes(fill = WCS_strategy)) + #scale_fill_grey()+
   theme_classic()+
-  labs(title = "Decison",
-       y = "Elevation",
+  labs(y = "Elevation",
        x = "Period")
 ggsave("outputs.jpg",plot=p)
-
-write.csv(Final,"_outputs/final.csv")
