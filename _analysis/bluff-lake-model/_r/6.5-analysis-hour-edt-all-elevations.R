@@ -1,7 +1,5 @@
 source("_r/1-global.R")
 source("_r/2-functions.R")
-source("_r/3-load-and-clean.R")
-source("_r/6-analysis.R")
 source("_r/CLEAN-Objective metrics_new.R")
 
 
@@ -262,17 +260,20 @@ for(i in 1:length(years)){
 # Calculating Utilties
 
 # Get file list
-file_list <- list.files()
+file_list <- list.files("_outputs/years")
 
 # Read all csv files in the folder and create a list of dataframes
-ldf <- lapply(file_list , read.csv)
+setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model/_outputs/years")
+ldf <- lapply(file_list, read.csv)
+setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
+datalistFinal<-list()
 
-# Combine each dataframe in the list into a single dataframe
-df.final <- do.call("rbind", ldf)
 
+for(r in 1:length(ldf)){
+All_Years<-ldf[[r]]
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
-All_Years<-All_Years%>%group_by(WCS_strategy, year, period)%>%
+All_Years<-All_Years%>%group_by(WCS_strategy, period, Board)%>%
   mutate(Avg15days=rollmean(elevation, k=336, fill=EL))
 All_Years$WF<-WFM(All_Years$Avg15days)
 All_Years$Fish<-FishM(All_Years$elevation)
@@ -304,13 +305,11 @@ All_Years$Utility<-(W[5]*All_Years$Paddlefish)+(W[1]*((All_Years$Ramp*.5) +
                   (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
 #Don't Drain the Lake!!
-All_Years2<- All_Years%>%group_by(WCS_strategy, year, period, Board)%>%
+All_Years<- All_Years%>%group_by(WCS_strategy, period, Board)%>%
   mutate(EL= min(EL))
-All_Years2$Utility<-ifelse(All_Years2$EL<=66.6, 0, All_Years2$Utility)
-All_Years<-All_Years2
+All_Years$Utility<-ifelse(All_Years$EL<=66.6, 0, All_Years$Utility)
 
 #Group and average
-All_Years$WCS_strategy<-as.factor(All_Years$WCS_strategy)
 All_Years$period<-as.factor(All_Years$period)
 
 discharges<- c(0, 2.8, 5.6, 8.5, 11.3, 14.1, 17)
@@ -319,18 +318,21 @@ PERIODS2 <-All_Years
 datalist5<-list()
 for(p in 1:length(discharges)){
   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-  p1 <- p1 %>% dplyr::group_by(year,period, Board) %>%dplyr::arrange(doy) %>%
+  p1 <- p1 %>% dplyr::group_by(period, Board) %>%dplyr::arrange(doy) %>%
     dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p]) 
   datalist5[[p]] <- p1
 }
 PERIODS2 <- rbindlist(datalist5)
 
-Final<- PERIODS2 %>% 
-  dplyr::group_by(WCS_strategy, year, period, Board) %>% 
+final<- PERIODS2 %>% 
+  dplyr::group_by(WCS_strategy, period, Board) %>% 
   dplyr::arrange(doy) %>%  
   dplyr::slice(n())
 
-Final$elevation<-Final$EL
+datalistFinal[[r]]<-final
+}
+Final <- rbindlist(datalistFinal)
+write.csv(Final, "_outputs/final.csv")
 
 Final<- Final%>%group_by(WCS_strategy, period, Board) %>%summarise(CumUt=mean(CumUt))
 
@@ -367,10 +369,10 @@ decision<- Final%>%group_by(period, Board)%>% filter(Utility== max(Utility)) %>%
 # dd<-rbindlist(dd)
 decision$WCS_strategy<-ifelse(decision$Utility<1, 0, decision$WCS_strategy)
 
+decision<-subset(decision, decision$Board<=68)
 decision$Board<-as.factor(decision$Board)
 decision$period<-as.factor(decision$period)
 decision$WCS_strategy<-as.factor(decision$WCS_strategy)
-
 
 #p<-
 ggplot(decision, aes(x=period, y=Board)) +
