@@ -1,7 +1,5 @@
 source("_r/1-global.R")
 source("_r/2-functions.R")
-source("_r/3-load-and-clean.R")
-source("_r/6-analysis.R")
 source("_r/CLEAN-Objective metrics_new.R")
 
 #----------------------------------------------------------------------
@@ -304,8 +302,6 @@ PERIODS2 <-All_Years
 datalist5<-list()
 for(p in 1:length(discharges)){
   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-  p1<- p1 %>% dplyr::group_by(year,period, doy) %>% summarise(Utility=mean(Utility), 
-                                                              EL=mean(EL))
   p1 <- p1 %>% dplyr::group_by(year,period) %>%dplyr::arrange(doy) %>%
   dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p]) #, minEL=min(EL)
   #p1 <- p1 %>%dplyr::group_by(year,period) %>% dplyr::mutate(CumUt = ifelse(minEL<=66.568, 0, CumUt))
