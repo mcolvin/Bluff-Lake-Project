@@ -110,15 +110,15 @@ EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
 Board_Time<-function(period)
 {
-  if(period==1) {x<-68.19} 
+  if(period==1) {x<-68.20} 
   if(period==2) {x<-68.40} 
-  if(period==3) {x<-68.19} 
-  if(period==4) {x<-67.99}
-  if(period==5) {x<-67.78}
-  if(period==6) {x<-67.57}
-  if(period==7) {x<-67.33}
-  if(period==8) {x<-67.78}
-  if(period==9) {x<-67.99}
+  if(period==3) {x<-68.20} 
+  if(period==4) {x<-68.00}
+  if(period==5) {x<-67.80}
+  if(period==6) {x<-67.60}
+  if(period==7) {x<-67.40}
+  if(period==8) {x<-67.80}
+  if(period==9) {x<-68.00}
   return(x)
 }
 
