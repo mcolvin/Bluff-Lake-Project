@@ -101,8 +101,6 @@ for(i in 1:length(years)){
   }
   discharge_hourly4 <- rbindlist(datalist3)
   #discharge_hourly<-discharge_year3
-  
-  discharge_hourly4<-mutate(discharge_hourly4, Board2=ifelse(test= period==1, yes="68.19", no=ifelse(period==2, yes="68.40", no=ifelse(period==3, yes="68.19", no=ifelse(period==4, yes="67.99", no=ifelse(period==5, yes="67.78", no=ifelse(period==6, yes= "67.57", no=ifelse(period==7, yes="67.33", no=ifelse(period==8, yes="67.78", no=ifelse(period==9, yes="67.99", no=NA))))))))))
                                                                                                                                                                                               
   datalistz <- list()
   for(z in 1:length(elevation)){
@@ -123,7 +121,7 @@ for(i in 1:length(years)){
   
   Board1<-mean(as.numeric(Period$Board1))
   
-  Board2<-mean(as.numeric(Period$Board2))
+  Board2<-68.4
   
   
   #----------------------------------------------------------------------
