@@ -54,10 +54,12 @@ for(i in 1:length(elevation)){
   WF[i]<-sum(Z)/1000000
 }
 data<-data.frame(WF, elevation)
+#Cap DEDs at 67.3
+data$WF<-ifelse(data$elevation<67.4, 0.9735894144, data$WF)
 WF2<-ggplot(data, aes(elevation, WF)) + geom_line() + 
   labs(y = "Duck Energy Days (million)", x = "Water Surface Elevation (m)")+   
   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
-  annotate(geom="text", x=64.5, y=2,size=3,label="A")
+  annotate(geom="text", x=64.5, y=1.1,size=3,label="A")
 
 # ---- Fish
 # Areas greater than 1 meter in depth

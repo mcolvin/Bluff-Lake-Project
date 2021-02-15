@@ -101,8 +101,6 @@ for(i in 1:length(years)){
   }
   discharge_hourly4 <- rbindlist(datalist3)
   #discharge_hourly<-discharge_year3
-  
-  discharge_hourly4<-mutate(discharge_hourly4, Board2=ifelse(test= period==1, yes="68.19", no=ifelse(period==2, yes="68.40", no=ifelse(period==3, yes="68.19", no=ifelse(period==4, yes="67.99", no=ifelse(period==5, yes="67.78", no=ifelse(period==6, yes= "67.57", no=ifelse(period==7, yes="67.33", no=ifelse(period==8, yes="67.78", no=ifelse(period==9, yes="67.99", no=NA))))))))))
                                                                                                                                                                                               
   datalistz <- list()
   for(z in 1:length(elevation)){
@@ -123,7 +121,7 @@ for(i in 1:length(years)){
   
   Board1<-mean(as.numeric(Period$Board1))
   
-  Board2<-mean(as.numeric(Period$Board2))
+  Board2<-68.4
   
   
   #----------------------------------------------------------------------
@@ -253,7 +251,7 @@ for(i in 1:length(years)){
   Solution   <- do.call(rbind, datalist2)
   #datalist[[i]]<-Solution
   print(i/length(years))
-  fwrite(Solution,paste("_outputs/years/",years[i],"-hydro-sims-2.csv",sep=""))
+  fwrite(Solution,paste("_outputs/yearsND/",years[i],"-hydro-sims-2.csv",sep=""))
 }
 #All_Years   <- do.call(rbind, datalist)
 #write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
@@ -264,10 +262,10 @@ for(i in 1:length(years)){
 # Calculating Utilties
 
 # Get file list
-file_list <- list.files("_outputs/years")
+file_list <- list.files("_outputs/yearsND")
 
 # Read all csv files in the folder and create a list of dataframes
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model/_outputs/years")
+setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model/_outputs/yearsND")
 ldf <- lapply(file_list, read.csv)
 setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 datalistFinal<-list()
@@ -335,9 +333,9 @@ final<- PERIODS2 %>%
 datalistFinal[[r]]<-final
 }
 Final <- rbindlist(datalistFinal)
-write.csv(Final, "_outputs/years/final-cappedDED.csv")
+write.csv(Final, "_outputs/yearsND/final-cappedDED.csv")
 
-#Final<-read.csv("_outputs/years/final-cappedDED.csv")
+Final<-read.csv("_outputs/yearsND/final-cappedDED.csv")
 
 # # fin1<-subset(Final, Final$period==1)
 # # fin1$penalty<-PenaltyM1(fin1$elevation)

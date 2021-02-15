@@ -110,15 +110,15 @@ EL_2_SA<-approxfun(elevation,surface,  rule=2)
 
 Board_Time<-function(period)
 {
-  if(period==1) {x<-68.19392} 
-  if(period==2) {x<-68.39712} 
-  if(period==3) {x<-68.19392} 
-  if(period==4) {x<-67.98562}
-  if(period==5) {x<-67.77732}
-  if(period==6) {x<-67.56902}
-  if(period==7) {x<-67.33402}
-  if(period==8) {x<-67.77732}
-  if(period==9) {x<-67.98562}
+  if(period==1) {x<-68.19} 
+  if(period==2) {x<-68.40} 
+  if(period==3) {x<-68.19} 
+  if(period==4) {x<-67.99}
+  if(period==5) {x<-67.78}
+  if(period==6) {x<-67.57}
+  if(period==7) {x<-67.33}
+  if(period==8) {x<-67.78}
+  if(period==9) {x<-67.99}
   return(x)
 }
 
@@ -135,10 +135,14 @@ for(i in 1:length(DOY)){
 Penalty <- do.call(rbind, datalist)
 
 Penalty$period<-ifelse(test = Penalty$doy>=1 & Penalty$doy<=14, yes= "1", no=ifelse(Penalty$doy>=15 & Penalty$doy<=181, yes="2", no=ifelse(Penalty$doy>=182 & Penalty$doy<=195, yes="3", no=ifelse(Penalty$doy>=196 & Penalty$doy<=212, yes="4", no=ifelse(Penalty$doy>=213 & Penalty$doy<=226, yes="5", no=ifelse(Penalty$doy>=227 & Penalty$doy<=243, yes="6", no=ifelse(Penalty$doy>=244 & Penalty$doy<=334, yes="7", no=ifelse(Penalty$doy>=335 & Penalty$doy<=348, yes="8", no="9"))))))))
-Penalty$period<-as.factor(Penalty$period)
+
 for(q in 1:nrow(Penalty)){
-  Penalty$Period_board[q]<-Board_Time(Penalty$period[q])
+  num<-as.numeric(Penalty$period[q])+1
+  num<-ifelse(num==10, 9, num)
+  Penalty$Period_board[q]<-Board_Time(num)
 }
+
+Penalty$period<-as.factor(Penalty$period)
 
 Penalty<- Penalty %>% 
   dplyr::group_by(elevation,period) %>% 
@@ -148,9 +152,6 @@ Penalty<- Penalty %>%
 Penalty2<-Penalty
 Penalty2$penalty<-Penalty$elevation/Penalty$Period_board
 Penalty2$penalty<-rescale(Penalty2$penalty, to=c(0,1))
-Penalty2$penalty<-ifelse(Penalty2$elevation>Penalty2$Period_board, 1, Penalty2$penalty)
-Penalty2$penalty<-ifelse(Penalty2$elevation<66.568, 0, Penalty2$penalty)
-
 
 PP1<-subset(Penalty2, Penalty2$period==1)
 PP2<-subset(Penalty2, Penalty2$period==2)
@@ -175,11 +176,15 @@ PenaltyM9<-approxfun(PP9$elevation, PP9$penalty, rule=2,yleft=0,yright=1)
 
 # Function for Board Elevation over Time
 
-Penalty2<-subset(Penalty2, Penalty2$period==1|Penalty2$period==2|Penalty2$period==4|Penalty2$period==5|Penalty2$period==6|Penalty2$period==7)
+Penalty2$penalty<-ifelse(Penalty2$elevation>Penalty2$Period_board, 1, Penalty2$penalty)
+Penalty2$penalty<-ifelse(Penalty2$elevation<66.568, 0, Penalty2$penalty)
+
+
+Penalty2<-subset(Penalty2, Penalty2$period==1|Penalty2$period==2|Penalty2$period==3|Penalty2$period==4|Penalty2$period==5|Penalty2$period==6)
 Penalty2$period<-as.character(Penalty2$period)
-Penalty2$period[Penalty2$period=="1"] <- "1 & 3"
-Penalty2$period[Penalty2$period=="4"] <- "4 & 9"
-Penalty2$period[Penalty2$period=="5"] <- "5 & 8"
+Penalty2$period[Penalty2$period=="2"] <- "2 & 9"
+Penalty2$period[Penalty2$period=="3"] <- "3 & 8"
+Penalty2$period[Penalty2$period=="4"] <- "4 & 7"
 
 
 ggplot(Penalty2, aes(elevation, penalty, group=period,color=period)) + geom_line(size=0.75) + 
