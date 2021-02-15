@@ -251,7 +251,7 @@ for(i in 1:length(years)){
   Solution   <- do.call(rbind, datalist2)
   #datalist[[i]]<-Solution
   print(i/length(years))
-  fwrite(Solution,paste("_outputs/round2/",years[i],"-hydro-sims-2.csv",sep=""))
+  fwrite(Solution,paste("_outputs/yearsND/",years[i],"-hydro-sims-2.csv",sep=""))
 }
 #All_Years   <- do.call(rbind, datalist)
 #write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
