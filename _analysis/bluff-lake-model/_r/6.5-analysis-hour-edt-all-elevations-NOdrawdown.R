@@ -262,10 +262,10 @@ for(i in 1:length(years)){
 # Calculating Utilties
 
 # Get file list
-file_list <- list.files("_outputs/round2")
+file_list <- list.files("_outputs/yearsND")
 
 # Read all csv files in the folder and create a list of dataframes
-setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model/_outputs/round2")
+setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model/_outputs/yearsND")
 ldf <- lapply(file_list, read.csv)
 setwd("~/GitHub/Bluff-Lake-Project/_analysis/bluff-lake-model")
 datalistFinal<-list()
@@ -333,9 +333,9 @@ final<- PERIODS2 %>%
 datalistFinal[[r]]<-final
 }
 Final <- rbindlist(datalistFinal)
-write.csv(Final, "_outputs/round2/final-cappedDED.csv")
+write.csv(Final, "_outputs/yearsND/final-cappedDED.csv")
 
-Final<-read.csv("_outputs/round2/final-cappedDED.csv")
+Final<-read.csv("_outputs/yearsND/final-cappedDED.csv")
 
 # # fin1<-subset(Final, Final$period==1)
 # # fin1$penalty<-PenaltyM1(fin1$elevation)
