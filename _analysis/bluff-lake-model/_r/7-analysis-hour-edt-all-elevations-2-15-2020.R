@@ -279,12 +279,12 @@ datalistFinal<-list()
 
 
 for(r in 1:length(ldf)){
-All_Years<-ldf[[1]]
+All_Years<-ldf[[r]]
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
 All_Years<-All_Years%>%group_by(WCS_strategy, period, Board1)%>%
-  mutate(Avg15days=rollmean(elevation, k=336, fill=EL))
-All_Years$WF<-WFM(All_Years$Avg15days)
+  mutate(Avg14days=rollmean(elevation, k=336, fill=EL))
+All_Years$WF<-WFM(All_Years$Avg14days)
 All_Years$Fish<-FishM(All_Years$elevation)
 All_Years$Anglers<-AnglersM(All_Years$elevation)
 All_Years$Ramp<-RampM(All_Years$elevation)

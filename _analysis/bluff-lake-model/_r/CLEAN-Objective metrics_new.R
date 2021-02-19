@@ -235,3 +235,32 @@ RampM <- approxfun(big_data1$elevation, big_data1$Ramp, rule=2,yleft=0,yright=1)
 # 
 # ggplot(big_data1,aes(DOY, Utility, group=elevation, color=elevation)) + geom_line()+labs(y = "Utility", x = "Day of Year")+ theme_classic()
 
+# dataframe$Ramp<-rescale(dataframe$Ramp, c(0,1))
+# dataframe$Anglers<-rescale(dataframe$Anglers, c(0,1))
+# dataframe$WF<-rescale(dataframe$WF, c(0,1))
+# dataframe$WB<-rescale(dataframe$WB, c(0,1))
+# dataframe$Fish<-rescale(dataframe$Fish, c(0,1))
+# 
+# WB2<-ggplot(dataframe, aes(elevation, WB)) + geom_line() + 
+#   labs(y = "Hectares <0.20m in depth", x = "Water Surface Elevation (m)")+   
+#   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
+#   annotate(geom="text", x=64.5, y=1.12,size=3,label="B")
+# WF2<-ggplot(dataframe, aes(elevation, WF)) + geom_line() + 
+#   labs(y = "Duck Energy Days (million)", x = "Water Surface Elevation (m)")+   
+#   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
+#   annotate(geom="text", x=64.5, y=1.12,size=3,label="A")
+# Bank<-ggplot(dataframe, aes(elevation, Anglers)) + geom_line() + 
+#   labs(y = "Hectares >1m in depth", x = "Water Surface Elevation (m)")+   
+#   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
+#   annotate(geom="text", x=64.5, y=1.12,size=3,label="C")
+# Boat<-ggplot(dataframe, aes(elevation, Ramp)) + geom_line() + 
+#   labs(y = "Square meters >0.5m", x = "Water Surface Elevation (m)")+   
+#   theme_classic()+theme(axis.title.x=element_blank(), text = element_text(size=8))+
+#   annotate(geom="text", x=64.5, y=1.12,size=3,label="D")
+# Fish2<-ggplot(dataframe, aes(elevation, Fish)) + geom_line() + 
+#   labs(y = bquote('Water Volume'~('million'~m^3)), x = "Elevation")+   
+#   theme_classic()+theme(legend.position = "none")+theme(axis.title.x=element_blank(), text = element_text(size=8))+
+#   annotate(geom="text", x=64.5, y=1.12,size=3,label="E") 
+# 
+# grid.arrange(WF2, WB2, Bank, Boat, Fish2, ncol=3,
+#              bottom="Water Surface Elevation (m)")
