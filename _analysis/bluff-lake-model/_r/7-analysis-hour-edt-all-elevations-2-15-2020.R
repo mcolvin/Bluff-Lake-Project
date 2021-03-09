@@ -282,7 +282,7 @@ for(r in 1:length(ldf)){
 All_Years<-ldf[[r]]
 All_Years$elevation<-All_Years$EL
 All_Years$WB<-WBM(All_Years$elevation)
-All_Years<-All_Years%>%group_by(WCS_strategy, period, Board1)%>%
+All_Years<-All_Years%>%group_by(year, WCS_strategy, period, Board1)%>%
   mutate(Avg14days=rollmean(elevation, k=336, fill=EL))
 All_Years$WF<-WFM(All_Years$Avg14days)
 All_Years$Fish<-FishM(All_Years$elevation)
@@ -292,6 +292,10 @@ All_Years$Paddlefish<-rescale(All_Years$WCS_strategy, to=c(0,1))
 
 #Seasonal Weights
 All_Years$DOY<-All_Years$doy
+All_Years<-All_Years%>%group_by(year,WCS_strategy, period, Board1, DOY)%>%
+  summarise(WB=sum(WB), WF=sum(WF), Fish=sum(Fish), Anglers=sum(Anglers), Ram=sum(Ramp),
+            Paddlefish=sum(Paddlefish), MinEL= min(EL), EL=mean(EL))
+
 All_Years<-merge(All_Years, dates, by="DOY")
 
 All_Years$WB<-All_Years$WF*All_Years$WF_S
@@ -313,8 +317,8 @@ All_Years$Utility<-(W[5]*All_Years$Paddlefish)+(W[1]*((All_Years$Ramp*.5) +
                   (W[3]*All_Years$WB) + (W[4]*All_Years$WF)
 
 #Don't Drain the Lake!!
-All_Years<- All_Years%>%group_by(WCS_strategy, period, Board1)%>%
-  mutate(MinEL= min(EL))
+All_Years<- All_Years%>%group_by(year, WCS_strategy, period, Board1)%>%
+  mutate(MinEL= min(MinEL))
 All_Years$Utility<-ifelse(All_Years$MinEL<=66.6, 0, All_Years$Utility)
 
 #Group and average
@@ -326,7 +330,7 @@ PERIODS2 <-All_Years
 datalist5<-list()
 for(p in 1:length(discharges)){
   p1<-subset(PERIODS2, PERIODS2$WCS_strategy==discharges[p])
-  p1 <- p1 %>% dplyr::group_by(period, Board1) %>%dplyr::arrange(doy) %>%
+  p1 <- p1 %>% dplyr::group_by(period, Board1) %>%dplyr::arrange(DOY) %>%
   dplyr::mutate(CumUt = cumsum(Utility), WCS_strategy=discharges[p]) 
   datalist5[[p]] <- p1
 }
@@ -334,15 +338,15 @@ PERIODS2 <- rbindlist(datalist5)
 
 final<- PERIODS2 %>% 
   dplyr::group_by(WCS_strategy, period, Board1) %>% 
-  dplyr::arrange(doy) %>%  
+  dplyr::arrange(DOY) %>%  
   dplyr::slice(n())
 
 datalistFinal[[r]]<-final
 }
 Final <- rbindlist(datalistFinal)
-write.csv(Final, "_outputs/yearsnew/final-cappedDED.csv")
+write.csv(Final, "_outputs/yearsnew/final.csv")
 
-Final<-read.csv("_outputs/yearsnew/final-cappedDED.csv")
+Final<-read.csv("_outputs/yearsnew/final.csv")
 
 for(q in 1:nrow(Final)){
   num<-as.numeric(Final$period[q])+1
@@ -350,50 +354,26 @@ for(q in 1:nrow(Final)){
   Final$Period_board[q]<-Board_Time(num)
 }
 
-Final$CumUt<-ifelse(Final$elevation<Final$Period_board-0.2, 0, Final$CumUt)
+Final$CumUt<-ifelse(Final$EL<Final$Period_board-0.2, 0, Final$CumUt)
 
 Final$period<-as.factor(Final$period)
-Final$elevation<-as.numeric(Final$elevation)
 
-#Final$WCS_strategy<-as.factor(Final$WCS_strategy)
-#yrs<-Final
-#for(i in 1:length(years)){
-#  Final<-subset(yrs, yrs$year==years[i])
-#Final<- Final%>%group_by(period, Board1, WCS_strategy) %>%summarise(CumUt=mean(CumUt), El=mean(EL))
+Final<- Final%>%group_by(WCS_strategy, period, Board1) %>%summarise(CumUt=median(CumUt))
 
-# Final<- Final %>% dplyr::group_by(period, Board1) %>%
-#   dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
-# 
-# plots<-list()
-# elevation<-unique(Final2$Board1)
-# for(u in 1:length(elevation)){
-#   fnl<-subset(Final2, Final$Board1==elevation[u])
-#   plt<-ggplot(fnl, aes(x=period, y=WCS_strategy)) +
-#     geom_tile(aes(fill = Utility)) +
-#     scale_fill_distiller(palette = "Greys") +
-#     labs(title = elevation[u],
-#        y = "Strategy",
-#        x = "Period")+theme(legend.position = "none", axis.title.x=element_blank(),
-#                            axis.title.y=element_blank(), axis.text.x=element_blank(),
-#                            axis.text.y=element_blank())
-#   plots[[u]]<-plt
-# }
-# 
-# grid.arrange(grobs = plots, ncol = 5)
 
-decision<- Final%>%group_by(period, Board1, year)%>% filter(CumUt== max(CumUt)) %>%
+decision<- Final%>%group_by(period, Board1)%>% filter(CumUt== max(CumUt)) %>% 
   select(WCS_strategy, CumUt)
-decision$WCS_strategy<-ifelse(decision$CumUt<1, 0, decision$WCS_strategy)
-decision<-decision %>% group_by(period, Board1) %>% summarize (d =names(which.max(table(WCS_strategy))))
 
-decision<-subset(decision, decision$Board1<=68.6)
+decision<-subset(decision, decision$Board1<69)
+
+decision$WCS_strategy<-ifelse(decision$CumUt<1, 0, decision$WCS_strategy)
+
 decision$Board1<-as.factor(decision$Board1)
 decision$period<-as.factor(decision$period)
-decision$WCS_strategy<-as.factor(decision$d)
-decision$WCS_strategy <- factor(decision$WCS_strategy, levels = c("0", "2.8", "5.6", "8.5", "14.1", "17"))
+decision$WCS_strategy<-as.factor(decision$WCS_strategy)
 
 #p<-
-  ggplot(decision, aes(x=period, y=Board1)) +
+ggplot(decision, aes(x=period, y=Board1)) +
   geom_tile(aes(fill = WCS_strategy)) + scale_fill_grey()+
   theme_classic()+
   labs(y = "Water Surface Elevation (m)",
@@ -403,22 +383,3 @@ decision$WCS_strategy <- factor(decision$WCS_strategy, levels = c("0", "2.8", "5
                color="black", size=1)
 #ggsave(paste("_outputs/yearsnew/",years[i],".jpg",sep=""),plot=p)
 #}
-
-
-drawdown<-subset(Final, period==1&Board1==68.2|period==2&Board1==68.4|period==3&Board1==68.2|period==4&Board1==68|period==5&Board1==67.8|period==6&Board1==67.6|period==7&Board1==67.4|period==8&Board1==67.8|period==9&Board1==68)
-
-drawdown<- drawdown%>%group_by(WCS_strategy, period) %>%summarise(CumUt=mean(CumUt))
-
-drawdown<- drawdown %>% dplyr::group_by(period) %>% 
-  dplyr::mutate(Utility=rescale(CumUt, to=c(0,1)), WCS_strategy=WCS_strategy)
-
-drawdown$Utility<-ifelse(drawdown$period==7&drawdown$WCS_strategy==0, 1, drawdown$Utility)
-drawdown$Utility<-ifelse(drawdown$period==7&drawdown$WCS_strategy!=0, 0, drawdown$Utility)
-
-drawdown$WCS_strategy<-as.factor(drawdown$WCS_strategy)
-
-ggplot(drawdown, aes(x=period, y=WCS_strategy)) +
-  geom_tile(aes(fill = Utility)) +
-  scale_fill_distiller(palette = "Greys") +
-  labs(y = "Discharge Strategy",
-       x = "Period") + theme(legend.title = element_blank())

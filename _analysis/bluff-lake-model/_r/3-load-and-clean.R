@@ -259,7 +259,7 @@ plot(FitG4~doy, newdat, type="l", col="red", ylim=c(69,70.2), xlim=c(0,365),
 legend("topright", c("Predicted", "Lake Elevation"),
        col = c("red", "blue"), lty = c(1, 1))        
 
-ggplot()+geom_line(data=newdat, aes(y=FitG4, x=doy), color="blue")+ylab("Elevation")+
+ggplot()+geom_line(data=newdat, aes(y=FitG4, x=doy), color="blue")+ylab("Water Surface Elevation (m)")+
   xlab("Day of Year")+ geom_line(data=newdat, aes(y=Intake, x=doy), color="red")+theme_classic()
 
 discharge_daily$Pred_El<-predict(gam_4, discharge_daily)

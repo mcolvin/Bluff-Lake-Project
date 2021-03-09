@@ -120,7 +120,7 @@ abline(h=EOFheight);text(2000,EOFheight,"EOF elevation",pos=3)
 
 ggplot()+geom_line(data=solution, aes(x=dt, y=wse_lake))+theme_classic()+
   geom_line(aes(x=solution$dt, y=solution$wse), color="blue")+xlab("Day of Year")+
-  ylab("Elevation")+geom_hline(yintercept = EOFheight, linetype="dashed")+
+  ylab("Water Surface Elevation (m)")+geom_hline(yintercept = EOFheight, linetype="dashed")+
   scale_x_datetime(date_labels = "%j")+geom_vline( xintercept = as.POSIXct("2020-06-30 00:00:00"), linetype="solid")
 preds <- solution$wse
 actual <- solution$wse_lake

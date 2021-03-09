@@ -88,6 +88,13 @@ points(dat2$DO_dawn~dat2$DawnDO_Mod, col="red")
 legend("topleft",legend=c("x>1","1>x>0.5","0.5>x"),
        col=c("blue","green","red"),pch=1,bg="white")
 
+dat$Depth<-ifelse(dat$depth>=1, "x >= 1", ifelse(dat$depth<1&dat$depth>0.5, "0.5< x <1", "x <= 0.5"))
+
+ggplot()+geom_point(data=dat, aes(y=DO_dawn, x=DawnDO_Mod, color=Depth))+
+  scale_color_grey()+
+  theme_classic()+labs(y="Measured Dissolved Oxygen (mg/L)", x="Modeled Dissolved Oxygen (mg/L)", color="Depth (m)")+
+  geom_abline(aes(intercept=0, slope=1))
+
 
 plot(dat$DO_dawn~dat$DawnDO_Mod, main="Dawn Dissolved Oxygen at Temperature x", xlab="Model DO", ylab="True DO", ylim=c(1,9), xlim=c(1,9), type="n")
 abline(0,1)
@@ -102,3 +109,14 @@ points(dat9$DO_dawn~dat9$DawnDO_Mod, col="brown", pch=4)
 legend("topleft",legend=c("x>30","30>x>25","25>x>20","x<20"),
        col=c("blue","green","red","brown"),pch=c(1:4),bg="white")
 
+dat$Te<-ifelse(dat$Temp_C>30, "x >= 30", 
+              ifelse(dat$Temp_C<30&dat$Temp_C>=25, "25=< x <30",
+                     ifelse(dat$Temp_C<25&dat$Temp_C>=20, "20=< x <25", "x < 20")))
+dat$Te<-factor(dat$Te, levels = c("x >= 30", "25=< x <30", "20=< x <25", "x < 20"))
+
+ggplot()+geom_point(data=dat, aes(y=DO_dawn, x=DawnDO_Mod, color=Te))+
+  scale_color_grey()+
+  theme_classic()+labs(y="Measured Dissolved Oxygen (mg/L)", x="Modeled Dissolved Oxygen (mg/L)", color=xlab)+
+  geom_abline(aes(intercept=0, slope=1))
+
+cor(dat$DO_dawn, dat$DawnDO_Mod)^2

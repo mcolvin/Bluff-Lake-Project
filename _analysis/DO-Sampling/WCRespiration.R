@@ -70,3 +70,12 @@ ggplot(WCresp, aes(x =as.factor(Lake), y=mWCresp))+geom_point()+
   theme_classic()+ ylim(0,0.12)+
   labs(y= "Water Column Respiration mg/L/hr", x = "Collection Site")+
   geom_errorbar(aes(ymin=CIlow, ymax=CIhigh), color="black", width=0.1)
+tempC<-c(5:30)
+SR<- ((((0.287*tempC-2.5)*44.661)*0.7)*0.001)/60
+
+da<-data.frame(tempC,SR)
+xlab<-"Temperature (°C)"
+
+ggplot(da, aes(x =tempC, y=SR))+geom_line()+ 
+  theme_classic()+
+  labs(y= "Sediment Respiration mg/L/hr", x = xlab)
