@@ -3,6 +3,9 @@ source("_r/2-functions.R")
 source("_r/3-load-and-clean.R")
 source("_r/CLEAN-Objective metrics_new.R")
 
+a=1.408
+b=0.302
+
 
 #----------------------------------------------------------------------
 #
@@ -201,8 +204,9 @@ for(i in 1:length(years)){
     intake_in<-weir(g=9.81,h=intake_head[1],w=intake_width[1])+ # bay 1
       weir(g=9.81,h=intake_head[2],w=intake_width[2]) # bay 2
     # convert to cubic meters per 60 minutes
-    intake_in<-intake_in*60*60
-    
+    p<-a+(intake_in*b)
+    intake_in<-(intake_in*60*60)*p
+
     #----------------------------------------------------------------------
     # 
     #  change in volume
@@ -253,7 +257,8 @@ for(i in 1:length(years)){
   Solution   <- do.call(rbind, datalist2)
   #datalist[[i]]<-Solution
   print(i/length(years))
-  fwrite(Solution,paste("_outputs/years/",years[i],"-hydro-sims-2.csv",sep=""))
+  fwrite(Solution,paste("_outputs/years/",years[i],
+                        "-hydro-sims-Final-drawdown.csv",sep=""))
 }
 #All_Years   <- do.call(rbind, datalist)
 #write.csv(All_Years,"_dat/All_Years_All_Elevations_Discharge_Sims.csv")
