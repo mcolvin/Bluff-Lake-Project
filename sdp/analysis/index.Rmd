@@ -16,7 +16,10 @@ source("_r/2-functions.R")
 source("_r/3-load-and-clean.R")
 source("_r/4-tables.R")
 source("_r/5-figures.R")
-source("_r/6-analysis.R")
+source("_r/6-1-analysis.R")# fixed starting elevations
+source("_r/6-2-analysis.R")# random starting elevations
+source("_r/6-3-analysis.R")# SDP
+
 ```
 
 #

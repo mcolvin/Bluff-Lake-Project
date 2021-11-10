@@ -120,3 +120,5 @@ Board_Time<-function(period)
   return(x)
 }
 
+30/1*1/1000
+

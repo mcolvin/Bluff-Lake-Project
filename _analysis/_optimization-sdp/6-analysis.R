@@ -1,4 +1,36 @@
 
+#----------------------------------------------------------------------
+# 
+#  fit gam needed 
+#
+#----------------------------------------------------------------------
+#  elevation of water at intake versus Macon
+#  run lake_info and discharge_daily from load-and-clean
+newdat<- subset(lake_info, dt> as.POSIXct("2019/11/12 18:00")) 
+newdat<-subset(newdat, is.na(newdat$Q_bl)==FALSE)
+newdat<-subset(newdat, is.na(newdat$Intake)==FALSE)
+
+matrix_gam <- data.table(newdat)
+
+gam_4 <- gam(Intake ~ te(Q_bl, doy),
+             data = matrix_gam,
+             family = gaussian)
+summary(gam_4)
+summary(gam_4)$s.table
+
+newdat$FitG4<- gam_4$fitted.values
+lake_info<-lake_info[order(doy)]
+newdat<-newdat[order(doy)]
+plot(Intake~doy, lake_info, type="l", col="blue", ylim=c(69,70.2), xlim=c(0,365), ylab=NA, xlab=NA)
+par(new=T)
+plot(FitG4~doy, newdat, type="l", col="red", ylim=c(69,70.2), xlim=c(0,365),
+     main="GAM Model Intake ~ Macon + DOY", xlab="Date", 
+     ylab="Water Surface Elevation")
+legend("topright", c("Predicted", "Lake Elevation"),
+       col = c("red", "blue"), lty = c(1, 1))    
+
+
+
 
 #----------------------------------------------------------------------
 # 
