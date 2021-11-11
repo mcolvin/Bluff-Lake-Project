@@ -1,31 +1,4 @@
-#----------------------------------------------------------------------
-# 
-# lake information
-#
-#----------------------------------------------------------------------
-#  watershed size for bluff lake
-bluff_lake<- 220 # mi^2
-bluff_lake<- bluff_lake*2.58999 # km^2
-# watershed at macon
-macon<- 768 # mi^2
-macon<- macon*2.58999 # km^2
-# elevation at empty lake
-empty_wse<-64.754 # min ele from bathymetry
 
-#  BATHYMETRIC DATA
-bath<- fread("_dat/CompleteMap.csv")
-names(bath)<-c("X","Y","elevation")
-
-#----------------------------------------------------------------------
-# 
-#  drawdown period information (3 years, first extended drawdawn followed
-#  by 2 years of normal drawdowns)
-#
-#----------------------------------------------------------------------
-drawdown_dat<-as.data.table(read_excel("AssortedElevationNotes.xlsx",sheet="drawdown_cycle"))
-#drawdown_dat[,start_date:=convertToDate(start_date)]
-#drawdown_dat[,end_date:=convertToDate(end_date)]
-#plot(board_elevation~start_date,drawdown_dat,type="s")
 
 
 drawdown_cycle<-subset(drawdown_dat,cycle==1)
@@ -34,9 +7,7 @@ drawdown_cycle[,drawdown_cycle_id:=.I]
 
 #----------------------------------------------------------------------
 # 
-#  NOXUBEE RIVER DAILY DISCHARGE DATA
-#
-#----------------------------------------------------------------------
+#---NOXUBEE RIVER DAILY DISCHARGE DATA
 
 # PULL DISCHARGE AND GAUGE DATA FROM USGS PORTAL
 ## PARAMETER CODE 00065 Gage height, feet 00060; Discharge, cubic feet per second
@@ -193,7 +164,7 @@ Vol_2_EL<- approxfun(volume, elevation, rule=2)
 # plot(elevation,volume/1000000) # matches what vrs had in report/thesis
 
 # Function for converting elevation or volume to surface area ----
-# suface area in meters squared
+# surface area in meters squared
 # volume in cubic meters
 # elevation in meters above sea level
 surface <- NA
