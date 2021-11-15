@@ -52,13 +52,13 @@ wse_sim_decisions<-function(t,x,parms)
         {        
         wcs_head<-ele_lake[x]-WCS1_wse
         wcs_head<-ifelse(wcs_head>0,wcs_head,0)
-        wcs_out<-weir(w=wcs_width[1], h=wcs_head[1])+
-            weir(w=wcs_width[2], h=wcs_head[2])+
-            0*weir(w=wcs_width[3], h=wcs_head[3])+
-            0*weir(w=wcs_width[4], h=wcs_head[4])+
-            0*weir(w=wcs_width[5], h=wcs_head[5])+
-            0*weir(w=wcs_width[6], h=wcs_head[6])+
-            weir(w=wcs_width[7], h=wcs_head[7])
+        wcs_out<-sharp_crested_weir(w=wcs_width[1], h=wcs_head[1])+
+            sharp_crested_weir(w=wcs_width[2], h=wcs_head[2])+
+            0*sharp_crested_weir(w=wcs_width[3], h=wcs_head[3])+
+            0*sharp_crested_weir(w=wcs_width[4], h=wcs_head[4])+
+            0*sharp_crested_weir(w=wcs_width[5], h=wcs_head[5])+
+            0*sharp_crested_weir(w=wcs_width[6], h=wcs_head[6])+
+            sharp_crested_weir(w=wcs_width[7], h=wcs_head[7])
         return((wcs_out*60*60)*0.8) # per hour
         })
     
@@ -78,7 +78,7 @@ wse_sim_decisions<-function(t,x,parms)
         EOF_head<-ele_lake[x]-EOFheight
         EOF_head<-ifelse(EOF_head>0,EOF_head,0)
         ## calculate discharge using broad wier equation
-        EOF_out<-broad_weir(w=EOFwidth, h=EOF_head)
+        EOF_out<-broad_crested_weir(w=EOFwidth, h=EOF_head)
         ## convert to cubic meters per hour
         return(EOF_out*60*60)
         })
@@ -94,8 +94,8 @@ wse_sim_decisions<-function(t,x,parms)
     intake_head<- c(max(0,ele_intake-intake_board_wse[1]),
                     max(0,ele_intake-intake_board_wse[2]))
     # water inputs to intake (cms)
-    intake_in<-weir(h=intake_head[1],w=intake_width[1])+ # bay 1
-      weir(h=intake_head[2],w=intake_width[2]) # bay 2
+    intake_in<-sharp_crested_weir(h=intake_head[1],w=intake_width[1])+ # bay 1
+      sharp_crested_weir(h=intake_head[2],w=intake_width[2]) # bay 2
     # convert to cubic meters per 60 minutes
     intake_in<-rep(intake_in*60*60,length(ele_lake))
     #intake_in<-intake_in*60*60

@@ -1,6 +1,7 @@
 
 
-
+data(lake_meta)
+data(drawdown_dat)
 drawdown_cycle<-subset(drawdown_dat,cycle==1)
 #plot(board_elevation~start_date,drawdown_cycle,type="s")
 drawdown_cycle[,drawdown_cycle_id:=.I]
@@ -28,7 +29,7 @@ if(tmp>15)# pull data again if more than 15 days have passed since last pull
     fwrite(discharge_daily,"_dat/discharge_daily.csv")
     }
 # scale discharge to watershed area m^3/second
-discharge_daily[,Q_bl:=(discharge/bluff_lake)*0.0283168]
+discharge_daily[,Q_bl:=(discharge/lake_meta$bluff_lake)*0.0283168]
 
 
 #----------------------------------------------------------------------
@@ -59,7 +60,7 @@ if(tmp>15)
     }
     
 ## scale discharge to watershed area m^3/second
-discharge_hourly[,Q_bl:=(discharge/bluff_lake)*0.0283168]
+discharge_hourly[,Q_bl:=(discharge/lake_meta$bluff_lake)*0.0283168]
 # round to nearest hour
 discharge_hourly[,dateTime:=round_date(dateTime, "1 hour")]
 ## summarize 15 minute intervals to hour
